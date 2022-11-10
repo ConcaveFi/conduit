@@ -17,7 +17,9 @@ module.exports = {
       },
       backgroundImage: {
         'green-gradient':
-          'linear-gradient(135deg, hsla(149, 100%, 75%, 1) 24%, hsla(167, 50%, 58%, 1) 80%)',
+          'linear-gradient(135deg, hsla(116, 72%, 79%, 1) 0%, hsla(157, 31%, 48%, 1) 100%)',
+        'red-gradient':
+          'linear-gradient(90deg, hsla(0, 85%, 61%, 1) 0%, hsla(29, 97%, 75%, 1) 100%)',
       },
     },
   },
