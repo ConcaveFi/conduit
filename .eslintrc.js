@@ -1,10 +1,13 @@
 module.exports = {
   root: true,
   // This tells ESLint to load the config from the package `eslint-config-custom`
-  extends: ["custom"],
+  extends: ['custom', 'next', 'next/core-web-vitals'],
+  rules: {
+    'react/display-name': 'off',
+  },
   settings: {
     next: {
-      rootDir: ["apps/*/"],
+      rootDir: ['fontend'],
     },
   },
-};
+}
