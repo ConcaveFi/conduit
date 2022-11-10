@@ -14,7 +14,7 @@ export function Topbar() {
         <button className="text-gray-400  font-mont font-bold h-full hover:underline flex items-center justify-center text-sm w-32 border-x border-dark-700">
           My wallets
         </button>
-        <div className="flex items-center gap-1 w-[214px] justify-center">
+        <div className="flex items-center gap-1 w-[232px] justify-center">
           <span className="text-gray-400 font-nunito font-bold text-sm">Chani's the best</span>
           <AvatarProfile />
           <ChevronIcon />
