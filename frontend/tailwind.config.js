@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
@@ -23,6 +25,18 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addComponents }) {
+      addComponents({
+        '.scrollbar-hidden': {
+          display: '',
+          '&::-webkit-scrollbar': {
+            width: '0px',
+            height: '0px',
+          },
+        },
+      })
+    }),
+  ],
 }
 // dark: '#131820',

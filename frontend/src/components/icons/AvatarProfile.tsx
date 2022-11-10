@@ -1,6 +1,6 @@
 export function AvatarProfile() {
   return (
-    <div className="w-8 h-8 bg-[#B8BDC5] rounded-lg ">
+    <div className="w-10 h-10 bg-[#B8BDC5] rounded-lg ">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         x="0px"
