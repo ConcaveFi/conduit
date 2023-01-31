@@ -1,19 +1,13 @@
-import { configureChains, createClient, mainnet, WagmiConfig } from 'wagmi'
-import { alchemyProvider } from '@wagmi/core/providers/alchemy'
-import { publicProvider } from '@wagmi/core/providers/public'
+import { createClient, mainnet, WagmiConfig } from 'wagmi'
 import { optimismGoerli } from '@wagmi/core/chains'
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
 import { ReactNode } from 'react'
-const { chains, provider } = configureChains(
-  [mainnet, optimismGoerli],
-  [publicProvider(), alchemyProvider({ apiKey: 'dduxooAO1ELKTf_kXyJHvqIcDniRVvXn' })],
-)
 
 const client = createClient(
   getDefaultClient({
     appName: 'Exchangett',
     alchemyId: 'dduxooAO1ELKTf_kXyJHvqIcDniRVvXn',
-    chains,
+    chains: [mainnet, optimismGoerli],
   }),
 )
 
