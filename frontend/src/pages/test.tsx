@@ -1,6 +1,11 @@
 import { ConnectKitButton } from 'connectkit'
 import { BigNumber } from 'ethers'
-import { formatUnits, parseUnits } from 'ethers/lib/utils.js'
+import {
+  formatBytes32String,
+  formatUnits,
+  parseBytes32String,
+  parseUnits,
+} from 'ethers/lib/utils.js'
 import { useState } from 'react'
 import { FUTURES_MARKER_ABI } from 'src/utils/FuturesMarkerAbi'
 import { useContractWrite } from 'wagmi'
@@ -21,12 +26,12 @@ export default function Test() {
   })
   const modifyPosition = useContractWrite({
     ...defaultOptions,
-    args: [size.toString(), tracking],
+    args: [size.toString(), formatBytes32String(tracking)],
     functionName: 'modifyPositionWithTracking',
   })
   const closePosition = useContractWrite({
     ...defaultOptions,
-    args: [closeTracking],
+    args: [formatBytes32String(closeTracking)],
     functionName: 'closePositionWithTracking',
   })
 
@@ -51,7 +56,7 @@ export default function Test() {
         </button>
       </div>
       <div className="my-8 flex flex-col max-w-[450px] p-6">
-        <span className="text-gray-400">Open position</span>
+        <span className="text-gray-400"> Open/Modify position</span>
         <input
           className="h-10 mt-2 rounded-md outline-none text-gray-400 px-4 bg-dark-700"
           onChange={({ target }) => setSize(parseUnits(Number(+target.value)?.toString() || '0'))}
@@ -69,11 +74,11 @@ export default function Test() {
           onClick={() => modifyPosition.write()}
           className="bg-dark-700 mt-2 h-10 rounded-md text-gray-100"
         >
-          Open position
+          Open/Modify position
         </button>
       </div>
       <div className="my-8 flex flex-col max-w-[450px] p-6">
-        <span className="text-gray-400">Open position</span>
+        <span className="text-gray-400">Close position</span>
 
         <input
           className="h-10 mt-2 rounded-md outline-none text-gray-400 px-4 bg-dark-700"
