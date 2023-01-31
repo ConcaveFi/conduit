@@ -1,10 +1,8 @@
-import { getDefaultProvider } from 'ethers'
 import { configureChains, createClient, mainnet, WagmiConfig } from 'wagmi'
 import { publicProvider } from '@wagmi/core/providers/public'
 import { optimismGoerli } from '@wagmi/core/chains'
-import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask'
-import { InjectedConnector } from '@wagmi/core'
 import { ConnectKitProvider, getDefaultClient } from 'connectkit'
+import { ReactNode } from 'react'
 const { chains, provider } = configureChains([mainnet, optimismGoerli], [publicProvider()])
 
 const client = createClient(
@@ -15,7 +13,9 @@ const client = createClient(
   }),
 )
 
-export function WagmiProvider({ children }) {
+export function WagmiProvider({ children }: { children: ReactNode }) {
+  console.log('testing crash')
+
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider>{children}</ConnectKitProvider>

@@ -8,8 +8,8 @@ export default function App({ Component, pageProps }: any) {
   const isMounted = useIsMounted()
   if (!isMounted) return <></>
   return (
-    // <WagmiProvider>
-    <Component {...pageProps} />
-    // </WagmiProvider>
+    <WagmiProvider>
+      <Component {...pageProps} />
+    </WagmiProvider>
   )
 }
