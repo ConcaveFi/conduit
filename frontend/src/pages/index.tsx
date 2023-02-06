@@ -1,21 +1,40 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ChevronIcon,
+  BalanceIcon,
+  CloseIcon,
+  CoinIcon,
+  ExpandIcon,
+  FundingIcon,
+  NotificationIcon,
+  PercentIcon,
+  SailIcon,
+  SearchIcon,
+  Arrow,
+  DashboardIcon,
+  LineGrowIcon,
+  PlusIcon,
+} from '@exchange/icons'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 export default function Home() {
-  const ref = useRef<HTMLDivElement>(null)
-
-  const [clientX, setClientX] = useState(0)
-  const [clientY, setClientY] = useState(0)
-
-  useEffect(() => {
-    setClientX(ref?.current?.clientWidth)
-    setClientY(ref?.current?.clientHeight)
-  }, [ref])
-
   const isMounted = useIsMounted()
   if (!isMounted) return <></>
 
   return (
     <div className="h-screen flex flex-col w-full bg-ocean-900">
+      <BalanceIcon />
+      <PercentIcon />
+      <CoinIcon />
+      <FundingIcon />
+      <SailIcon />
+      <SearchIcon />
+      <ChevronIcon />
+      <NotificationIcon />
+      <CloseIcon />
+      <ExpandIcon />
+      <Arrow />
+      <DashboardIcon />
+      <LineGrowIcon />
+      <PlusIcon />
       <span className="text-white"></span>
     </div>
   )

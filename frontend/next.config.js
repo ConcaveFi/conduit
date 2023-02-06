@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ['@exchange/core'],
+  transpilePackages: ['@exchange/core', '@exchange/icons'],
 }
 
 module.exports = nextConfig
