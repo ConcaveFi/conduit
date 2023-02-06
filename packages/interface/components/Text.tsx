@@ -5,7 +5,7 @@ import { PrimitiveSpanProps } from '../types/primitives'
 export const textStyles = cva(cva('text-jus ')(), {
   variants: {
     variant: {
-      heading: 'font-semibold text-xl text-white',
+      heading: 'font-semibold text-white',
       'heading.light': 'text-lg text-white',
       high: 'text-ocean-100',
       medium: 'text-ocean-200',
@@ -29,8 +29,8 @@ export const textStyles = cva(cva('text-jus ')(), {
       bold: 'font-bold',
     },
     modifier: {
-      positive: 'text-green-500',
-      negative: 'text-red-500',
+      positive: 'text-[#32FF2E]',
+      negative: 'text-[#FF2E2E]',
       none: '',
     },
     align: {
