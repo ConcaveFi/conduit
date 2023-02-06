@@ -2,15 +2,36 @@ import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
 import { PrimitiveSpanProps } from '../types/primitives'
 
-export const textStyles = cva(cva('text-jus')(), {
+export const textStyles = cva(cva('text-jus ')(), {
   variants: {
     variant: {
-      heading: 'font-semibold text-lg text-white',
+      heading: 'font-semibold text-xl text-white',
+      'heading.light': 'text-lg text-white',
       high: 'text-ocean-100',
       medium: 'text-ocean-200',
       low: 'text-ocean-300 font-medium',
-      positive: 'text-green-400',
-      negative: 'text-red-400',
+    },
+    size: {
+      xs: 'text-xs',
+      sm: 'text-[14px]',
+      md: 'text-md',
+      lg: 'text-lg',
+      xl: 'text-xl',
+      '2xl': 'text-2xl',
+      '3xl': 'text-3xl',
+      '4xl': 'text-4xl',
+      '5xl': 'text-5xl',
+    },
+    weight: {
+      regular: 'font-normal',
+      medium: 'font-medium',
+      semibold: 'font-semibold',
+      bold: 'font-bold',
+    },
+    modifier: {
+      positive: 'text-green-500',
+      negative: 'text-red-500',
+      none: '',
     },
     align: {
       justify: 'text-justify',
@@ -26,6 +47,12 @@ export const textStyles = cva(cva('text-jus')(), {
 export type TextAttributes = VariantProps<typeof textStyles>
 export interface TextProps extends TextAttributes, PrimitiveSpanProps {}
 export const Text = forwardRef<HTMLSpanElement, TextProps>((props, ref) => {
-  const { variant, className, ...spanProps } = props
-  return <span ref={ref} className={textStyles({ className, variant })} {...spanProps}></span>
+  const { variant, className, modifier, size, weight, ...spanProps } = props
+  return (
+    <span
+      ref={ref}
+      className={textStyles({ className, variant, modifier, size, weight })}
+      {...spanProps}
+    ></span>
+  )
 })
