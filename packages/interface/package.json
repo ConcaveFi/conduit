@@ -1,0 +1,14 @@
+{
+  "name": "@exchange/interface",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "react": "^18.2.0",
+    "tailwind": "^4.0.0"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.4.0"
+  }
+}

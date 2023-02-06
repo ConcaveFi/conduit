@@ -8,5 +8,6 @@
     "**/Thumbs.db": true,
     "**/node_modules": true,
     "**/.next": true
-  }
+  },
+  "tailwindCSS.experimental.classRegex": [["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]]
 }
