@@ -1,3 +1,4 @@
+import { Text } from '@exchange/interface'
 import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/Topbar'

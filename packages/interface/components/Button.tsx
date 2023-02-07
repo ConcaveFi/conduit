@@ -15,8 +15,8 @@ export const buttonStyles = cva(baseStyles(), {
     },
     isEnabled: { true: '', false: '' },
     size: {
-      md: 'px-3 py-2',
-      lg: 'px-5 py-[8px]',
+      md: 'px-3 w-fit min-w-[100px]',
+      lg: 'px-5 py-1 w-fit min-w-[140px]',
       xl: 'h-10 w-full',
     },
   },

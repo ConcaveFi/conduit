@@ -11,7 +11,7 @@ const panelHeaderStyles = cva(cva('flex px-3 justify-between items-center w-full
     },
   },
 })
-const baseBodyStyles = cva(['flex, flex-col gap-4 p-4 w-full h-full'])
+const baseBodyStyles = cva(['flex flex-col gap-4 p-4 w-full h-full'])
 const panelBodyStyles = cva(baseBodyStyles(), {
   variants: {
     variant: {
