@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 export function StrategyHeader() {
   return (
-    <Flex className="w-full h-20 px-6 rounded-2xl bg-ocean-600 " justify="between">
+    <Flex className="w-full min-h-[80px] px-6 rounded-2xl bg-ocean-600 " justify="between">
       <Flex centered className="gap-6">
         <ItemInfo
           info="BTC Perpetual"

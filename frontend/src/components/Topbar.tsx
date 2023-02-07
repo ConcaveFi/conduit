@@ -36,7 +36,7 @@ export function Topbar() {
           <Flex className="w-full h-full rounded-full bg-sky-300" />
         </Flex>
         <NotificationIcon className="w-5 h-5 fill-ocean-200" />
-        <Button variant="primary" size="md">
+        <Button variant="primary" size="lg" className="py-2">
           Optimism
           <ChevronIcon className="w-3 h-3 fill-ocean-200" />
         </Button>

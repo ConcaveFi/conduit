@@ -7,6 +7,9 @@ export const buttonStyles = cva(baseStyles(), {
   variants: {
     variant: {
       primary: 'bg-ocean-700 rounded-full hover:bg-ocean-500 text-ocean-200 fill-ocean-200',
+      secondary: 'bg-ocean-300 rounded-full hover:bg-ocean-500 text-ocean-200 fill-ocean-200',
+      'secondary.underline':
+        'border-2 border-ocean-300 rounded-full hover:bg-ocean-500 text-ocean-200 fill-ocean-200',
       'green-gradient': 'bg-green-gradient rounded-full',
       'bottom-glow':
         'border-b-2 border-ocean-100 text-ocean-100 bg-gradient-to-b from-[#0000] to-[#00D1FF50]',

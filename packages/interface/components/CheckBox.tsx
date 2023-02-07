@@ -1,3 +1,4 @@
+import { ripple } from '@exchange/theme/utils/animation'
 import { SVGProps, useEffect, useRef, useState } from 'react'
 import { Flex } from './Flex'
 import { Text } from './Text'
@@ -55,14 +56,16 @@ export function CheckBox({ initialState, onToggle, className, info, ...props }: 
             />
           )}
         </svg>
-        <div
-          ref={ref}
-          className={`absolute ${hover ? 'flex' : 'hidden'} justify-center items-center
-         overflow-hidden w-[220%] h-[220%] rounded-full 
-         bg-opacity-50 bg-ocean-300 -inset-[65%]
-         
+        {ripple && (
+          <div
+            ref={ref}
+            className={`absolute flex justify-center items-center
+            ${hover ? 'opacity-100' : 'opacity-0'} transition-all duration-300 ease-out 
+            overflow-hidden w-[220%] h-[220%] rounded-full pointer-events-none
+            bg-opacity-50 bg-ocean-300 -inset-[65%]
          `}
-        ></div>
+          />
+        )}
       </button>
       {info && <Text>{info}</Text>}
     </Flex>
