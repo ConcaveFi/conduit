@@ -13,10 +13,7 @@ export function SailIcon({ variant = 'default', ...props }: SailIconProps) {
         xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
-        <path
-          d="M2.66663 1.5H4.16663V6H2.66663V7.5H1.66663V6H0.166626V1.5H1.66663V0H2.66663V1.5ZM7.66663 4H9.16663V8.5H7.66663V10H6.66663V8.5H5.16663V4H6.66663V2.5H7.66663V4Z"
-          fill="#0E052D"
-        />
+        <path d="M2.66663 1.5H4.16663V6H2.66663V7.5H1.66663V6H0.166626V1.5H1.66663V0H2.66663V1.5ZM7.66663 4H9.16663V8.5H7.66663V10H6.66663V8.5H5.16663V4H6.66663V2.5H7.66663V4Z" />
       </svg>
     )
   }

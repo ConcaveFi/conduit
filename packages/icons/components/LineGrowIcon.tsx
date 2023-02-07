@@ -3,9 +3,9 @@ import { SVGProps } from 'react'
 export function LineGrowIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      width="22"
-      height="19"
-      viewBox="0 0 14 14"
+      width="11"
+      height="10"
+      viewBox="0 0 11 10"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className || 'fill-ocean-300 w-6 h-6'}

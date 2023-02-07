@@ -32,7 +32,7 @@ export const flexStyles = cva(baseStyles(), {
 export type FlexAttributes = VariantProps<typeof flexStyles>
 export interface FlexProps extends PrimitiveDivProps, FlexAttributes {}
 
-export const Flex = forwardRef<any, FlexProps>((props, ref) => {
+export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
   const { row, column, centered, grow, justify, align, className = '', ...divProps } = props
   if (props.hidden) return <></>
   return (
@@ -42,4 +42,4 @@ export const Flex = forwardRef<any, FlexProps>((props, ref) => {
       {...divProps}
     />
   )
-})
+}) as React.FC<FlexProps>
