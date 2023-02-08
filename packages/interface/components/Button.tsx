@@ -2,7 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
 import { PrimitiveButtonProps } from '../types/primitives'
 
-const baseStyles = cva('flex gap-1 items-center justify-center font-medium')
+const baseStyles = cva('flex gap-1 font-medium')
 export const buttonStyles = cva(baseStyles(), {
   variants: {
     variant: {
@@ -16,6 +16,7 @@ export const buttonStyles = cva(baseStyles(), {
       underline: 'text-ocean-200 hover:underline ',
       'underline.secondary': 'text-ocean-300 hover:underline ',
     },
+    centered: { true: 'items-center justify-center' },
     isEnabled: { true: '', false: '' },
     size: {
       md: 'px-3 w-fit min-w-[100px]',
@@ -23,12 +24,19 @@ export const buttonStyles = cva(baseStyles(), {
       xl: 'h-10 w-full',
     },
   },
+  defaultVariants: {
+    centered: true,
+  },
 })
 export type ButtonAttributes = VariantProps<typeof buttonStyles>
 export interface ButtonProps extends PrimitiveButtonProps, ButtonAttributes {}
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  const { variant, size, className, ...buttonProps } = props
+  const { variant, size, className, centered, ...buttonProps } = props
   return (
-    <button ref={ref} className={buttonStyles({ className, size, variant })} {...buttonProps} />
+    <button
+      ref={ref}
+      className={buttonStyles({ className, size, centered, variant })}
+      {...buttonProps}
+    />
   )
 }) as React.FC<ButtonProps>
