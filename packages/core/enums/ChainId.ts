@@ -1,5 +1,6 @@
 export enum ChainId {
-  OPTMISM_GÖRLI = 420,
+  OPTiMISM_GÖRLI = 420,
+  OPTIMISM = 10,
   ETHEREUM = 1,
   ROPSTEN = 3,
   RINKEBY = 4,
