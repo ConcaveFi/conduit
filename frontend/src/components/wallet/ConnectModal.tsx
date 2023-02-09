@@ -19,6 +19,7 @@ export function ConnectModal() {
             onClick={() => connect({ connector })}
             centered={false}
             size="xl"
+            key={name}
           >
             {name}
             <img
