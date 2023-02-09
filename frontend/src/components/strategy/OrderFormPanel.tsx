@@ -1,5 +1,5 @@
-import { ChevronIcon } from '@exchange/icons'
-import { Button, CheckBox, Flex, Panel, Text } from '@exchange/interface'
+import { ChevronIcon } from '@tradex/icons'
+import { Button, CheckBox, Flex, Panel, Text } from '@tradex/interface'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 

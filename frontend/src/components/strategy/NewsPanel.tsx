@@ -1,4 +1,4 @@
-import { Flex, Panel, Text } from '@exchange/interface'
+import { Flex, Panel, Text } from '@tradex/interface'
 
 export function NewsPanel() {
   return (

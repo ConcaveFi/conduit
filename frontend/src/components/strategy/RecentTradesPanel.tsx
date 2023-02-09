@@ -1,5 +1,5 @@
-import { Arrow } from '@exchange/icons'
-import { Flex, Panel, Text } from '@exchange/interface'
+import { Arrow } from '@tradex/icons'
+import { Flex, Panel, Text } from '@tradex/interface'
 
 export function RecentTradesPanel() {
   return (

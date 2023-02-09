@@ -1,5 +1,5 @@
-import { LineGrowIcon, SailIcon } from '@exchange/icons'
-import { Button } from '@exchange/interface'
+import { LineGrowIcon, SailIcon } from '@tradex/icons'
+import { Button } from '@tradex/interface'
 import { useState } from 'react'
 import { Tab } from '../TabSelector'
 

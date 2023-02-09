@@ -5,5 +5,5 @@ module.exports = {
     '../packages/icons/components/**/*.tsx',
     '../packages/interface/components/**/*.tsx',
   ],
-  plugins: [require('@exchange/theme')],
+  plugins: [require('@tradex/theme')],
 }

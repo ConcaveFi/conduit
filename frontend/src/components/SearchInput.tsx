@@ -1,5 +1,5 @@
-import { SearchIcon } from '@exchange/icons'
-import { Flex, Input } from '@exchange/interface'
+import { SearchIcon } from '@tradex/icons'
+import { Flex, Input } from '@tradex/interface'
 
 export function SearchInput() {
   return (

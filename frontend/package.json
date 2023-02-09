@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@exchange/core": "*",
-    "@exchange/icons": "*",
-    "@exchange/interface": "*",
-    "@exchange/theme": "*",
+    "@tradex/core": "*",
+    "@tradex/icons": "*",
+    "@tradex/interface": "*",
+    "@tradex/theme": "*",
     "@headlessui/react": "^1.7.10",
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",

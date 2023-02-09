@@ -1,4 +1,4 @@
-import { ripple } from '@exchange/theme/utils/animation'
+import { ripple } from '@tradex/theme/utils/animation'
 import { SVGProps, useEffect, useRef, useState } from 'react'
 import { Flex } from './Flex'
 import { Text } from './Text'

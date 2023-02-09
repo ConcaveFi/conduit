@@ -1,5 +1,5 @@
-import { BalanceIcon, ChevronIcon, CoinIcon, FundingIcon, PercentIcon } from '@exchange/icons'
-import { Flex, ItemInfo } from '@exchange/interface'
+import { BalanceIcon, ChevronIcon, CoinIcon, FundingIcon, PercentIcon } from '@tradex/icons'
+import { Flex, ItemInfo } from '@tradex/interface'
 import Image from 'next/image'
 
 export function StrategyHeader() {

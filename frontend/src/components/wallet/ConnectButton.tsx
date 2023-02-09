@@ -1,4 +1,4 @@
-import { Button } from '@exchange/interface'
+import { Button } from '@tradex/interface'
 import { useConnectWallet } from 'src/context/ConnectWalletProvider'
 
 export function ConnectButton() {

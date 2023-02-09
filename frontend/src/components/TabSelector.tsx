@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Flex } from '@exchange/interface'
+import { Button, ButtonProps, Flex } from '@tradex/interface'
 import React, { ReactElement, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface TabProps {

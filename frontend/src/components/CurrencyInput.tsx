@@ -1,4 +1,4 @@
-import { Flex, Input, Text } from '@exchange/interface'
+import { Flex, Input, Text } from '@tradex/interface'
 
 export function CurrencyInput({ currency }: { currency: string }) {
   return (

@@ -1,4 +1,4 @@
-import { Container, Flex, Panel, Text } from '@exchange/interface'
+import { Container, Flex, Panel, Text } from '@tradex/interface'
 import { useEffect } from 'react'
 import { NewsPanel } from 'src/components/strategy/NewsPanel'
 import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'

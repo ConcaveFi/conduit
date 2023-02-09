@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, Text } from '@exchange/interface'
+import { Button, Flex, Modal, Text } from '@tradex/interface'
 import { useMemo } from 'react'
 import { useConnectWallet } from 'src/context/ConnectWalletProvider'
 import { Connector, useConnect } from 'wagmi'
