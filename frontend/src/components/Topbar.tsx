@@ -1,10 +1,10 @@
-import { ChainId } from '@tradex/core'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { Button, Flex, ItemInfo, Panel, Text } from '@tradex/interface'
 import { Menu, Popover, Transition } from '@headlessui/react'
 import Image from 'next/image'
 import { Fragment } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { mainnet, optimism, optimismGoerli } from 'wagmi/chains'
 import { SearchInput } from './SearchInput'
 import { ConnectButton } from './wallet/ConnectButton'
 import { ConnectModal } from './wallet/ConnectModal'
@@ -71,7 +71,7 @@ export function Topbar() {
                     size="xl"
                     centered={false}
                     className="justify-start px-2 items-center"
-                    onClick={() => switchNetwork(ChainId.ETHEREUM)}
+                    onClick={() => switchNetwork(mainnet.id)}
                   >
                     <img src="/assets/networks/eth.png" className="rounded-full w-6" />
                     Ethereum
@@ -81,7 +81,7 @@ export function Topbar() {
                     size="xl"
                     centered={false}
                     className="justify-start px-2 items-center"
-                    onClick={() => switchNetwork(ChainId.OPTIMISM)}
+                    onClick={() => switchNetwork(optimism.id)}
                   >
                     <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
                     Optimism
@@ -91,7 +91,7 @@ export function Topbar() {
                     size="xl"
                     centered={false}
                     className="justify-start px-2 items-center"
-                    onClick={() => switchNetwork(ChainId.OPTiMISM_GÖRLI)}
+                    onClick={() => switchNetwork(optimismGoerli.id)}
                   >
                     <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
                     Optimism Goerli
