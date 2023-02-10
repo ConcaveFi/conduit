@@ -1,6 +1,6 @@
 import { forwardRef, LegacyRef } from 'react'
 import { cva, VariantProps } from 'class-variance-authority'
-import { PrimitiveDivProps } from '../types/primitives'
+import { PrimitiveDivProps } from '../../types/primitives'
 import { CloseIcon, ExpandIcon } from '@tradex/icons'
 
 const panelHeaderStyles = cva(cva('flex px-3 justify-between items-center w-full h-9')(), {

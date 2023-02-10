@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
-import { PrimitiveSpanProps } from '../types/primitives'
+import { PrimitiveSpanProps } from '../../types/primitives'
 
 export const textStyles = cva(cva('text-jus ')(), {
   variants: {

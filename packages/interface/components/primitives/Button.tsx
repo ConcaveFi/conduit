@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
-import { PrimitiveButtonProps } from '../types/primitives'
+import { PrimitiveButtonProps } from '../../types/primitives'
 
 const baseStyles = cva('flex gap-1 font-medium')
 export const buttonStyles = cva(baseStyles(), {
