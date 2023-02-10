@@ -1,5 +1,5 @@
 import { ChevronIcon } from '@tradex/icons'
-import { Button, CheckBox, Flex, Panel, Text } from '@tradex/interface'
+import { Button, CheckBox, Flex, Panel, Slider, Text } from '@tradex/interface'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 
@@ -30,6 +30,7 @@ export function OrderFormPanel() {
         <CheckBox onToggle={() => {}} info="Post" />
         <CheckBox onToggle={() => {}} info="Hidden" />
       </Flex>
+      <Slider />
       <Flex className="gap-4 -mb-2 mt-4">
         <Button className="w-full" variant="secondary.underline" size="lg">
           Position 0
