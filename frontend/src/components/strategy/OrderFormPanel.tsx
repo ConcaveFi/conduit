@@ -30,7 +30,7 @@ export function OrderFormPanel() {
         <CheckBox onToggle={() => {}} info="Post" />
         <CheckBox onToggle={() => {}} info="Hidden" />
       </Flex>
-      <Slider max={50} />
+      <Slider max={50} track />
       <Flex className="gap-4 -mb-2 mt-4">
         <Button className="w-full" variant="secondary.underline" size="lg">
           Position 0

@@ -1,15 +1,16 @@
 import { Transition } from '@headlessui/react'
 import { useRef, useState, useMemo, Fragment, useEffect } from 'react'
 import { PrimitiveInputProps } from '../types/primitives'
+import { Flex } from './Flex'
 
-export interface SliderProps extends PrimitiveInputProps {
+interface RawSliderProps extends PrimitiveInputProps {
   onValue?: (val: number) => void
   defaultValue?: number
   max?: number
   min?: number
 }
 
-export function Slider(props: SliderProps) {
+function RawSlider(props: RawSliderProps) {
   const { max = 100, min = 0, defaultValue = 0, onValue = () => {}, className } = props
   const [value, setValue] = useState(defaultValue)
   const [pressed, setPressed] = useState(false)
@@ -47,15 +48,48 @@ export function Slider(props: SliderProps) {
         />
       </Transition>
       <input
-        className={`green-slider ${className}`}
-        onMouseDown={() => setPressed(true)}
-        onMouseUp={() => setPressed(false)}
+        max={max}
         type="range"
+        onMouseDown={() => setPressed(true)}
+        onInput={(e) => setValue(+e.currentTarget.value)}
+        className={`green-slider ${className}`}
+        onMouseUp={() => setPressed(false)}
         value={value}
         min={min}
-        max={max}
-        onInput={(e) => setValue(+e.currentTarget.value)}
       />
     </div>
   )
+}
+export interface SliderProps extends RawSliderProps {
+  track?: boolean
+}
+export function Slider({ track = false, ...props }: SliderProps) {
+  if (track)
+    return (
+      <Flex column className=" gap-1">
+        <RawSlider {...props} />
+        <Flex
+          style={{ width: `` }}
+          justify="between"
+          className="w-full pointer-events-none mx-auto relative px-[6px]"
+        >
+          {new Array(5).fill(0).map((_, i) => (
+            <Flex key={i}>
+              <Flex className="bg-ocean-300 w-[2px] h-[8px] absolut" style={{}}></Flex>
+              {i <= 3 && (
+                <Flex
+                  style={{
+                    backgroundPosition: '12px 0px',
+                    backgroundImage: 'url(assets/track.svg)',
+                    backgroundSize: '80px 8px',
+                  }}
+                  className="w-[85px] "
+                />
+              )}
+            </Flex>
+          ))}
+        </Flex>
+      </Flex>
+    )
+  return <RawSlider {...props} />
 }
