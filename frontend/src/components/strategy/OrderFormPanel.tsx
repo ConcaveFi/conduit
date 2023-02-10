@@ -25,12 +25,12 @@ export function OrderFormPanel() {
           </Button>
         </Flex>
       </Flex>
-      <Flex className="gap-6 mx-4">
+      <Flex className="gap-6 mx-4 ">
         <CheckBox onToggle={() => {}} info="Reduce" />
         <CheckBox onToggle={() => {}} info="Post" />
         <CheckBox onToggle={() => {}} info="Hidden" />
       </Flex>
-      <Slider />
+      <Slider max={50} />
       <Flex className="gap-4 -mb-2 mt-4">
         <Button className="w-full" variant="secondary.underline" size="lg">
           Position 0

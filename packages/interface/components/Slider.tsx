@@ -1,42 +1,59 @@
 import { Transition } from '@headlessui/react'
-import { useRef, useState, useMemo, Fragment } from 'react'
+import { useRef, useState, useMemo, Fragment, useEffect } from 'react'
+import { PrimitiveInputProps } from '../types/primitives'
 
-export function Slider() {
-  const [value, setValue] = useState(0)
+export interface SliderProps extends PrimitiveInputProps {
+  onValue?: (val: number) => void
+  defaultValue?: number
+  max?: number
+  min?: number
+}
+
+export function Slider(props: SliderProps) {
+  const { max = 100, min = 0, defaultValue = 0, onValue = () => {}, className } = props
+  const [value, setValue] = useState(defaultValue)
   const [pressed, setPressed] = useState(false)
   const ref = useRef<HTMLDivElement>()
-  const width = useMemo(() => ref.current?.clientWidth, [ref])
-  const size = 22
+  const [width, setWidth] = useState(0)
+  const size = 14
 
+  useEffect(() => setWidth(ref.current?.clientWidth || 0), [ref])
+  useEffect(() => onValue(value), [value])
   const left = useMemo(() => {
-    let middle = value * (width / 100)
+    let middle = value * (width / max)
     const difference = (middle / width) * 2 - 1
-    return middle - difference * (size / 2)
-  }, [width, value])
+    return middle - difference * (size / 2) || 0
+  }, [width, value, min, max])
 
   return (
     <div ref={ref} className="flex items-center relative">
       <div
-        className="bg-green-gradient flex justify-end items-center z-0 h-[6px] rounded-full absolute"
+        className="bg-gradient-to-r max-w-[100%] from-[#34EDB380] to-[#00D1FF80] flex justify-end items-center z-20 pointer-events-none h-[5px] rounded-full absolute"
         style={{ width: left }}
       />
       <Transition
         show={pressed}
-        // unmount
         as={Fragment}
         enter="transition-[transform] duration-[0.2s] ease-out"
-        enterFrom="scale-0 opacity-0"
+        enterFrom="scale-75 opacity-0"
         enterTo="scale-100 opacity-100"
+        leave="transition-all duration-200 ease-out"
+        leaveFrom="scale-100 opacity-100"
+        leaveTo="scale-75 opacity-0"
       >
         <div
-          className="bg-gradient-to-r  from-[#34EDB320] to-[#00D1FF20] absolute  z-0 rounded-full "
-          style={{ width: 40, height: 40, left: left - 20 }}
+          className="bg-gradient-to-r  from-[#34EDB340] to-[#00D1FF40] absolute pointer-events-none z-10 rounded-full "
+          style={{ width: 30, height: 30, left: left - 15 }}
         />
       </Transition>
       <input
+        className={`green-slider ${className}`}
         onMouseDown={() => setPressed(true)}
         onMouseUp={() => setPressed(false)}
         type="range"
+        value={value}
+        min={min}
+        max={max}
         onInput={(e) => setValue(+e.currentTarget.value)}
       />
     </div>
