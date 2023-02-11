@@ -1,4 +1,4 @@
-import { Container, Flex, Panel, Text } from '@tradex/interface'
+import { Button, Container, Flex, Panel, TabPanel, Text } from '@tradex/interface'
 import { useEffect } from 'react'
 import { NewsPanel } from 'src/components/strategy/NewsPanel'
 import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
@@ -45,12 +45,41 @@ export default function Home() {
       <StrategyHeader />
       <Container className="gap-4">
         <OrderFormPanel />
-        <Panel
-          name="Chart"
-          variant="secondary"
-          className="w-[60%] "
-          bodyProps={{ id: 'chart-container', className: 'h-[600px]' }}
-        ></Panel>
+        <Flex column className="w-[60%]">
+          <Panel
+            name="Chart"
+            variant="secondary"
+            className="w-full "
+            bodyProps={{ id: 'chart-container', className: 'h-[600px]' }}
+          ></Panel>
+          <TabPanel.Root variant="secondary" className="w-full h-40">
+            <TabPanel.Tab>
+              {(selected) => (
+                <Button
+                  onClick={() => console.log('testtt')}
+                  size="sm"
+                  variant={selected ? 'secondary' : 'primary'}
+                >
+                  Tab
+                </Button>
+              )}
+            </TabPanel.Tab>
+            <TabPanel.Tab>
+              {(selected) => (
+                <Button size="sm" variant={selected ? 'secondary' : 'primary'}>
+                  Tab
+                </Button>
+              )}
+            </TabPanel.Tab>
+            <TabPanel.Screen>
+              {() => (
+                <Flex>
+                  <Button>Testing</Button>
+                </Flex>
+              )}
+            </TabPanel.Screen>
+          </TabPanel.Root>
+        </Flex>
         <Flex column className="gap-4 w-w-3/12 ">
           <NewsPanel />
           <RecentTradesPanel />

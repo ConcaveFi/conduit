@@ -19,6 +19,7 @@ export const buttonStyles = cva(baseStyles(), {
     centered: { true: 'items-center justify-center' },
     isEnabled: { true: '', false: '' },
     size: {
+      sm: 'px-2 !rounded-md min-w-[70px]',
       md: 'px-3 w-fit min-w-[100px]',
       lg: 'px-5 py-1 w-fit min-w-[140px]',
       xl: 'h-10 w-full',

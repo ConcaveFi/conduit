@@ -1,2 +1,3 @@
 export * from './ItemInfo'
-export * from './Panel'
+export * from './panel/Panel'
+export * from './panel/TabPanel'
