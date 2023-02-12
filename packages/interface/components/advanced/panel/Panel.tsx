@@ -8,13 +8,13 @@ import { VariantProps } from 'class-variance-authority'
 
 export type PanelAttributes = VariantProps<typeof wrapperSyles>
 export interface PanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
-  bodyProps: PanelBodyProps
+  bodyProps?: PanelBodyProps
   name: string
 }
 export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
-  const { variant = 'primary', name, children, bodyProps, size } = props
+  const { variant = 'primary', name, children, bodyProps, size, ...rest } = props
   return (
-    <PanelWrapper ref={ref} size={size} {...props}>
+    <PanelWrapper ref={ref} size={size} {...rest}>
       <PanelHeader variant={variant}>
         <Text size="xs" variant="medium">
           {name}

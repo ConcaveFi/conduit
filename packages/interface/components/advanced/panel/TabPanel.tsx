@@ -3,12 +3,13 @@ import React, {
   createContext,
   forwardRef,
   ReactComponentElement,
+  ReactElement,
   useMemo,
   useState,
 } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Flex, FlexProps } from '../../primitives'
-import { PanelAttributes } from './Panel'
+import { PanelAttributes, PanelProps } from './Panel'
 import { PanelBody, PanelBodyProps } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
@@ -22,7 +23,7 @@ export enum TabPanelDisplayNames {
 const TabPanelContext = createContext<{ test?: string }>({})
 export interface TabPanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
   bodyProps?: PanelBodyProps
-  children: ReactComponentElement<React.FC<PanelTab>>[] | ReactComponentElement<React.FC<PanelTab>>
+  children: any
 }
 export function Root(props: TabPanelProps) {
   const [tab, setTab] = useState(0)
@@ -31,8 +32,10 @@ export function Root(props: TabPanelProps) {
   const tabs = useMemo(() => {
     return React.Children.map(children, (c, i) => {
       if (c.type?.displayName !== TabPanelDisplayNames.PANEL_TAB) return null
-      if (c.props.default) setTab(i)
-      const children = c.props.children(i === tab) as JSX.Element
+      const element = c as ReactComponentElement<React.FC<PanelTab>>
+
+      if (element.props.default) setTab(i)
+      const children = element.props.children(i === tab) as JSX.Element
       const onClick = () => (children.props.onClick && children.props.onClick(), setTab(i))
       return cloneElement(children, { onClick })
     })
@@ -44,9 +47,9 @@ export function Root(props: TabPanelProps) {
       return el.type.displayName === TabPanelDisplayNames.PANEL_SCREEN
     })
     return filtered.map((c, i) => {
-      const el = c as JSX.Element
+      const el = c as ReactComponentElement<React.FC<PanelScreen>>
       if (tab !== i) return null
-      return el.props.children(true)
+      return typeof el.props.children === 'function' ? el.props.children(true) : el.props.children
     })
   }, [children, tab])
   return (
@@ -72,10 +75,11 @@ const Tab: React.FC<PanelTab> = (props) => <></>
 Tab.displayName = TabPanelDisplayNames.PANEL_TAB
 
 type PanelScreen = {
-  children: (isSelected?: boolean) => JSX.Element
+  children: JSX.Element | ((isSelected?: boolean) => JSX.Element)
 }
 export const Screen = forwardRef<HTMLDivElement, PanelScreen>((props, ref) => {
-  return cloneElement(props.children(true), { ref })
+  const el = typeof props.children === 'function' ? props.children() : props.children
+  return cloneElement(el, { ref })
 })
 Screen.displayName = TabPanelDisplayNames.PANEL_SCREEN
 

@@ -5,6 +5,7 @@ import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
 import { RecentTradesPanel } from 'src/components/strategy/RecentTradesPanel'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/Topbar'
+import { ViewPanels } from 'src/components/ViewPanels'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 export default function Home() {
   const isMounted = useIsMounted()
@@ -45,40 +46,14 @@ export default function Home() {
       <StrategyHeader />
       <Container className="gap-4">
         <OrderFormPanel />
-        <Flex column className="w-[60%]">
+        <Flex column className="w-[60%] gap-4">
           <Panel
             name="Chart"
             variant="secondary"
             className="w-full "
             bodyProps={{ id: 'chart-container', className: 'h-[600px]' }}
-          ></Panel>
-          <TabPanel.Root variant="secondary" className="w-full h-40">
-            <TabPanel.Tab>
-              {(selected) => (
-                <Button
-                  onClick={() => console.log('testtt')}
-                  size="sm"
-                  variant={selected ? 'secondary' : 'primary'}
-                >
-                  Tab
-                </Button>
-              )}
-            </TabPanel.Tab>
-            <TabPanel.Tab>
-              {(selected) => (
-                <Button size="sm" variant={selected ? 'secondary' : 'primary'}>
-                  Tab
-                </Button>
-              )}
-            </TabPanel.Tab>
-            <TabPanel.Screen>
-              {() => (
-                <Flex>
-                  <Button>Testing</Button>
-                </Flex>
-              )}
-            </TabPanel.Screen>
-          </TabPanel.Root>
+          />
+          <ViewPanels />
         </Flex>
         <Flex column className="gap-4 w-w-3/12 ">
           <NewsPanel />
