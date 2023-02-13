@@ -1,9 +1,12 @@
 import { ChevronIcon } from '@tradex/icons'
 import { Button, CheckBox, Flex, Panel, Slider, Text } from '@tradex/interface'
+import { useState } from 'react'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 
 export function OrderFormPanel() {
+  const [value, setValue] = useState(0)
+
   return (
     <Panel name="Order Form" className="w-3/12 ">
       <OrderTab />
@@ -30,7 +33,7 @@ export function OrderFormPanel() {
         <CheckBox onToggle={() => {}} info="Post" />
         <CheckBox onToggle={() => {}} info="Hidden" />
       </Flex>
-      <Slider max={50} track />
+      <Slider pseudoMax={50} track onValue={setValue} />
       <Flex className="gap-4 -mb-2 mt-4">
         <Button className="w-full" variant="secondary.underline" size="lg">
           Position 0
