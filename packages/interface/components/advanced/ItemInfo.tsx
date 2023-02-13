@@ -1,4 +1,3 @@
-import { cva } from 'class-variance-authority'
 import { ReactNode } from 'react'
 import { Flex } from '../primitives/Flex'
 import { Text } from '../primitives/Text'

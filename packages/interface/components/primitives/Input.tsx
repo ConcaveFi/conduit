@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
-import { PrimitiveInputProps } from '../types/primitives'
+import { PrimitiveInputProps } from '../../types/primitives'
 
 const baseStyles = cva('outline-none')
 export const inputStyles = cva(baseStyles(), {

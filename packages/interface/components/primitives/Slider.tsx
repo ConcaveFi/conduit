@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react'
 import { useRef, useState, useMemo, Fragment, useEffect } from 'react'
-import { PrimitiveInputProps } from '../types/primitives'
+import { PrimitiveInputProps } from '../../types/primitives'
 import { Flex } from './Flex'
 
 interface RawSliderProps extends PrimitiveInputProps {
