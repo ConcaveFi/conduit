@@ -1,10 +1,11 @@
-import { Container, Flex, Panel, Text } from '@tradex/interface'
+import { Button, Container, Flex, Panel, TabPanel, Text } from '@tradex/interface'
 import { useEffect } from 'react'
 import { NewsPanel } from 'src/components/strategy/NewsPanel'
 import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
 import { RecentTradesPanel } from 'src/components/strategy/RecentTradesPanel'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/Topbar'
+import { ViewPanels } from 'src/components/ViewPanels'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 export default function Home() {
   const isMounted = useIsMounted()
@@ -45,12 +46,15 @@ export default function Home() {
       <StrategyHeader />
       <Container className="gap-4">
         <OrderFormPanel />
-        <Panel
-          name="Chart"
-          variant="secondary"
-          className="w-[60%] "
-          bodyProps={{ id: 'chart-container', className: 'h-[600px]' }}
-        ></Panel>
+        <Flex column className="w-[60%] gap-4">
+          <Panel
+            name="Chart"
+            variant="secondary"
+            className="w-full "
+            bodyProps={{ id: 'chart-container', className: 'h-[600px]' }}
+          />
+          <ViewPanels />
+        </Flex>
         <Flex column className="gap-4 w-w-3/12 ">
           <NewsPanel />
           <RecentTradesPanel />

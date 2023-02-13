@@ -1,0 +1,13 @@
+
+ <svg
+      height="4"
+      fill="none"
+      viewBox="0 0 100 8"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+        <rect x="0%" width="2" height="4" fill="#3E5389" />
+        <rect x="25%" width="2" height="4" fill="#3E5389" />
+        <rect x="50%" width="2" height="4" fill="#3E5389" />
+        <rect x="75%" width="2" height="4" fill="#3E5389" />
+        <rect x="100%" width="2" height="4" fill="#3E5389" />
+    </svg>

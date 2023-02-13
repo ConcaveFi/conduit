@@ -26,7 +26,7 @@ export function RecentTradesPanel() {
         </thead>
         <tbody>
           {new Array(4).fill(0).map((_, i) => (
-            <tr key={i} className="odd:bg-ocean-800 h-6">
+            <tr key={i} className="odd:bg-ocean-900 h-6">
               <td>
                 <Text size="xs" modifier="negative">
                   22,915.0
@@ -50,7 +50,7 @@ export function RecentTradesPanel() {
               </td>
             </tr>
           ))}
-          <tr className="h-14 rounded-lg px-2 bg-ocean-800">
+          <tr className="h-14 rounded-lg px-2 bg-ocean-900">
             <td className="">
               <Flex className="justify-end items-center gap-2">
                 <Text size="md" modifier="positive">
@@ -77,7 +77,7 @@ export function RecentTradesPanel() {
             </td>
           </tr>
           {new Array(4).fill(0).map((_, i) => (
-            <tr key={i} className="odd:bg-ocean-800 ">
+            <tr key={i} className="odd:bg-ocean-900 ">
               <td>
                 <Text size="xs" modifier="positive">
                   22,915.0

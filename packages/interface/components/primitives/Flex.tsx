@@ -1,6 +1,6 @@
 import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
-import { PrimitiveDivProps } from '../types/primitives'
+import { PrimitiveDivProps } from '../../types/primitives'
 const baseStyles = cva([`flex`])
 
 export const flexStyles = cva(baseStyles(), {

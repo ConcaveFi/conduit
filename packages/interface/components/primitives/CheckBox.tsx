@@ -1,7 +1,7 @@
 import { ripple } from '@tradex/theme/utils/animation'
 import { SVGProps, useEffect, useRef, useState } from 'react'
 import { Flex } from './Flex'
-import { Text } from './Text'
+import { Text } from '../primitives/Text'
 
 export interface CheckBox extends SVGProps<SVGSVGElement> {
   info?: string

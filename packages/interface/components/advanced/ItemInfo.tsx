@@ -1,7 +1,6 @@
-import { cva } from 'class-variance-authority'
 import { ReactNode } from 'react'
-import { Flex } from './Flex'
-import { Text } from './Text'
+import { Flex } from '../primitives/Flex'
+import { Text } from '../primitives/Text'
 
 export interface ItemInfoProps {
   info: string
