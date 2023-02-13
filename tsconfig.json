@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strict": false,
+    "strict": true,
     "allowJs": true,
     "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],
