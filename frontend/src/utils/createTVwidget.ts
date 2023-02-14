@@ -9,7 +9,6 @@ const DEFAULT_CHART_PROPS = {
   toolbar_bg: '#000',
   enable_publishing: false,
   allow_symbol_change: true,
-  container_id: 'chart-container',
 } as WidgetProps
 
 function createTradingViewWidget(props?: WidgetProps) {
