@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.10",
+    "@next/font": "^13.1.6",
     "@tradex/core": "*",
     "@tradex/icons": "*",
     "@tradex/interface": "*",
