@@ -1,4 +1,4 @@
-interface WidgetProps {
+interface TVWidgetOptions {
   autosize?: boolean
   symbol?: string
   interval?: string
@@ -24,9 +24,9 @@ interface WidgetProps {
 interface TVWidget {
   id: string
   iframe: HTMLIFrameElement
-  options: WidgetProps
+  options: TVWidgetOptions
 }
 
 declare var TradingView: {
-  widget(props: WidgetProps): void
+  widget(props: TVWidgetOptions): void
 }
