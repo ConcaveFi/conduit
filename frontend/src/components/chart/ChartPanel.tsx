@@ -14,5 +14,7 @@ export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, 
   const loadChart = () => setWidget(createTVwidget({ container_id: id }))
   useScriptLoader(TRADING_VIEW_SRC, SCRIPT_TYPE, loadChart)
 
-  return <Panel name="Chart" {...props} ref={ref} bodyProps={{ className, id }} />
+  return (
+    <Panel name="Chart" variant="secondary" {...props} ref={ref} bodyProps={{ className, id }} />
+  )
 })
