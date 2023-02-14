@@ -86,11 +86,7 @@ export function Slider({ track = false, ...props }: SliderProps) {
     return (
       <Flex column className=" gap-1">
         <RawSlider max={max} min={min} {...props} />
-        <Flex
-          style={{ width: `` }}
-          justify="between"
-          className="w-full pointer-events-none mx-auto relative px-[6px]"
-        >
+        <Flex justify="between" className="w-full pointer-events-none mx-auto relative px-[6px]">
           {new Array(5).fill(0).map((_, i) => (
             <Flex key={i}>
               <Flex className="bg-ocean-300 w-[2px] h-[8px] justify-center" style={{}}>

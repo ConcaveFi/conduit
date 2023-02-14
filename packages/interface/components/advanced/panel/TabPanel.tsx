@@ -19,13 +19,11 @@ export enum TabPanelDisplayNames {
   PANEL_TAB = 'Panel.Tab',
   PANEL_ROOT = 'Panel.Root',
 }
-
-const TabPanelContext = createContext<{ test?: string }>({})
 export interface TabPanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
   bodyProps?: PanelBodyProps
   children: any
 }
-export function Root(props: TabPanelProps) {
+export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
   const [tab, setTab] = useState(0)
   const { size, variant = 'primary', children, bodyProps } = props
 
@@ -53,18 +51,16 @@ export function Root(props: TabPanelProps) {
     })
   }, [children, tab])
   return (
-    <TabPanelContext.Provider value={{ test: 'Testando' }}>
-      <PanelWrapper size={size} {...props}>
-        <PanelHeader variant={variant}>
-          <Flex className="gap-4">{tabs}</Flex>
-        </PanelHeader>
-        <PanelBody variant={variant} {...bodyProps}>
-          {screens}
-        </PanelBody>
-      </PanelWrapper>
-    </TabPanelContext.Provider>
+    <PanelWrapper size={size} {...props} ref={ref}>
+      <PanelHeader variant={variant}>
+        <Flex className="gap-4">{tabs}</Flex>
+      </PanelHeader>
+      <PanelBody variant={variant} {...bodyProps}>
+        {screens}
+      </PanelBody>
+    </PanelWrapper>
   )
-}
+})
 Root.displayName = TabPanelDisplayNames.PANEL_ROOT
 
 interface PanelTab {

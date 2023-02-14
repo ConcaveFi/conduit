@@ -1,7 +1,8 @@
 import { CloseIcon, ExpandIcon } from '@tradex/icons'
 import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef, ReactComponentElement, ReactNode } from 'react'
-import { Flex } from '../../primitives'
+import { PrimitiveDivProps } from '../../../types/primitives'
+import { Button, Flex } from '../../primitives'
 
 const baseStyles = cva('flex px-3 justify-between items-center w-full h-9')
 export const panelHeaderStyles = cva(baseStyles(), {
@@ -13,19 +14,29 @@ export const panelHeaderStyles = cva(baseStyles(), {
   },
 })
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
-export interface PanelHeaderProps extends PanelHeaderAttributes {
+export interface PanelHeaderProps extends PanelHeaderAttributes, PrimitiveDivProps {
   children?: ReactNode
 }
 export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
-  ({ children, variant }, ref) => {
+  ({ children, variant, ...props }, ref) => {
     return (
-      <Flex ref={ref} className={`${panelHeaderStyles({ variant })}`}>
+      <Flex
+        ref={ref}
+        className={`${panelHeaderStyles({ variant })} cursor-move`}
+        onMouseDown={(e) => e.preventDefault()}
+        data-draggable="true"
+        {...props}
+      >
         {children}
-        <Flex className="gap-3" align="center">
-          <ExpandIcon className="w-4 h-4 fill-ocean-200" />
-          <CloseIcon className="w-3 h-3 fill-ocean-200" />
+        <Flex className="gap-3 z-20" align="center">
+          <Button>
+            <ExpandIcon className="w-4 h-4 fill-ocean-200" />
+          </Button>
+          <Button>
+            <CloseIcon className="w-3 h-3 fill-ocean-200" />
+          </Button>
         </Flex>
       </Flex>
     )
   },
-)
+) as React.FC<PanelHeaderProps>
