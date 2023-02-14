@@ -8,7 +8,7 @@ const TRADING_VIEW_SRC = 'https://s3.tradingview.com/tv.js'
 const SCRIPT_TYPE = 'text/javascript'
 
 export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
-  const [className, id] = ['h-[560px]', 'chart-container']
+  const [className, id] = ['h-[94%]', 'chart-container']
   useScriptLoader(TRADING_VIEW_SRC, SCRIPT_TYPE, loadChart)
 
   function loadChart() {

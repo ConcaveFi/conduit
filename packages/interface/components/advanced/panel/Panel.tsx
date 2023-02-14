@@ -25,4 +25,4 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
       </PanelBody>
     </PanelWrapper>
   )
-})
+}) as React.FC<PanelProps>

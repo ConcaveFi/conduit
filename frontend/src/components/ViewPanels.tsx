@@ -1,9 +1,11 @@
 import { Button, Flex, TabPanel, Text } from '@tradex/interface'
+import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
+import { forwardRef } from 'react'
 
 const TABS = ['Trade', 'Charts', 'Trading History', 'Activity Log']
-export function ViewPanels() {
+export const ViewPanels = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
   return (
-    <TabPanel.Root variant="secondary" className="w-full h-fit">
+    <TabPanel.Root {...props} ref={ref} variant="secondary" className="w-full h-fit">
       {TABS.map((tab) => (
         <TabPanel.Tab key={tab}>
           {(selected) => (
@@ -104,4 +106,4 @@ export function ViewPanels() {
       </TabPanel.Screen>
     </TabPanel.Root>
   )
-}
+})
