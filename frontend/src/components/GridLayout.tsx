@@ -6,11 +6,11 @@ import { NewsPanel } from 'src/components/strategy/NewsPanel'
 import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
 import { RecentTradesPanel } from 'src/components/strategy/RecentTradesPanel'
 import { ViewPanels } from 'src/components/ViewPanels'
-import { getStoredLayout, storeLayout } from 'src/utils/gridLayout'
+import { DEFAULT_LAYOUT, getStoredLayout, storeLayout } from 'src/utils/gridLayout'
 
 export function GridLayout() {
   const [width, setWidth] = useState(0)
-  const ref = useRef()
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!ref.current) return
@@ -24,7 +24,6 @@ export function GridLayout() {
         className="relative "
         layout={getStoredLayout()}
         cols={12}
-        rowHeight={30}
         width={width}
         containerPadding={[0, 0]}
         onLayoutChange={storeLayout}

@@ -1,4 +1,4 @@
-import { ForwardedRef, forwardRef, LegacyRef } from 'react'
+import { forwardRef } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { Text } from '../../primitives'
@@ -9,13 +9,15 @@ import { VariantProps } from 'class-variance-authority'
 export type PanelAttributes = VariantProps<typeof wrapperSyles>
 export interface PanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
   bodyProps?: PanelBodyProps
+  onMaximize?: VoidFunction
+  onClose?: VoidFunction
   name: string
 }
 export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const { variant = 'primary', name, children, bodyProps, size, ...rest } = props
   return (
     <PanelWrapper ref={ref} size={size} {...rest}>
-      <PanelHeader variant={variant}>
+      <PanelHeader onMaximize={props.onMaximize} onClose={props.onClose} variant={variant}>
         <Text size="xs" variant="medium">
           {name}
         </Text>

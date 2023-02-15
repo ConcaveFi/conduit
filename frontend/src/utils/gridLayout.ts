@@ -1,9 +1,9 @@
 export const DEFAULT_LAYOUT = [
-  { i: 'order-form', x: 0, y: 0, w: 3, h: 27 },
-  { i: 'chart-panel', x: 3, y: 0, w: 6, h: 15 },
-  { i: 'views-panel', x: 3, y: 15, w: 6, h: 6 },
-  { i: 'news-panel', x: 9, y: 0, w: 3, h: 9 },
-  { i: 'trades-panel', x: 9, y: 9, w: 3, h: 9.5 },
+  { i: 'order-form', x: 0, y: 0, w: 3, h: 6.8 },
+  { i: 'chart-panel', x: 3, y: 0, w: 6, h: 4 },
+  { i: 'views-panel', x: 3, y: 15, w: 6, h: 1.5 },
+  { i: 'news-panel', x: 9, y: 0, w: 3, h: 2.4 },
+  { i: 'trades-panel', x: 9, y: 9, w: 3, h: 2.4 },
 ] as ReactGridLayout.Layout[]
 
 const STORED_GRID_ITEM = 'grid-layout'

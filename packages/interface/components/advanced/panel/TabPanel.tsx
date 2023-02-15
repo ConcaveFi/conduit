@@ -1,15 +1,7 @@
-import React, {
-  cloneElement,
-  createContext,
-  forwardRef,
-  ReactComponentElement,
-  ReactElement,
-  useMemo,
-  useState,
-} from 'react'
+import React, { cloneElement, forwardRef, ReactComponentElement, useMemo, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
-import { Flex, FlexProps } from '../../primitives'
-import { PanelAttributes, PanelProps } from './Panel'
+import { Flex } from '../../primitives'
+import { PanelAttributes } from './Panel'
 import { PanelBody, PanelBodyProps } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
@@ -21,6 +13,8 @@ export enum TabPanelDisplayNames {
 }
 export interface TabPanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
   bodyProps?: PanelBodyProps
+  onMaximize?: VoidFunction
+  onClose?: VoidFunction
   children: any
 }
 export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
@@ -33,6 +27,7 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
       const element = c as ReactComponentElement<React.FC<PanelTab>>
 
       if (element.props.default) setTab(i)
+      if (typeof element.props?.children !== 'function') return <></>
       const children = element.props.children(i === tab) as JSX.Element
       const onClick = () => (children.props.onClick && children.props.onClick(), setTab(i))
       return cloneElement(children, { onClick })
@@ -52,7 +47,7 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
   }, [children, tab])
   return (
     <PanelWrapper size={size} {...props} ref={ref}>
-      <PanelHeader variant={variant}>
+      <PanelHeader onMaximize={props.onMaximize} onClose={props.onClose} variant={variant}>
         <Flex className="gap-4">{tabs}</Flex>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>
