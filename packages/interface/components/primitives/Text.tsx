@@ -13,7 +13,7 @@ export const textStyles = cva(cva('text-jus ')(), {
     },
     size: {
       xs: 'text-xs',
-      sm: 'text-[14px]',
+      sm: 'text-sm',
       md: 'text-md',
       lg: 'text-lg',
       xl: 'text-xl',
