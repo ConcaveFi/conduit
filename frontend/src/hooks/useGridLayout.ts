@@ -23,6 +23,12 @@ export function useGridLayout(props?: GridLayoutHook) {
     setMaxPanel('')
   }
 
+  function removeGridWidget(key: string) {
+    const newLayout = layout.filter((grid) => grid.i !== key)
+    setLayout(newLayout)
+    storeLayout(newLayout)
+  }
+
   function handleChange(layout: ReactGridLayout.Layout[]) {
     if (!isMaximized) {
       setUnMaximizedLayout(layout)
@@ -35,6 +41,7 @@ export function useGridLayout(props?: GridLayoutHook) {
     isMaximized,
     maximizedPanel,
     maximize: maximizePanel,
+    removeGridWidget,
     handleChange,
     minimize,
   }
