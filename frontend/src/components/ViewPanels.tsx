@@ -1,9 +1,9 @@
-import { Button, Flex, TabPanel, Text } from '@tradex/interface'
+import { Button, Flex, PanelProps, TabPanel, TabPanelProps, Text } from '@tradex/interface'
 import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
 import { forwardRef } from 'react'
 
 const TABS = ['Trade', 'Charts', 'Trading History', 'Activity Log']
-export const ViewPanels = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
+export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
     <TabPanel.Root {...props} ref={ref} variant="secondary" className="w-full h-fit">
       {TABS.map((tab) => (

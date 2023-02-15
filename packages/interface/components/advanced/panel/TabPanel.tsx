@@ -1,7 +1,7 @@
 import React, { cloneElement, forwardRef, ReactComponentElement, useMemo, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Flex } from '../../primitives'
-import { PanelAttributes } from './Panel'
+import { PanelAttributes, PanelEssentials } from './Panel'
 import { PanelBody, PanelBodyProps } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
@@ -11,15 +11,25 @@ export enum TabPanelDisplayNames {
   PANEL_TAB = 'Panel.Tab',
   PANEL_ROOT = 'Panel.Root',
 }
-export interface TabPanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
-  bodyProps?: PanelBodyProps
-  onMaximize?: VoidFunction
-  onClose?: VoidFunction
+export interface TabPanelProps
+  extends PrimitiveDivProps,
+    PanelEssentials,
+    PanelAttributes,
+    PanelHeaderProps {
   children: any
 }
 export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
   const [tab, setTab] = useState(0)
-  const { size, variant = 'primary', children, bodyProps } = props
+  const {
+    size,
+    variant = 'primary',
+    children,
+    bodyProps,
+    onMaximize,
+    onMinimize,
+    onClose,
+    ...rest
+  } = props
 
   const tabs = useMemo(() => {
     return React.Children.map(children, (c, i) => {
@@ -46,8 +56,13 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
     })
   }, [children, tab])
   return (
-    <PanelWrapper size={size} {...props} ref={ref}>
-      <PanelHeader onMaximize={props.onMaximize} onClose={props.onClose} variant={variant}>
+    <PanelWrapper size={size} {...rest} ref={ref}>
+      <PanelHeader
+        onMinimize={onMinimize}
+        onMaximize={onMaximize}
+        onClose={onClose}
+        variant={variant}
+      >
         <Flex className="gap-4">{tabs}</Flex>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>
