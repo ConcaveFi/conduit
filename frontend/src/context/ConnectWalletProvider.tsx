@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext, PropsWithChildren, useContext } from 'react'
 import { ConnectModal } from 'src/components/wallet/ConnectModal'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 
@@ -12,7 +12,7 @@ const ConnectWalletContext = createContext<{
   open: () => {},
 })
 
-export function ConnectWalletProvider({ children }) {
+export function ConnectWalletProvider({ children }: PropsWithChildren) {
   const { isOpen, onClose: close, onOpen: open } = useDisclosure()
   return (
     <ConnectWalletContext.Provider value={{ close, isOpen, open }}>
