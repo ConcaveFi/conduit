@@ -1,8 +1,7 @@
 import { Flex, Panel, PanelProps, Text } from '@tradex/interface'
-import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
 import { forwardRef } from 'react'
 
-export const NewsPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
+export const NewsPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
     <Panel name="News" variant="secondary" className="w-full h-fit" ref={ref} {...props}>
       <Flex column className="gap-2 ">

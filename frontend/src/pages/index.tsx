@@ -11,7 +11,7 @@ export default function Home() {
 
   if (!isMounted) return <></>
   return (
-    <Container space="medium.eq" column className="overflow-y-auto overflow-x-hidden">
+    <Container space="medium.eq" column className="overflow-y-auto h-screen overflow-x-hidden">
       <Topbar />
       <StrategyHeader />
       <GridLayout />

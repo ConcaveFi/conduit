@@ -1,15 +1,7 @@
-import React, {
-  cloneElement,
-  createContext,
-  forwardRef,
-  ReactComponentElement,
-  ReactElement,
-  useMemo,
-  useState,
-} from 'react'
+import React, { cloneElement, forwardRef, ReactComponentElement, useMemo, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
-import { Flex, FlexProps } from '../../primitives'
-import { PanelAttributes, PanelProps } from './Panel'
+import { Flex } from '../../primitives'
+import { PanelAttributes, PanelEssentials } from './Panel'
 import { PanelBody, PanelBodyProps } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
@@ -19,13 +11,25 @@ export enum TabPanelDisplayNames {
   PANEL_TAB = 'Panel.Tab',
   PANEL_ROOT = 'Panel.Root',
 }
-export interface TabPanelProps extends PrimitiveDivProps, PanelAttributes, PanelHeaderProps {
-  bodyProps?: PanelBodyProps
+export interface TabPanelProps
+  extends PrimitiveDivProps,
+    PanelEssentials,
+    PanelAttributes,
+    PanelHeaderProps {
   children: any
 }
 export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
   const [tab, setTab] = useState(0)
-  const { size, variant = 'primary', children, bodyProps } = props
+  const {
+    size,
+    variant = 'primary',
+    children,
+    bodyProps,
+    onMaximize,
+    onMinimize,
+    onClose,
+    ...rest
+  } = props
 
   const tabs = useMemo(() => {
     return React.Children.map(children, (c, i) => {
@@ -33,6 +37,7 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
       const element = c as ReactComponentElement<React.FC<PanelTab>>
 
       if (element.props.default) setTab(i)
+      if (typeof element.props?.children !== 'function') return <></>
       const children = element.props.children(i === tab) as JSX.Element
       const onClick = () => (children.props.onClick && children.props.onClick(), setTab(i))
       return cloneElement(children, { onClick })
@@ -51,8 +56,13 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
     })
   }, [children, tab])
   return (
-    <PanelWrapper size={size} {...props} ref={ref}>
-      <PanelHeader variant={variant}>
+    <PanelWrapper size={size} {...rest} ref={ref}>
+      <PanelHeader
+        onMinimize={onMinimize}
+        onMaximize={onMaximize}
+        onClose={onClose}
+        variant={variant}
+      >
         <Flex className="gap-4">{tabs}</Flex>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>

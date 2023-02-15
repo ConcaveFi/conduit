@@ -1,39 +1,36 @@
-import { Flex, Panel } from '@tradex/interface'
-import { useEffect, useRef, useState } from 'react'
+import { Flex } from '@tradex/interface'
 import ReactGridLayout from 'react-grid-layout'
-import { ChartPanel } from 'src/components/chart/ChartPanel'
-import { NewsPanel } from 'src/components/strategy/NewsPanel'
-import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
-import { RecentTradesPanel } from 'src/components/strategy/RecentTradesPanel'
-import { ViewPanels } from 'src/components/ViewPanels'
-import { getStoredLayout, storeLayout } from 'src/utils/gridLayout'
+import { useGridLayout } from 'src/hooks/useGridLayout'
+import { useResizeObserver } from 'src/hooks/useResizeObserver'
+import { GridPanels } from 'src/utils/gridPanels'
+
+const DEFAULT_COLS = 12
+const DEFAULT_ROW_HEIGHT = 145
 
 export function GridLayout() {
-  const [width, setWidth] = useState(0)
-  const ref = useRef()
-
-  useEffect(() => {
-    if (!ref.current) return
-    new ResizeObserver((e) => setWidth(e[0].target.clientWidth)).observe(ref.current)
-  }, [])
-
+  const { handleChange, isMaximized, layout, maximize, maximizedPanel, minimize } = useGridLayout()
+  const { ref, width, height } = useResizeObserver<HTMLDivElement>()
   return (
-    <Flex ref={ref} className="w-full bg-ocean-900">
+    <Flex ref={ref} className="w-full h-full bg-ocean-900">
       <ReactGridLayout
+        style={{ height: isMaximized ? '100%' : 'fit-content' }}
+        rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
         draggableHandle="[data-draggable='true']"
-        className="relative "
-        layout={getStoredLayout()}
-        cols={12}
-        rowHeight={30}
-        width={width}
+        cols={isMaximized ? 1 : DEFAULT_COLS}
+        className="relative transition-all"
+        onLayoutChange={handleChange}
         containerPadding={[0, 0]}
-        onLayoutChange={storeLayout}
+        layout={layout}
+        width={width}
       >
-        <OrderFormPanel key={'order-form'} />
-        <NewsPanel key={'news-panel'} />
-        <ChartPanel key={'chart-panel'} />
-        <RecentTradesPanel key={'trades-panel'} />
-        <ViewPanels key={'views-panel'} />
+        {Object.entries(GridPanels).map(([key, Panel]) => (
+          <Panel
+            hidden={isMaximized && maximizedPanel !== key}
+            onMaximize={() => maximize(key)}
+            onMinimize={() => minimize()}
+            key={key}
+          />
+        ))}
       </ReactGridLayout>
     </Flex>
   )

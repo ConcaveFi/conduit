@@ -1,9 +1,8 @@
 import { Arrow } from '@tradex/icons'
-import { Flex, Panel, Text } from '@tradex/interface'
-import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
+import { Flex, Panel, PanelProps, Text } from '@tradex/interface'
 import { forwardRef } from 'react'
 
-export const RecentTradesPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
+export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
     <Panel {...props} ref={ref} name="Recent Trades" variant="secondary" className="w-full h-fit">
       <table className="text-end">

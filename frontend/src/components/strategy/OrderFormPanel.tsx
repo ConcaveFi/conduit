@@ -1,11 +1,10 @@
 import { ChevronIcon, CloseIcon } from '@tradex/icons'
 import { Button, CheckBox, Flex, Input, Panel, PanelProps, Slider, Text } from '@tradex/interface'
-import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
 import { ChangeEvent, forwardRef, useState } from 'react'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 
-export const OrderFormPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
+export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const [value, setValue] = useState<number>()
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     let value = +e.target.value
@@ -14,7 +13,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((pro
     setValue(value || undefined)
   }
   return (
-    <Panel ref={ref} {...props} name="Order Form" className="w-3/12 ">
+    <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
       <OrderTab />
       <Flex column className="gap-2">
         <Text variant="low" className="px-4">

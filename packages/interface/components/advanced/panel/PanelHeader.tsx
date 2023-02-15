@@ -1,6 +1,6 @@
 import { CloseIcon, ExpandIcon } from '@tradex/icons'
 import { cva, VariantProps } from 'class-variance-authority'
-import { forwardRef, ReactComponentElement, ReactNode } from 'react'
+import { forwardRef, ReactNode, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Button, Flex } from '../../primitives'
 
@@ -16,9 +16,22 @@ export const panelHeaderStyles = cva(baseStyles(), {
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
 export interface PanelHeaderProps extends PanelHeaderAttributes, PrimitiveDivProps {
   children?: ReactNode
+  onMaximize?: VoidFunction
+  onClose?: VoidFunction
+  onMinimize?: VoidFunction
 }
 export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
-  ({ children, variant, ...props }, ref) => {
+  ({ children, variant, onMaximize, onClose, onMinimize, ...props }, ref) => {
+    const [isFull, setIsFull] = useState(false)
+    function handleToggle() {
+      if (isFull && onMinimize) {
+        setIsFull(false)
+        onMinimize()
+      } else if (!isFull && onMaximize) {
+        setIsFull(true)
+        onMaximize()
+      }
+    }
     return (
       <Flex
         ref={ref}
@@ -29,10 +42,10 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
       >
         {children}
         <Flex className="gap-3 z-20" align="center">
-          <Button>
+          <Button onClick={handleToggle}>
             <ExpandIcon className="w-4 h-4 fill-ocean-200" />
           </Button>
-          <Button>
+          <Button onClick={onClose}>
             <CloseIcon className="w-3 h-3 fill-ocean-200" />
           </Button>
         </Flex>
