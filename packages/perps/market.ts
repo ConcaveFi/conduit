@@ -2,8 +2,10 @@ import { Address, getContract } from '@wagmi/core'
 import { perpsV2MarketAbi } from './abis/marketAbi'
 import { utils, BigNumber } from 'ethers'
 import { goerliMarketData } from './marketData/marketData'
+import { bpsToWei, Percent } from './percent'
 
 const { parseBytes32String: decodeBytes32String, formatBytes32String: encodeBytes32String } = utils
+const n = BigNumber.from
 
 type Bytes32 = `0x${string}`
 
@@ -23,22 +25,23 @@ export const marketsSummaries = async () => {
 }
 
 const TrackingCode = encodeBytes32String('tradex') as Bytes32
-const DEFAULT_PRICE_IMPACT_DELTA = 500000000000000000n
+
+const DEFAULT_PRICE_IMPACT_DELTA: Percent = 50 // 0.5%
 
 export const marketActions = (marketAddress: Address) => {
   const market = getContract({ address: marketAddress, abi: perpsV2MarketAbi })
 
   return {
-    depositMargin: (amount: bigint) => market.transferMargin(BigNumber.from(amount)),
-    withdrawnMargin: (amount: bigint) => market.transferMargin(BigNumber.from(-amount)),
-    openPosition: (
+    depositMargin: (amount: bigint) => market.transferMargin(n(amount)),
+    withdrawnMargin: (amount: bigint) => market.transferMargin(n(-amount)),
+    managePosition: (
       size: bigint,
-      priceImpact: bigint = DEFAULT_PRICE_IMPACT_DELTA,
+      priceImpact: Percent = DEFAULT_PRICE_IMPACT_DELTA,
       trackingCode: Bytes32 = TrackingCode,
     ) =>
       market.submitOffchainDelayedOrderWithTracking(
-        BigNumber.from(size),
-        BigNumber.from(priceImpact),
+        n(size),
+        n(bpsToWei(priceImpact)),
         trackingCode,
       ),
   }
