@@ -2,14 +2,10 @@ import { Address, useAccount, useContractRead, useContractReads } from 'wagmi'
 import { perpsV2MarketAbi } from '@tradex/perps/abis/marketAbi'
 import { marketDataAbi } from '@tradex/perps/marketData/marketDataAbi'
 import { marketSettingsAbi } from '@tradex/perps/abis/marketSettingsAbi'
-import {
-  formatBytes32String,
-  formatEther,
-  parseBytes32String,
-  parseEther,
-} from 'ethers/lib/utils.js'
+import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import { optimismGoerli } from 'wagmi/chains'
 import { format } from '../utils/format'
+import { useIsMounted } from 'src/hooks/useIsMounted'
 
 const Markets = () => {
   const { data: markets } = useContractRead({
@@ -19,7 +15,9 @@ const Markets = () => {
     functionName: 'allProxiedMarketSummaries',
   })
 
-  if (!markets) return null
+  const isMounted = useIsMounted()
+
+  if (!markets || !isMounted) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
@@ -58,7 +56,9 @@ const Orders = ({
     args: [address],
   })
 
-  if (!order) return null
+  const isMounted = useIsMounted()
+
+  if (!order || !isMounted) return null
 
   const size = order.sizeDelta.toBigInt()
   const side = size > 0 ? 'Long' : 'Short'
@@ -112,7 +112,9 @@ const Position = ({ market }: { market: { address: Address; key: string } }) => 
     args: [address],
   })
 
-  if (!position) return null
+  const isMounted = useIsMounted()
+
+  if (!position || !isMounted) return null
 
   const size = position.size.toBigInt()
   const side = size > 0 ? 'Long' : 'Short'
@@ -139,6 +141,67 @@ const Position = ({ market }: { market: { address: Address; key: string } }) => 
   )
 }
 
+const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
+  return (
+    <div className="flex flex-col gap-3 items-center justify-center p-4 rounded-xl bg-neutral-800/40">
+      <div>
+        <input
+          className="font-bold bg-transparent text-3xl placeholder:text-neutral-400"
+          placeholder="0.00"
+        />
+      </div>
+      <div className="flex gap-3 items-center justify-center">
+        <button className="px-5 py-1 rounded-full bg-green-700">
+          <span className="text-neutral-200 font-bold">Buy/Long</span>
+        </button>
+        <button className="px-5 py-1 rounded-full bg-red-700">
+          <span className="text-neutral-200 font-bold">Sell/Short</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+const Margin = ({ market }: { market: { address: Address; key: string } }) => {
+  const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
+
+  const contract = {
+    abi: perpsV2MarketAbi,
+    address: market.address,
+    chainId: optimismGoerli.id,
+  }
+
+  const { data } = useContractReads({
+    contracts: [
+      { ...contract, functionName: 'remainingMargin', args: [address] },
+      { ...contract, functionName: 'accessibleMargin', args: [address] },
+    ],
+  })
+
+  const isMounted = useIsMounted()
+
+  if (!data || !isMounted) return null
+
+  const [{ marginRemaining }, { marginAccessible }] = data
+
+  return (
+    <div className="flex flex-col gap-1 px-3 rounded-xl bg-neutral-800/40 py-2">
+      <h1 className="text-xs text-neutral-400">Margin</h1>
+      <span className="text-neutral-200 text-xs">
+        Remaining: {format(marginRemaining.toBigInt(), 18)}
+      </span>
+      <span className="text-neutral-200 text-xs">
+        Accessible: {format(marginAccessible.toBigInt(), 18)}
+      </span>
+    </div>
+  )
+}
+
+const market = {
+  address: '0x111BAbcdd66b1B60A20152a2D3D06d36F8B5703c',
+  key: 'sETH',
+} as const
+
 export default function Home() {
   const { data: offchainDelayedOrderMaxAge } = useContractRead({
     abi: marketSettingsAbi,
@@ -150,22 +213,18 @@ export default function Home() {
 
   return (
     <div className="bg-neutral-900 h-screen flex items-center justify-center font-medium">
-      <div className="h-[500px] flex gap-5">
+      <div className="h-[500px] flex gap-2">
         <Markets />
-        <div className="w-[300px] h-[500px] flex flex-col gap-1">
+        <div className="w-[300px] h-[500px] flex flex-col gap-2">
           <Orders
             market={{
-              address: '0x111BAbcdd66b1B60A20152a2D3D06d36F8B5703c',
-              key: 'sETH',
+              ...market,
               orderMaxAge: offchainDelayedOrderMaxAge?.toNumber(),
             }}
           />
-          <Position
-            market={{
-              address: '0x111BAbcdd66b1B60A20152a2D3D06d36F8B5703c',
-              key: 'sETH',
-            }}
-          />
+          <Position market={market} />
+          <Margin market={market} />
+          {/* <OpenPosition /> */}
         </div>
       </div>
     </div>
@@ -173,6 +232,7 @@ export default function Home() {
 }
 
 /*
+https://subgraph.satsuma-prod.com/05943208e921/kwenta/optimism-perps/api
 https://api.thegraph.com/subgraphs/name/kwenta/optimism-goerli-main
 query {
   futuresTrades (where: { account: "0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0" }) {
