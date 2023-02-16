@@ -6610,10 +6610,10 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
-with-multicall@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/with-multicall/-/with-multicall-0.0.3.tgz#273aad48380ba5844b5b6e6deeb8ec5a6bcdf539"
-  integrity sha512-AVAnJC6faJ2PD1yAPtEXSEM6oEYTLmzgpt4F34IRDrR6tCTOgsMWmTiSuq68Hz9seXQFmY3phgjfqcwrB8E6Sg==
+with-multicall@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/with-multicall/-/with-multicall-0.0.6.tgz#a31cf976ee72e59b887d648ae4257fbcdc63458b"
+  integrity sha512-A93+nIbKp3mIbzXrEyCDVJjf90NC3wXElajPw6i4me9KuRKlrrgXFUSAleT+2KFjbXhHoDay13c2Q4gMylTmOw==
 
 word-wrap@^1.2.3:
   version "1.2.3"
