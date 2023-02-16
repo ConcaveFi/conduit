@@ -143,18 +143,18 @@ const Position = ({ market }: { market: { address: Address; key: string } }) => 
 
 const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
   return (
-    <div className="flex flex-col gap-3 items-center justify-center p-4 rounded-xl bg-neutral-800/40">
-      <div>
+    <div className="flex flex-col gap-4 items-center justify-center p-4 rounded-xl bg-neutral-800/40">
+      <div className="flex max-w-full">
         <input
-          className="font-bold bg-transparent text-3xl placeholder:text-neutral-400"
+          className="font-bold bg-transparent max-w-full w-auto text-3xl placeholder:text-neutral-400 text-neutral-200 outline-none "
           placeholder="0.00"
         />
       </div>
       <div className="flex gap-3 items-center justify-center">
-        <button className="px-5 py-1 rounded-full bg-green-700">
+        <button className="px-5 py-1 rounded-full bg-green-600 hover:opacity-80 active:scale-[.99]">
           <span className="text-neutral-200 font-bold">Buy/Long</span>
         </button>
-        <button className="px-5 py-1 rounded-full bg-red-700">
+        <button className="px-5 py-1 rounded-full bg-red-600 hover:opacity-80 active:scale-[.99]">
           <span className="text-neutral-200 font-bold">Sell/Short</span>
         </button>
       </div>
@@ -180,7 +180,7 @@ const Margin = ({ market }: { market: { address: Address; key: string } }) => {
 
   const isMounted = useIsMounted()
 
-  if (!data || !isMounted) return null
+  if (!data?.[0] || !isMounted) return null
 
   const [{ marginRemaining }, { marginAccessible }] = data
 
@@ -212,7 +212,7 @@ export default function Home() {
   })
 
   return (
-    <div className="bg-neutral-900 h-screen flex items-center justify-center font-medium">
+    <div className="bg-neutral-900 w-screen h-screen flex items-center justify-center font-medium">
       <div className="h-[500px] flex gap-2">
         <Markets />
         <div className="w-[300px] h-[500px] flex flex-col gap-2">
@@ -223,7 +223,7 @@ export default function Home() {
             }}
           />
           <Position market={market} />
-          <Margin market={market} />
+          {/* <Margin market={market} /> */}
           {/* <OpenPosition /> */}
         </div>
       </div>
