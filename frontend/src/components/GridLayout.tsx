@@ -13,6 +13,7 @@ import {
   GRID_WIDGETS,
   storeWidgets,
 } from 'src/utils/gridWidgets'
+import { ChartPanel } from './chart/ChartPanel'
 
 const DEFAULT_COLS = 12
 const DEFAULT_ROW_HEIGHT = 145

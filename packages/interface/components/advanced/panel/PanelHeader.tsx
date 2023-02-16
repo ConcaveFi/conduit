@@ -4,7 +4,7 @@ import { forwardRef, ReactNode, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Button, Flex } from '../../primitives'
 
-const baseStyles = cva('flex px-3 justify-between items-center w-full h-9')
+const baseStyles = cva('flex px-3 justify-between items-center w-full min-h-[2.25rem]')
 export const panelHeaderStyles = cva(baseStyles(), {
   variants: {
     variant: {
