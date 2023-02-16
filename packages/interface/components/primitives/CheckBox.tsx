@@ -12,16 +12,17 @@ export interface CheckBox extends SVGProps<SVGSVGElement> {
 export function CheckBox({ initialState, onToggle, className, info, ...props }: CheckBox) {
   const [state, setState] = useState(Boolean(initialState))
   const [hover, setHover] = useState(false)
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement>(null)
   useEffect(() => onToggle && onToggle(state), [state])
 
   const handleCLick = () => {
     setState(!state)
+    if (!ref.current) return
     const ripple = document.createElement('div')
     ripple.className = 'bg-ocean-100 animate-ripple rounded-xl absolute'
     ref.current.appendChild(ripple)
     const timeout = setTimeout(() => {
-      ref.current.removeChild(ripple)
+      if (ref.current) ref.current.removeChild(ripple)
       clearTimeout(timeout)
     }, 500)
   }
@@ -67,7 +68,7 @@ export function CheckBox({ initialState, onToggle, className, info, ...props }: 
           />
         )}
       </button>
-      {info && <Text>{info}</Text>}
+      {info && <Text className="capitalize">{info}</Text>}
     </Flex>
   )
 }

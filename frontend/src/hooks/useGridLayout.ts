@@ -23,7 +23,8 @@ export function useGridLayout(props?: GridLayoutHook) {
     setMaxPanel('')
   }
 
-  function removeGridWidget(key: string) {
+  function removeGridWidget(key?: string) {
+    if (!key) return
     const newLayout = layout.filter((grid) => grid.i !== key)
     setLayout(newLayout)
     storeLayout(newLayout)

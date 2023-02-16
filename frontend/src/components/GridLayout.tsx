@@ -1,6 +1,7 @@
 import { Flex } from '@tradex/interface'
 import { useState } from 'react'
 import ReactGridLayout from 'react-grid-layout'
+import { useWidgets } from 'src/context/WidgetsProvider'
 import { useGridLayout } from 'src/hooks/useGridLayout'
 import { useResizeObserver } from 'src/hooks/useResizeObserver'
 import { getStoredLayout, WIDGET_PRESETS } from 'src/utils/gridLayout'
@@ -27,14 +28,7 @@ export function GridLayout() {
     removeGridWidget,
   } = useGridLayout()
   const { ref, width, height } = useResizeObserver<HTMLDivElement>()
-
-  const [widgets, setWidgets] = useState(getStoredWidgets() || DEFAULT_GRID_WIDGETS)
-  function removeWidget(key: string) {
-    const newWidgets = widgets.filter((w) => w !== key)
-    storeWidgets(newWidgets)
-    setWidgets(newWidgets)
-    removeGridWidget(key)
-  }
+  const { widgets, removeWidget } = useWidgets()
 
   return (
     <Flex ref={ref} className="w-full h-full bg-ocean-900">
@@ -56,7 +50,7 @@ export function GridLayout() {
               hidden={isMaximized && maximizedPanel !== key}
               onMaximize={() => maximize(key)}
               onMinimize={() => minimize()}
-              onClose={() => removeWidget(key)}
+              onClose={() => removeWidget(key).then(removeGridWidget)}
               data-grid={WIDGET_PRESETS[key]}
               key={key}
             />
