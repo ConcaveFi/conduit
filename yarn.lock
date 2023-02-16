@@ -6610,6 +6610,11 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
+with-multicall@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/with-multicall/-/with-multicall-0.0.3.tgz#273aad48380ba5844b5b6e6deeb8ec5a6bcdf539"
+  integrity sha512-AVAnJC6faJ2PD1yAPtEXSEM6oEYTLmzgpt4F34IRDrR6tCTOgsMWmTiSuq68Hz9seXQFmY3phgjfqcwrB8E6Sg==
+
 word-wrap@^1.2.3:
   version "1.2.3"
   resolved "https://registry.npmjs.org/word-wrap/-/word-wrap-1.2.3.tgz"

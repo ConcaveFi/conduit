@@ -1,8 +1,10 @@
+import { PropsWithChildren } from 'react'
 import { configureChains, createClient, mainnet, WagmiConfig } from 'wagmi'
 import { optimismGoerli, optimism } from '@wagmi/core/chains'
 import { alchemyProvider } from '@wagmi/core/providers/alchemy'
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask'
-import { ReactNode } from 'react'
+
+import { withMulticall } from 'with-multicall'
 
 const { chains, provider } = configureChains(
   [mainnet, optimismGoerli, optimism],
@@ -10,10 +12,10 @@ const { chains, provider } = configureChains(
 )
 
 const client = createClient({
-  provider,
+  provider: withMulticall(provider),
   connectors: [new MetaMaskConnector({ chains })],
 })
 
-export function WagmiProvider({ children }: { children: ReactNode }) {
+export function WagmiProvider({ children }: PropsWithChildren) {
   return <WagmiConfig client={client}>{children}</WagmiConfig>
 }
