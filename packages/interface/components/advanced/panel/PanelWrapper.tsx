@@ -1,18 +1,11 @@
-import { cva, VariantProps } from 'class-variance-authority'
-import { forwardRef } from 'react'
-import { PrimitiveDivProps } from '../../../types/primitives'
+import React, { forwardRef } from 'react'
+import { Flex, FlexProps } from '../../primitives'
 
-export const wrapperSyles = cva(cva('flex flex-col rounded-lg overflow-hidden ')(), {
-  variants: {
-    size: {
-      '16:9': 'w-[600px] h-[300px]',
-    },
-  },
-})
-export type PanelWrapperAttributes = VariantProps<typeof wrapperSyles>
-export interface PanelWrapperProps extends PanelWrapperAttributes, PrimitiveDivProps {}
+const DEFAULT_STYLES = 'rounded-lg overflow-hidden'
+export interface PanelWrapperProps extends FlexProps {}
 export const PanelWrapper = forwardRef<HTMLDivElement, PanelWrapperProps>(
-  ({ size, className, ...props }, ref) => {
-    return <div ref={ref} className={`${wrapperSyles({ className, size })}`} {...props} />
+  ({ className, ...props }, ref) => {
+    const _styles = `${DEFAULT_STYLES} ${className}`
+    return React.createElement(Flex, { column: true, ref, className: _styles, ...props })
   },
 ) as React.FC<PanelWrapperProps>

@@ -1,8 +1,8 @@
 import React, { cloneElement, forwardRef, ReactComponentElement, useMemo, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Flex } from '../../primitives'
-import { PanelAttributes, PanelEssentials } from './Panel'
-import { PanelBody, PanelBodyProps } from './PanelBody'
+import { PanelEssentials } from './Panel'
+import { PanelBody } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
 
@@ -11,17 +11,12 @@ export enum TabPanelDisplayNames {
   PANEL_TAB = 'Panel.Tab',
   PANEL_ROOT = 'Panel.Root',
 }
-export interface TabPanelProps
-  extends PrimitiveDivProps,
-    PanelEssentials,
-    PanelAttributes,
-    PanelHeaderProps {
+export interface TabPanelProps extends PrimitiveDivProps, PanelEssentials, PanelHeaderProps {
   children: any
 }
 export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
   const [tab, setTab] = useState(0)
   const {
-    size,
     variant = 'primary',
     children,
     bodyProps,
@@ -56,7 +51,7 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
     })
   }, [children, tab])
   return (
-    <PanelWrapper size={size} {...rest} ref={ref}>
+    <PanelWrapper {...rest} ref={ref}>
       <PanelHeader
         onMinimize={onMinimize}
         onMaximize={onMaximize}

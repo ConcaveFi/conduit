@@ -1,18 +1,10 @@
 import { CloseIcon, ExpandIcon } from '@tradex/icons'
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps } from 'class-variance-authority'
 import { forwardRef, ReactNode, useState } from 'react'
+import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Button, Flex } from '../../primitives'
 
-const baseStyles = cva('flex px-3 justify-between items-center w-full min-h-[2.25rem]')
-export const panelHeaderStyles = cva(baseStyles(), {
-  variants: {
-    variant: {
-      primary: ['bg-ocean-500 border-b-2 border-opacity-40 border-ocean-300'],
-      secondary: ['bg-ocean-600 border-b-2 border-ocean-400'],
-    },
-  },
-})
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
 export interface PanelHeaderProps extends PanelHeaderAttributes, PrimitiveDivProps {
   children?: ReactNode

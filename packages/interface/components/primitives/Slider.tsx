@@ -11,14 +11,14 @@ interface RawSliderProps extends PrimitiveInputProps {
 }
 
 function RawSlider(props: RawSliderProps) {
-  const { max, min, defaultValue, className, ...rest } = props
-  const [value, setValue] = useState<number>(defaultValue)
+  const { max = 100, min = 0, defaultValue, className, ...rest } = props
+  const [value, setValue] = useState<number>(defaultValue || 0)
   const [pressed, setPressed] = useState(false)
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLSpanElement>(null)
   const [width, setWidth] = useState(0)
   const size = 14
 
-  useEffect(() => setValue(+props.value), [props.value])
+  useEffect(() => setValue(props.value ? +props.value : 0), [props.value])
   useEffect(() => setWidth(ref.current?.clientWidth || 0), [ref])
   useEffect(() => {
     if (!ref.current) return
