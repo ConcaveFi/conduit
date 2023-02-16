@@ -6,3 +6,18 @@ html,
 body {
   background-color: #0b0b22;
 }
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #3e5389;
+  border-radius: 20px;
+}
