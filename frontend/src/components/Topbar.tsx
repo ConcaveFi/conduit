@@ -48,7 +48,7 @@ export function Topbar() {
         {isConnected && (
           <>
             <Popover column centered>
-              <Popover.Button variant="primary" size="lg" className={'py-2'}>
+              <Popover.Button variant="secondary" size="lg" className={'py-2'}>
                 {chain?.name}
                 <ChevronIcon className="w-3 h-3 fill-ocean-200" />
               </Popover.Button>
