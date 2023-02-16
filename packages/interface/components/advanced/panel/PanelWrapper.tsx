@@ -2,7 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 
-export const wrapperSyles = cva(cva('rounded-lg overflow-hidden ')(), {
+export const wrapperSyles = cva(cva('flex flex-col rounded-lg overflow-hidden ')(), {
   variants: {
     size: {
       '16:9': 'w-[600px] h-[300px]',

@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 const DEFAULT_CHART_PROPS = {
   autosize: true,
   symbol: 'BINANCE:ETHUSDT',

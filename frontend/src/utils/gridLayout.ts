@@ -1,9 +1,18 @@
+import { GridWidgetKeys } from './gridWidgets'
+
+export const WIDGET_PRESETS: { [key in GridWidgetKeys]: {} } = {
+  'chart-panel': { x: 3, y: 0, w: 6, h: 4 },
+  'news-panel': { x: 9, y: 0, w: 3, h: 2.4 },
+  'order-panel': { x: 0, y: 0, w: 3, h: 6.8 },
+  'trades-panel': { x: 9, y: 9, w: 3, h: 2.4 },
+  'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
+}
 export const DEFAULT_LAYOUT = [
-  { i: 'order-panel', x: 0, y: 0, w: 3, h: 6.8 },
-  { i: 'chart-panel', x: 3, y: 0, w: 6, h: 4 },
-  { i: 'views-panel', x: 3, y: 15, w: 6, h: 1.5 },
-  { i: 'news-panel', x: 9, y: 0, w: 3, h: 2.4 },
-  { i: 'trades-panel', x: 9, y: 9, w: 3, h: 2.4 },
+  { i: 'chart-panel', ...WIDGET_PRESETS['chart-panel'] },
+  { i: 'trades-panel', ...WIDGET_PRESETS['trades-panel'] },
+  { i: 'views-panel', ...WIDGET_PRESETS['views-panel'] },
+  { i: 'news-panel', ...WIDGET_PRESETS['news-panel'] },
+  { i: 'order-panel', ...WIDGET_PRESETS['order-panel'] },
 ] as ReactGridLayout.Layout[]
 
 const STORED_GRID_ITEM = 'grid-layout'

@@ -2,7 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 
-const baseBodyStyles = cva(['flex flex-col w-full h-full'])
+const baseBodyStyles = cva(['flex flex-col flex-grow'])
 export const panelBodyStyles = cva(baseBodyStyles(), {
   variants: {
     variant: {

@@ -1,20 +1,20 @@
-import { Container, Flex, Panel } from '@tradex/interface'
-import { useEffect, useRef, useState } from 'react'
-import ReactGridLayout from 'react-grid-layout'
-import { ChartPanel } from 'src/components/chart/ChartPanel'
+import { Container, Flex } from '@tradex/interface'
 import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/Topbar'
+import { WidgetsProvider } from 'src/context/WidgetsProvider'
 import { useIsMounted } from 'src/hooks/useIsMounted'
+
 export default function Home() {
   const isMounted = useIsMounted()
-
   if (!isMounted) return <></>
   return (
-    <Container space="medium.eq" column className="overflow-y-auto h-screen overflow-x-hidden">
-      <Topbar />
-      <StrategyHeader />
-      <GridLayout />
-    </Container>
+    <WidgetsProvider>
+      <Container space="medium.eq" column className="w-full h-full">
+        <Topbar />
+        <StrategyHeader />
+        <GridLayout />
+      </Container>
+    </WidgetsProvider>
   )
 }

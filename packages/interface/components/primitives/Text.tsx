@@ -10,10 +10,12 @@ export const textStyles = cva(cva('text-jus ')(), {
       high: 'text-ocean-100',
       medium: 'text-ocean-200',
       low: 'text-ocean-300 font-medium',
+      positive: 'text-[#32FF2E]',
+      negative: 'text-[#FF2E2E]',
     },
     size: {
       xs: 'text-xs',
-      sm: 'text-[14px]',
+      sm: 'text-sm',
       md: 'text-md',
       lg: 'text-lg',
       xl: 'text-xl',
@@ -29,8 +31,8 @@ export const textStyles = cva(cva('text-jus ')(), {
       bold: 'font-bold',
     },
     modifier: {
-      positive: 'text-[#32FF2E]',
-      negative: 'text-[#FF2E2E]',
+      positive: '!text-[#32FF2E]',
+      negative: '!text-[#FF2E2E]',
       none: '',
     },
     align: {

@@ -4,7 +4,7 @@ import { forwardRef, ReactNode, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Button, Flex } from '../../primitives'
 
-const baseStyles = cva('flex px-3 justify-between items-center w-full h-9')
+const baseStyles = cva('flex px-3 justify-between items-center w-full min-h-[2.25rem]')
 export const panelHeaderStyles = cva(baseStyles(), {
   variants: {
     variant: {
@@ -42,10 +42,10 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
       >
         {children}
         <Flex className="gap-3 z-20" align="center">
-          <Button onClick={handleToggle}>
+          <Button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
             <ExpandIcon className="w-4 h-4 fill-ocean-200" />
           </Button>
-          <Button onClick={onClose}>
+          <Button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
             <CloseIcon className="w-3 h-3 fill-ocean-200" />
           </Button>
         </Flex>

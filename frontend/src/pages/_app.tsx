@@ -1,3 +1,4 @@
+import { Flex } from '@tradex/interface'
 import { ConnectWalletProvider } from 'src/context/ConnectWalletProvider'
 import { WagmiProvider } from 'src/context/WagmiProvider'
 import 'tailwindcss/tailwind.css'
@@ -7,7 +8,9 @@ export default function App({ Component, pageProps }: any) {
   return (
     <WagmiProvider>
       <ConnectWalletProvider>
-        <Component {...pageProps} />
+        <Flex className="overflow-y-auto h-screen overflow-x-hidden">
+          <Component {...pageProps} />
+        </Flex>
       </ConnectWalletProvider>
     </WagmiProvider>
   )
