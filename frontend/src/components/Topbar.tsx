@@ -1,6 +1,6 @@
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { Button, Flex, ItemInfo, Panel, Text } from '@tradex/interface'
-import { Menu, Popover, Transition } from '@headlessui/react'
+import { Popover } from '@tradex/interface'
 import Image from 'next/image'
 import { Fragment } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
@@ -47,58 +47,45 @@ export function Topbar() {
         <NotificationIcon className="w-5 h-5 fill-ocean-200" />
         {isConnected && (
           <>
-            <Popover as={'div'} className="relative  ">
-              <Popover.Button as={Button} variant="primary" size="lg" className={'py-2'}>
+            <Popover column centered>
+              <Popover.Button variant="primary" size="lg" className={'py-2'}>
                 {chain?.name}
                 <ChevronIcon className="w-3 h-3 fill-ocean-200" />
               </Popover.Button>
-              <Transition
-                as={Fragment}
-                enter="transition-all duration-300 ease-out"
-                enterFrom="opacity-0 scale-75"
-                enterTo="opacity-100 scale-100"
-                leave="transition-all duration-300 ease-out"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-75"
-              >
-                <Popover.Panel
-                  className="absolute origin-top-right right-0 gap-2 p-2 top-full mt-2 right- w-56 shadow-xl bg-ocean-800 border-2 border-ocean-300 border-opacity-50 rounded-lg "
-                  as={Flex}
-                  column
+              <Popover.Panel className="w-52 p-2 gap-2" column>
+                <Button
+                  variant="primary"
+                  size="xl"
+                  centered={false}
+                  className="justify-start px-2 items-center"
+                  onClick={() => switchNetwork && switchNetwork(mainnet.id)}
                 >
-                  <Button
-                    variant="primary"
-                    size="xl"
-                    centered={false}
-                    className="justify-start px-2 items-center"
-                    onClick={() => switchNetwork(mainnet.id)}
-                  >
-                    <img src="/assets/networks/eth.png" className="rounded-full w-6" />
-                    Ethereum
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="xl"
-                    centered={false}
-                    className="justify-start px-2 items-center"
-                    onClick={() => switchNetwork(optimism.id)}
-                  >
-                    <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
-                    Optimism
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="xl"
-                    centered={false}
-                    className="justify-start px-2 items-center"
-                    onClick={() => switchNetwork(optimismGoerli.id)}
-                  >
-                    <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
-                    Optimism Goerli
-                  </Button>
-                </Popover.Panel>
-              </Transition>
+                  <img src="/assets/networks/eth.png" className="rounded-full w-6" />
+                  Ethereum
+                </Button>
+                <Button
+                  variant="primary"
+                  size="xl"
+                  centered={false}
+                  className="justify-start px-2 items-center"
+                  onClick={() => switchNetwork && switchNetwork(optimism.id)}
+                >
+                  <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
+                  Optimism
+                </Button>
+                <Button
+                  variant="primary"
+                  size="xl"
+                  centered={false}
+                  className="justify-start px-2 items-center"
+                  onClick={() => switchNetwork && switchNetwork(optimismGoerli.id)}
+                >
+                  <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
+                  Optimism Goerli
+                </Button>
+              </Popover.Panel>
             </Popover>
+
             <ItemInfo info="0xb30...9af7f" value="$ 2,548.04" />
           </>
         )}

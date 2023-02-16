@@ -1,21 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { cva, VariantProps } from 'class-variance-authority'
 import { Fragment } from 'react'
+import { CardAttributes, cardStyles } from '../advanced'
 import { ContainerProps, containerStyles } from './Container'
 import { FlexProps, flexStyles } from './Flex'
 
-export const modalStyles = cva(cva('')(), {
-  variants: {
-    variant: {
-      primary: 'bg-ocean-800 rounded-2xl border border-ocean-300 border-opacity-40  shadow-xl',
-    },
-  },
-  defaultVariants: {
-    variant: 'primary',
-  },
-})
-export type ModalStyles = VariantProps<typeof modalStyles>
-export interface ModalProps extends ContainerProps, FlexProps, ModalStyles {
+export interface ModalProps extends ContainerProps, FlexProps, CardAttributes {
   isOpen: boolean
   onClose: VoidFunction
   overlay?: boolean
@@ -26,7 +15,7 @@ export function Modal(props: ModalProps) {
 
   const _flexStyles = flexStyles({ align, centered, column, justify, grow, row })
   const _containerStyles = containerStyles({ space, expand })
-  const _modalStyles = modalStyles({ className, variant })
+  const _modalStyles = cardStyles({ className, variant })
   return (
     <Transition appear unmount show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10 " onClose={onClose}>

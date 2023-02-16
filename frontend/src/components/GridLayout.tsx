@@ -1,19 +1,10 @@
 import { Flex } from '@tradex/interface'
-import { useState } from 'react'
 import ReactGridLayout from 'react-grid-layout'
 import { useWidgets } from 'src/context/WidgetsProvider'
 import { useGridLayout } from 'src/hooks/useGridLayout'
 import { useResizeObserver } from 'src/hooks/useResizeObserver'
-import { getStoredLayout, WIDGET_PRESETS } from 'src/utils/gridLayout'
-import {
-  DEFAULT_GRID_WIDGETS,
-  getStoredWidgets,
-  GridWidget,
-  GridWidgetKeys,
-  GRID_WIDGETS,
-  storeWidgets,
-} from 'src/utils/gridWidgets'
-import { ChartPanel } from './chart/ChartPanel'
+import { WIDGET_PRESETS } from 'src/utils/gridLayout'
+import { GRID_WIDGETS } from 'src/utils/gridWidgets'
 
 const DEFAULT_COLS = 12
 const DEFAULT_ROW_HEIGHT = 145
@@ -46,13 +37,14 @@ export function GridLayout() {
       >
         {widgets.map((key) => {
           const Panel = GRID_WIDGETS[key]
+          const isHidden = isMaximized && maximizedPanel !== key
           return (
             <Panel
-              hidden={isMaximized && maximizedPanel !== key}
-              onMaximize={() => maximize(key)}
-              onMinimize={() => minimize()}
               onClose={() => removeWidget(key).then(removeGridWidget)}
+              style={{ visibility: isHidden ? 'hidden' : 'visible' }}
+              onMaximize={() => maximize(key)}
               data-grid={WIDGET_PRESETS[key]}
+              onMinimize={() => minimize()}
               key={key}
             />
           )
