@@ -32,6 +32,7 @@ export function GridLayout() {
         className="relative transition-all "
         onLayoutChange={handleChange}
         containerPadding={[0, 0]}
+        useCSSTransforms
         layout={layout}
         width={width}
       >
@@ -42,6 +43,7 @@ export function GridLayout() {
             <Panel
               onClose={() => removeWidget(key).then(removeGridWidget)}
               style={{ visibility: isHidden ? 'hidden' : 'visible' }}
+              className="duration-500 ease-out"
               onMaximize={() => maximize(key)}
               data-grid={WIDGET_PRESETS[key]}
               onMinimize={() => minimize()}

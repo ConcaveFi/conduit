@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 
 export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
-    <Panel {...props} ref={ref} name="Recent Trades" variant="secondary" className="w-full h-fit">
+    <Panel {...props} ref={ref} name="Recent Trades" variant="secondary">
       <table className="text-end">
         <thead className="border-b-2 border-ocean-400">
           <tr>

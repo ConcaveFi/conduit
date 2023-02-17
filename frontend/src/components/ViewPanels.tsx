@@ -5,7 +5,7 @@ import { forwardRef } from 'react'
 const TABS = ['Trade', 'Charts', 'Trading History', 'Activity Log']
 export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
-    <TabPanel.Root {...props} ref={ref} variant="secondary" className="w-full h-fit">
+    <TabPanel.Root {...props} ref={ref} variant="secondary">
       {TABS.map((tab) => (
         <TabPanel.Tab key={tab}>
           {(selected) => (
