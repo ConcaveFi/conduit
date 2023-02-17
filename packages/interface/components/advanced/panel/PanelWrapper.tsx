@@ -1,11 +1,7 @@
 import React, { forwardRef } from 'react'
 import { Flex, FlexProps } from '../../primitives'
 
-const DEFAULT_STYLES = 'rounded-lg overflow-hidde'
 export interface PanelWrapperProps extends FlexProps {}
-export const PanelWrapper = forwardRef<HTMLDivElement, PanelWrapperProps>(
-  ({ className, ...props }, ref) => {
-    const _styles = `${DEFAULT_STYLES} ${className}`
-    return React.createElement(Flex, { column: true, ref, className: _styles, ...props })
-  },
-) as React.FC<PanelWrapperProps>
+export const PanelWrapper = forwardRef<HTMLDivElement, PanelWrapperProps>(({ ...props }, ref) => {
+  return React.createElement(Flex, { column: true, ref, ...props })
+}) as React.FC<PanelWrapperProps>
