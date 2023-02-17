@@ -7,16 +7,17 @@ export interface ItemInfoProps {
   value: string
   Icon?: ReactNode
   modifier?: 'positive' | 'negative' | 'none'
+  align?: 'center' | 'end' | 'baseline' | 'stretch' | 'start'
 }
-export function ItemInfo({ Icon, info, value, modifier = 'none' }: ItemInfoProps) {
+export function ItemInfo({ Icon, info, value, align = 'start', modifier = 'none' }: ItemInfoProps) {
   return (
-    <Flex className="gap-4 items-center">
+    <Flex className="gap-4 items-center ">
       {Icon}
-      <Flex column>
+      <Flex column align={align}>
         <Text size="sm" variant="medium" weight="medium">
           {info}
         </Text>
-        <Text className="-mt-2" variant="heading" size="md" modifier={modifier}>
+        <Text className="-mt-1" variant="heading" size="md" modifier={modifier}>
           {value}
         </Text>
       </Flex>

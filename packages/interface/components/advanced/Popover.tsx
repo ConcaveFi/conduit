@@ -6,7 +6,7 @@ import { Button, ButtonProps, Flex, FlexProps } from '../primitives'
 import { Card, CardProps } from './Card'
 
 export function Popover({ className, ...props }: FlexProps) {
-  return <PrimitivePopover className={`z-[100] relative ${className}`} as={Flex} {...props} />
+  return <PrimitivePopover className={`z-[10] relative ${className}`} as={Flex} {...props} />
 }
 
 const PopButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {

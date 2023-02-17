@@ -1,4 +1,5 @@
 import { Container, Flex } from '@tradex/interface'
+import { useRouter } from 'next/router'
 import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/Topbar'

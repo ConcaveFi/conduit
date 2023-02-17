@@ -14,7 +14,7 @@ const DEFAULT_CHART_PROPS = {
 } as TVWidgetOptions
 
 function createTradingViewWidget(props?: TVWidgetOptions) {
-  if (!TradingView) return
+  if (!window.TradingView) return
   const finalProps = Object.assign(DEFAULT_CHART_PROPS, { ...props })
   return new TradingView.widget(finalProps) as TVWidget
 }
