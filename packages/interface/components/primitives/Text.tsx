@@ -9,4 +9,4 @@ export const Text = forwardRef<HTMLSpanElement, TextProps>((props, ref) => {
   const { variant, className, modifier, size, weight, ...spanProps } = props
   const _styles = textStyles({ className, variant, modifier, size, weight })
   return React.createElement('span', { ref, className: _styles, ...spanProps })
-})
+}) as React.FC<TextProps>

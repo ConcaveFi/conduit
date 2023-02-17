@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 import { Flex, FlexProps } from '../../primitives'
 
-const DEFAULT_STYLES = 'rounded-lg overflow-hidden'
+const DEFAULT_STYLES = 'rounded-lg overflow-hidde'
 export interface PanelWrapperProps extends FlexProps {}
 export const PanelWrapper = forwardRef<HTMLDivElement, PanelWrapperProps>(
   ({ className, ...props }, ref) => {
