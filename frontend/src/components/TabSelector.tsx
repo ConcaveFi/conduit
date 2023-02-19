@@ -8,7 +8,7 @@ export interface TabProps {
 export function Tab({ children, onChange }: TabProps) {
   const [curTab, setTab] = useState(0)
   useEffect(() => onChange(curTab), [curTab])
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement>(null)
   const tabs = useMemo(
     () =>
       React.Children.map(children, (tab, index) => {
@@ -21,7 +21,7 @@ export function Tab({ children, onChange }: TabProps) {
     [curTab, children],
   )
   useEffect(() => {
-    if (!ref) return
+    if (!ref.current) return
     for (let i = 0; i < ref.current.childNodes.length; i++) {
       const child = ref.current.childNodes[i] as HTMLButtonElement
       child.onclick = () => setTab(i)
