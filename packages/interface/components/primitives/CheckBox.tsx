@@ -1,4 +1,3 @@
-import { ripple } from '@tradex/theme/utils/animation'
 import { SVGProps, useEffect, useRef, useState } from 'react'
 import { Flex } from './Flex'
 import { Text } from '../primitives/Text'
@@ -9,7 +8,7 @@ export interface CheckBox extends SVGProps<SVGSVGElement> {
   initialState?: boolean
   onToggle: (state: boolean) => void
 }
-export function CheckBox({ initialState, onToggle, className, info, ...props }: CheckBox) {
+export function CheckBox({ initialState, onToggle, className, ripple, info, ...props }: CheckBox) {
   const [state, setState] = useState(Boolean(initialState))
   const [hover, setHover] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
