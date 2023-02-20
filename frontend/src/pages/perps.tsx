@@ -6,11 +6,16 @@ import {
   useMarketPositions,
   useMarketRemainingMargin,
   useMarketSettingsOffchainDelayedOrderMaxAge,
+  useMarketSubmitOffchainDelayedOrderWithTracking,
+  usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from '@tradex/contracts'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { format } from '../utils/format'
 import { useIsMounted } from 'src/hooks/useIsMounted'
+import { useState } from 'react'
+import { useDebounce } from 'usehooks-ts'
+import { BigNumber } from 'ethers'
 
 const Markets = () => {
   const { data: markets } = useMarketDataAllProxiedMarketSummaries()
@@ -129,13 +134,35 @@ const Position = ({ market }: { market: { address: Address; key: string } }) => 
   )
 }
 
+const TrackingCode = formatBytes32String('tradex')
+
+/** percent in basis points (30 = 0.3%, 100 = 1%, ...) */
+export type Percent = bigint | number
+const DEFAULT_PRICE_IMPACT_DELTA: Percent = 50 // 0.5%
+const bps_divider = 10_000n
+export const bpsToWei = (bps: Percent) => (BigInt(bps) * 10n ** 18n) / bps_divider
 const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
+  const [input, setInput] = useState('')
+  const debouncedInput = useDebounce(input, 500)
+
+  const priceImpact = bpsToWei(DEFAULT_PRICE_IMPACT_DELTA)
+
+  const [side, setSide] = useState<'long' | 'short'>('long')
+  const size = side === 'long' ? debouncedInput : -debouncedInput
+
+  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+    args: [BigNumber.from(size), BigNumber.from(priceImpact), TrackingCode],
+  })
+  const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
+
   return (
     <div className="flex flex-col gap-4 items-center justify-center p-4 rounded-xl bg-neutral-800/40">
       <div className="flex max-w-full">
         <input
           className="font-bold bg-transparent max-w-full w-auto text-3xl placeholder:text-neutral-400 text-neutral-200 outline-none "
           placeholder="0.00"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
       </div>
       <div className="flex gap-3 items-center justify-center">
@@ -178,11 +205,6 @@ const Margin = ({ market }: { market: { address: Address; key: string } }) => {
 const market = {
   address: '0x111BAbcdd66b1B60A20152a2D3D06d36F8B5703c',
   key: 'sETH',
-} as const
-
-const marketSettingsAddress = {
-  [optimism.id]: '',
-  [optimismGoerli.id]: '0x14fA3376E2ffa41708A0636009A35CAE8D8E2bc7',
 } as const
 
 export default function Home() {
