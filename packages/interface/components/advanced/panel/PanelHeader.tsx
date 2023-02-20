@@ -34,20 +34,13 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         {...props}
       >
         {children}
-        <Flex className="gap-3 z-20 " align="center">
-          <Tooltip
-            info={isFull ? 'Minimize screen' : 'Maximize screen'}
-            infoProps={{ className: 'w-[130px]' }}
-          >
-            <Button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
-              <ExpandIcon className="w-4 h-4 fill-ocean-200" />
-            </Button>
-          </Tooltip>
-          <Tooltip info={'Remove widget'} infoProps={{ className: 'w-[130px]' }}>
-            <Button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
-              <CloseIcon className="w-3 h-3 fill-ocean-200" />
-            </Button>
-          </Tooltip>
+        <Flex className="gap-3  right-3 z-10" align="center">
+          <Button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
+            <ExpandIcon className="w-4 h-4 fill-ocean-200" />
+          </Button>
+          <Button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
+            <CloseIcon className="w-3 h-3 fill-ocean-200" />
+          </Button>
         </Flex>
       </Flex>
     )
