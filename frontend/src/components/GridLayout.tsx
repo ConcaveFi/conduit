@@ -43,7 +43,7 @@ export function GridLayout() {
             <Panel
               onClose={() => removeWidget(key).then(removeGridWidget)}
               style={{ display: isHidden ? 'none' : 'flex' }}
-              className="duration-500 ease-out"
+              className="duration-300 ease-out"
               onMaximize={() => maximize(key)}
               data-grid={WIDGET_PRESETS[key]}
               onMinimize={() => minimize()}
