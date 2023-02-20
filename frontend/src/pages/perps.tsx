@@ -1,19 +1,19 @@
-import { Address, useAccount, useContractRead, useContractReads } from 'wagmi'
-import { perpsV2MarketAbi } from '@tradex/perps/abis/marketAbi'
-import { marketDataAbi } from '@tradex/perps/marketData/marketDataAbi'
-import { marketSettingsAbi } from '@tradex/perps/abis/marketSettingsAbi'
+import { Address } from 'wagmi'
+import {
+  useMarketAccessibleMargin,
+  useMarketDataAllProxiedMarketSummaries,
+  useMarketDelayedOrders,
+  useMarketPositions,
+  useMarketRemainingMargin,
+  useMarketSettingsOffchainDelayedOrderMaxAge,
+} from '@tradex/contracts'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
-import { optimismGoerli } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { format } from '../utils/format'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 
 const Markets = () => {
-  const { data: markets } = useContractRead({
-    abi: marketDataAbi,
-    address: '0x0D9eFa310a4771c444233B10bfB57e5b991ad529',
-    chainId: optimismGoerli.id,
-    functionName: 'allProxiedMarketSummaries',
-  })
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries()
 
   const isMounted = useIsMounted()
 
@@ -48,13 +48,7 @@ const Orders = ({
   //   const { address } = useAccount()
   const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
 
-  const { data: order } = useContractRead({
-    abi: perpsV2MarketAbi,
-    address: market.address,
-    chainId: optimismGoerli.id,
-    functionName: 'delayedOrders',
-    args: [address],
-  })
+  const { data: order } = useMarketDelayedOrders({ args: [address] })
 
   const isMounted = useIsMounted()
 
@@ -104,13 +98,7 @@ const Position = ({ market }: { market: { address: Address; key: string } }) => 
   //   const { address } = useAccount()
   const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
 
-  const { data: position } = useContractRead({
-    abi: perpsV2MarketAbi,
-    address: market.address,
-    chainId: optimismGoerli.id,
-    functionName: 'positions',
-    args: [address],
-  })
+  const { data: position } = useMarketPositions({ args: [address] })
 
   const isMounted = useIsMounted()
 
@@ -165,34 +153,24 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
 const Margin = ({ market }: { market: { address: Address; key: string } }) => {
   const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
 
-  const contract = {
-    abi: perpsV2MarketAbi,
-    address: market.address,
-    chainId: optimismGoerli.id,
-  }
-
-  const { data } = useContractReads({
-    contracts: [
-      { ...contract, functionName: 'remainingMargin', args: [address] },
-      { ...contract, functionName: 'accessibleMargin', args: [address] },
-    ],
+  const { data: remainingMargin } = useMarketRemainingMargin({
+    args: [address],
+    select: (d) => d.marginRemaining.toBigInt(),
+  })
+  const { data: accessibleMargin } = useMarketAccessibleMargin({
+    args: [address],
+    select: (d) => d.marginAccessible.toBigInt(),
   })
 
   const isMounted = useIsMounted()
 
-  if (!data?.[0] || !isMounted) return null
-
-  const [{ marginRemaining }, { marginAccessible }] = data
+  if (!remainingMargin || !accessibleMargin || !isMounted) return null
 
   return (
     <div className="flex flex-col gap-1 px-3 rounded-xl bg-neutral-800/40 py-2">
       <h1 className="text-xs text-neutral-400">Margin</h1>
-      <span className="text-neutral-200 text-xs">
-        Remaining: {format(marginRemaining.toBigInt(), 18)}
-      </span>
-      <span className="text-neutral-200 text-xs">
-        Accessible: {format(marginAccessible.toBigInt(), 18)}
-      </span>
+      <span className="text-neutral-200 text-xs">Remaining: {format(remainingMargin, 18)}</span>
+      <span className="text-neutral-200 text-xs">Accessible: {format(accessibleMargin, 18)}</span>
     </div>
   )
 }
@@ -202,13 +180,14 @@ const market = {
   key: 'sETH',
 } as const
 
+const marketSettingsAddress = {
+  [optimism.id]: '',
+  [optimismGoerli.id]: '0x14fA3376E2ffa41708A0636009A35CAE8D8E2bc7',
+} as const
+
 export default function Home() {
-  const { data: offchainDelayedOrderMaxAge } = useContractRead({
-    abi: marketSettingsAbi,
-    address: '0x14fA3376E2ffa41708A0636009A35CAE8D8E2bc7',
-    chainId: optimismGoerli.id,
-    functionName: 'offchainDelayedOrderMaxAge',
-    args: [formatBytes32String('sETHPERP') as Address],
+  const { data: offchainDelayedOrderMaxAge } = useMarketSettingsOffchainDelayedOrderMaxAge({
+    args: [formatBytes32String('sETHPERP')],
   })
 
   return (
