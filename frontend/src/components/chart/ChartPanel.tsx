@@ -1,9 +1,10 @@
 import { Panel } from '@tradex/interface'
 import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
-import { useRouter } from 'next/router'
 import { forwardRef, useEffect, useState } from 'react'
+import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { useScriptLoader } from 'src/hooks/useScriptLoader'
 import { createTVwidget } from 'src/utils/createTVwidget'
+import { findValueOnUrl, queryUrl } from 'src/utils/urlHandler'
 
 const TRADING_VIEW_SRC = 'https://s3.tradingview.com/tv.js'
 const SCRIPT_TYPE = 'text/javascript'
@@ -11,21 +12,9 @@ const SCRIPT_TYPE = 'text/javascript'
 export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
   const [widget, setWidget] = useState<TVWidget>()
   const [asset, setAsset] = useState('ETH')
-  const router = useRouter()
   const id = 'chart-container'
 
-  useEffect(() => {
-    function handleChange(e: string) {
-      const query = 'asset'
-      const index = e.indexOf(query)
-      e = e.substring(index + query.length + 1)
-      const nextQuery = e.indexOf('&')
-      e = e.substring(0, nextQuery)
-      if (e) setAsset(e)
-    }
-    router.events.on('routeChangeComplete', handleChange)
-    return () => router.events.off('routeChangeComplete', handleChange)
-  }, [])
+  const { router } = useRouterEvents({ routeComplete: (e) => setAsset(findValueOnUrl(e, 'asset')) })
 
   useEffect(() => {
     if (router.query.asset) setAsset(router.query.asset as string)
