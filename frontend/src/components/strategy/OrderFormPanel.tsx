@@ -70,18 +70,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
       <Button variant="green-gradient" size="xl">
         Buy
       </Button>
-      <Button variant="underline.secondary" className="gap-2 mt-4" size="md">
-        <ChevronIcon />
-        Contract details
-      </Button>
-      <Flex column>
-        {new Array(10).fill(0).map((_, i) => (
-          <Flex key={i} justify="between" className="odd:bg-ocean-600 px-3 py-1 rounded-md">
-            <Text variant="low">{i % 2 == 0 ? 'Mark Price' : 'Price Source'}</Text>
-            <Text variant="high">{i % 2 == 0 ? 'USD 22,900.23' : 'Deribit Bitcoin index'}</Text>
-          </Flex>
-        ))}
-      </Flex>
     </Panel>
   )
 })

@@ -3,7 +3,7 @@ import { GridWidgetKeys } from './gridWidgets'
 export const WIDGET_PRESETS: { [key in GridWidgetKeys]: {} } = {
   'chart-panel': { x: 3, y: 0, w: 6, h: 4 },
   'news-panel': { x: 9, y: 0, w: 3, h: 2.4 },
-  'order-panel': { x: 0, y: 0, w: 3, h: 6.8 },
+  'order-panel': { x: 0, y: 0, w: 3, h: 4.4 },
   'trades-panel': { x: 9, y: 9, w: 3, h: 2.4 },
   'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
 }
