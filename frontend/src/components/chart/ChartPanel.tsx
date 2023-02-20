@@ -1,27 +1,33 @@
 import { Panel } from '@tradex/interface'
 import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
-import { forwardRef, useEffect, useState } from 'react'
+import { NextRouter } from 'next/router'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { useScriptLoader } from 'src/hooks/useScriptLoader'
 import { createTVwidget } from 'src/utils/createTVwidget'
-import { findValueOnUrl, queryUrl } from 'src/utils/urlHandler'
+import { findValueOnUrl } from 'src/utils/urlHandler'
 
 const TRADING_VIEW_SRC = 'https://s3.tradingview.com/tv.js'
-const SCRIPT_TYPE = 'text/javascript'
+const container_id = 'chart-container'
 
 export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
   const [widget, setWidget] = useState<TVWidget>()
-  const [asset, setAsset] = useState('ETH')
-  const id = 'chart-container'
+  const [asset, setAsset] = useState('')
 
-  const { router } = useRouterEvents({ routeComplete: (e) => setAsset(findValueOnUrl(e, 'asset')) })
+  const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + 'PERP' }))
+  const onRouteChange = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
+  const onIsReady = ({ query }: NextRouter) => setAsset(query.asset as string)
+
+  useRouterEvents({ routeComplete: onRouteChange, onIsReady })
+  const { loaded } = useScriptLoader({ onLoad: loadChart, src: TRADING_VIEW_SRC, enabled: !!asset })
 
   useEffect(() => {
-    if (router.query.asset) setAsset(router.query.asset as string)
-  }, [router.isReady])
+    if (!asset || !loaded || !widget?.iframe) return
+    widget.iframe.remove()
+    loadChart()
+  }, [asset])
 
-  const loadChart = () => setWidget(createTVwidget({ container_id: id }))
-  useScriptLoader(TRADING_VIEW_SRC, SCRIPT_TYPE, loadChart)
-
-  return <Panel name="Chart" variant="secondary" {...props} ref={ref} bodyProps={{ id }} />
+  return (
+    <Panel name="Chart" variant="secondary" {...props} ref={ref} bodyProps={{ id: container_id }} />
+  )
 })
