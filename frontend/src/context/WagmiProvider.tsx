@@ -4,15 +4,15 @@ import { optimismGoerli, optimism } from '@wagmi/core/chains'
 import { alchemyProvider } from '@wagmi/core/providers/alchemy'
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask'
 
-import { withMulticall } from 'with-multicall'
+import { multicallProvider } from 'multicall-provider/wagmi'
 
 const { chains, provider } = configureChains(
-  [mainnet, optimismGoerli, optimism],
+  [optimismGoerli],
   [alchemyProvider({ apiKey: 'dduxooAO1ELKTf_kXyJHvqIcDniRVvXn' })],
 )
 
 const client = createClient({
-  provider: withMulticall(provider),
+  provider: multicallProvider(provider),
   connectors: [new MetaMaskConnector({ chains })],
 })
 
