@@ -19,13 +19,7 @@ const contracts = [
       [optimismGoerli.id]: '0x14fA3376E2ffa41708A0636009A35CAE8D8E2bc7',
     },
   },
-  {
-    name: 'Market',
-    abi: marketAbi,
-    address: {
-      [optimismGoerli.id]: '0x14fA3376E2ffa41708A0636009A35CAE8D8E2bc7',
-    },
-  },
+  { name: 'Market', abi: marketAbi },
 ] satisfies ContractConfig[]
 
 export default defineConfig({ out: 'index.ts', contracts, plugins: [erc(), react()] })

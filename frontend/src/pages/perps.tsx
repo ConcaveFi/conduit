@@ -52,7 +52,7 @@ const Orders = ({
   //   const { address } = useAccount()
   const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
 
-  const { data: order } = useMarketDelayedOrders({ args: [address] })
+  const { data: order } = useMarketDelayedOrders({ args: [address], address: market.address })
 
   const isMounted = useIsMounted()
 
@@ -102,7 +102,7 @@ const Position = ({ market }: { market: { address: Address; key: string } }) => 
   //   const { address } = useAccount()
   const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
 
-  const { data: position } = useMarketPositions({ args: [address] })
+  const { data: position } = useMarketPositions({ args: [address], address: market.address })
 
   const isMounted = useIsMounted()
 
@@ -181,10 +181,12 @@ const Margin = ({ market }: { market: { address: Address; key: string } }) => {
 
   const { data: remainingMargin } = useMarketRemainingMargin({
     args: [address],
+    address: market.address,
     select: (d) => d.marginRemaining.toBigInt(),
   })
   const { data: accessibleMargin } = useMarketAccessibleMargin({
     args: [address],
+    address: market.address,
     select: (d) => d.marginAccessible.toBigInt(),
   })
 
@@ -223,7 +225,7 @@ export default function Home() {
             }}
           />
           <Position market={market} />
-          {/* <Margin market={market} /> */}
+          <Margin market={market} />
           {/* <OpenPosition /> */}
         </div>
       </div>
