@@ -4,7 +4,6 @@ import { forwardRef, ReactNode, useState } from 'react'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { PrimitiveDivProps } from '../../../types/primitives'
 import { Button, Flex } from '../../primitives'
-import { Tooltip } from '../Tooltip'
 
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
 export interface PanelHeaderProps extends PanelHeaderAttributes, PrimitiveDivProps {

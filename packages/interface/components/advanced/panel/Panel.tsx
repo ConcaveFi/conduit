@@ -1,10 +1,9 @@
 import { forwardRef } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
-import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { Text } from '../../primitives'
 import { PanelBody, PanelBodyProps } from './PanelBody'
+import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
-import { VariantProps } from 'class-variance-authority'
 
 export interface PanelEssentials {
   bodyProps?: PanelBodyProps

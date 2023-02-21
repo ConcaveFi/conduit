@@ -1,5 +1,5 @@
-import { Button, ButtonProps, Flex } from '@tradex/interface'
-import React, { ReactElement, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { Flex } from '@tradex/interface'
+import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface TabProps {
   children: ReactElement<TabButton> | ReactElement<TabButton>[]

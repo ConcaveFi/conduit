@@ -1,7 +1,7 @@
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps } from 'class-variance-authority'
 import React, { forwardRef } from 'react'
 import { cardStyles } from '../../styles/advanced/cardStyles'
-import { Container, ContainerProps, Flex } from '../primitives'
+import { Container, ContainerProps } from '../primitives'
 
 export type CardAttributes = VariantProps<typeof cardStyles>
 export interface CardProps extends CardAttributes, ContainerProps {}

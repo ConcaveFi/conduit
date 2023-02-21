@@ -1,6 +1,6 @@
 import { PlusIcon } from '@tradex/icons'
 import { Button, Container } from '@tradex/interface'
-import { createContext, useCallback, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { AddWidgetModal } from 'src/components/widgets/AddWidgetModal'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 import {

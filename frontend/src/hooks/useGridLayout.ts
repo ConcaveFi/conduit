@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { DEFAULT_LAYOUT, getStoredLayout, storeLayout } from 'src/utils/gridLayout'
+import { useState } from 'react'
+import { getStoredLayout, storeLayout } from 'src/utils/gridLayout'
 
 export interface GridLayoutHook {
   defaultLayout?: ReactGridLayout.Layout[]

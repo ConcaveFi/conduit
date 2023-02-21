@@ -1,8 +1,7 @@
-import { Button, CheckBox, Flex, Modal, ModalProps, Text } from '@tradex/interface'
+import { Button, Flex, Modal, ModalProps, Text } from '@tradex/interface'
 import { useReducer } from 'react'
 import { useWidgets } from 'src/context/WidgetsProvider'
 import { GridWidgetKeys, GRID_WIDGETS } from 'src/utils/gridWidgets'
-import { OrderFormPanel } from '../strategy/OrderFormPanel'
 
 function reducer(state: string[], action: string) {
   if (action === 'wipe') return []

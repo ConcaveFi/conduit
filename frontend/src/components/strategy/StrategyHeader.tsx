@@ -1,6 +1,5 @@
-import { BalanceIcon, ChevronIcon, CoinIcon, FundingIcon, PercentIcon } from '@tradex/icons'
-import { Button, Flex, ItemInfo, Popover, Text } from '@tradex/interface'
-import Image from 'next/image'
+import { BalanceIcon, CoinIcon, FundingIcon, PercentIcon } from '@tradex/icons'
+import { Flex, ItemInfo } from '@tradex/interface'
 import { MarketList } from './MarketList'
 
 export function StrategyHeader() {

@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react'
-import React, { Attributes, Fragment, HtmlHTMLAttributes, useMemo, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Flex, FlexProps, Text, TextProps } from '../primitives'
 
 export interface Tooltip extends FlexProps {

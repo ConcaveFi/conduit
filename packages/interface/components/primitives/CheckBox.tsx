@@ -1,6 +1,6 @@
 import { SVGProps, useEffect, useRef, useState } from 'react'
-import { Flex } from './Flex'
 import { Text } from '../primitives/Text'
+import { Flex } from './Flex'
 
 export interface CheckBox extends SVGProps<SVGSVGElement> {
   info?: string

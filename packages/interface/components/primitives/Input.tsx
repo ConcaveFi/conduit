@@ -1,4 +1,4 @@
-import { cva, VariantProps } from 'class-variance-authority'
+import { VariantProps } from 'class-variance-authority'
 import React, { forwardRef } from 'react'
 import { inputStyles } from '../../styles/primitives/inputStyles'
 import { PrimitiveInputProps } from '../../types/primitives'

@@ -1,4 +1,3 @@
-import { Address } from 'wagmi'
 import {
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
@@ -9,13 +8,13 @@ import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from '@tradex/contracts'
-import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
-import { optimism, optimismGoerli } from 'wagmi/chains'
-import { format } from '../utils/format'
-import { useIsMounted } from 'src/hooks/useIsMounted'
-import { useState } from 'react'
-import { useDebounce } from 'usehooks-ts'
 import { BigNumber } from 'ethers'
+import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
+import { useState } from 'react'
+import { useIsMounted } from 'src/hooks/useIsMounted'
+import { useDebounce } from 'usehooks-ts'
+import { Address } from 'wagmi'
+import { format } from '../utils/format'
 
 const Markets = () => {
   const { data: markets } = useMarketDataAllProxiedMarketSummaries()

@@ -1,5 +1,5 @@
 import { Transition } from '@headlessui/react'
-import { useRef, useState, useMemo, Fragment, useEffect } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { PrimitiveInputProps } from '../../types/primitives'
 import { Flex } from './Flex'
 import { Text } from './Text'

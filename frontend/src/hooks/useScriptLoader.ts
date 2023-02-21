@@ -15,11 +15,8 @@ export function useScriptLoader(props: ScriptLoader) {
 
   function loadScript() {
     if (!enabled || !src || !type) return
-    if (hasScript(src)) {
-      setLoaded(true)
-      return
-    }
-    console.log('passou aqui também')
+    if (hasScript(src)) return setLoaded(true)
+
     createScript({ src, type, onload })
   }
 

@@ -1,13 +1,10 @@
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { Button, Flex, ItemInfo, Panel, Text } from '@tradex/interface'
-import { Popover } from '@tradex/interface'
+import { Button, Flex, ItemInfo, Popover, Text } from '@tradex/interface'
 import Image from 'next/image'
-import { Fragment } from 'react'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import { mainnet, optimism, optimismGoerli } from 'wagmi/chains'
 import { SearchInput } from './SearchInput'
 import { ConnectButton } from './wallet/ConnectButton'
-import { ConnectModal } from './wallet/ConnectModal'
 
 export function Topbar() {
   const { address, isConnected } = useAccount()

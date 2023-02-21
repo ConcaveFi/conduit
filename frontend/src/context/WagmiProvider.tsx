@@ -1,8 +1,8 @@
-import { PropsWithChildren } from 'react'
-import { configureChains, createClient, mainnet, WagmiConfig } from 'wagmi'
-import { optimismGoerli, optimism } from '@wagmi/core/chains'
-import { alchemyProvider } from '@wagmi/core/providers/alchemy'
+import { optimismGoerli } from '@wagmi/core/chains'
 import { MetaMaskConnector } from '@wagmi/core/connectors/metaMask'
+import { alchemyProvider } from '@wagmi/core/providers/alchemy'
+import { PropsWithChildren } from 'react'
+import { configureChains, createClient, WagmiConfig } from 'wagmi'
 
 import { multicallProvider } from 'multicall-provider/wagmi'
 
