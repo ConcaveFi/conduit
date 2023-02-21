@@ -9,14 +9,16 @@ import { findValueOnUrl } from 'src/utils/urlHandler'
 
 const TRADING_VIEW_SRC = 'https://s3.tradingview.com/tv.js'
 const container_id = 'chart-container'
+const DEFAULT_MARKET = 'ETH'
+const PERP_SYMBOL = 'PERP'
 
 export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
   const [widget, setWidget] = useState<TVWidget>()
   const [asset, setAsset] = useState('')
 
-  const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + 'PERP' }))
+  const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + PERP_SYMBOL }))
   const onRouteChange = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
-  const onIsReady = ({ query }: NextRouter) => setAsset(query.asset as string)
+  const onIsReady = ({ query }: NextRouter) => setAsset((query.asset as string) || DEFAULT_MARKET)
 
   useRouterEvents({ routeComplete: onRouteChange, onIsReady })
   const { loaded } = useScriptLoader({ onLoad: loadChart, src: TRADING_VIEW_SRC, enabled: !!asset })
