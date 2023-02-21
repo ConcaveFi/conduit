@@ -9,6 +9,6 @@ export interface TableRowProps<P extends Readonly<string>> extends ModifiedTRPro
 
 export function TableRow<P extends Readonly<string>>({ children, ...props }: TableRowProps<P>) {
   const tableRows = props.rows.map(children)
-  const tableDatas = tableRows.map((element) => React.createElement('td', {}, element))
+  const tableDatas = tableRows.map((element, key) => React.createElement('td', { key }, element))
   return React.createElement('tr', { ...props, children: tableDatas })
 }
