@@ -1,4 +1,10 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps, HTMLAttributes, InputHTMLAttributes } from 'react'
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  HTMLAttributes,
+  InputHTMLAttributes,
+  TableHTMLAttributes,
+} from 'react'
 
 export type PrimitiveDivProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 export type PrimitiveSpanProps = DetailedHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>
@@ -10,4 +16,19 @@ export type PrimitiveButtonProps = DetailedHTMLProps<
 export type PrimitiveInputProps = DetailedHTMLProps<
   InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
+>
+
+export type PrimitiveTableProps = DetailedHTMLProps<
+  TableHTMLAttributes<HTMLTableElement>,
+  HTMLTableElement
+>
+
+export type PrimitiveTableSelectionProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLTableSectionElement>,
+  HTMLTableSectionElement
+>
+
+export type PrimitiveTRProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLTableRowElement>,
+  HTMLTableRowElement
 >

@@ -1,9 +1,55 @@
-import { Button, Flex, PanelProps, TabPanel, TabPanelProps, Text } from '@tradex/interface'
-import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
+import {
+  Button,
+  Flex,
+  PanelProps,
+  Table,
+  TableBody,
+  TableRow,
+  TabPanel,
+  Text,
+  TextAttributes,
+  THead,
+} from '@tradex/interface'
 import { forwardRef } from 'react'
+import { queryUrl } from 'src/utils/urlHandler'
+
+// CONSTANTS -------------------------------------------------------------------
 
 const TABS = ['Trade', 'Charts', 'Trading History', 'Activity Log']
+const HEADERS = [
+  'Market',
+  'Side',
+  'Size',
+  'Leverage',
+  'Unrealized P&L',
+  'Avg. Entry Price',
+  'Liq. Price',
+] as const
+
+const MOCK_ROWS = [
+  'ETH-PERP',
+  'SHORT',
+  '0.05 (%71.89)',
+  ' 1.40 X',
+  '$0.24 (0.46%)',
+  ' $1,657.20',
+  '$2,235.29',
+] as const
+
+const STYLES = {
+  Market: { variant: 'heading.light' },
+  Side: { modifier: 'negative' },
+  Size: { variant: 'heading.light' },
+  Leverage: { variant: 'heading.light' },
+  'Unrealized P&L': { modifier: 'positive' },
+  'Avg. Entry Price': { variant: 'heading.light' },
+  'Liq. Price': { variant: 'heading.light' },
+} as Readonly<{ [key: string]: TextAttributes }>
+
+// COMPONENT ---------------------------------------------------------------------
+
 export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
+  const {} = queryUrl('teste', ...HEADERS)
   return (
     <TabPanel.Root {...props} ref={ref} variant="secondary">
       {TABS.map((tab) => (
@@ -17,91 +63,26 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
       ))}
       <TabPanel.Screen>
         <Flex>
-          <table className="w-full text-left">
-            <thead className="border-b-2 border-ocean-300 border-opacity-40">
-              <tr>
-                <th>
-                  <Text size="sm" variant="low">
-                    Market
+          <Table className="w-full" left>
+            <THead variant={'primary'}>
+              <TableRow rows={HEADERS}>
+                {(element, index) => (
+                  <Text key={index} size="sm" variant="low">
+                    {element}
                   </Text>
-                </th>
-                <th>
-                  <Text size="sm" variant="low">
-                    Side
+                )}
+              </TableRow>
+            </THead>
+            <TableBody>
+              <TableRow rows={MOCK_ROWS}>
+                {(element, index) => (
+                  <Text key={index} size={'sm'} {...STYLES[HEADERS[index]]}>
+                    {element}
                   </Text>
-                </th>
-                <th>
-                  <Text size="sm" variant="low">
-                    Size
-                  </Text>
-                </th>
-                <th>
-                  <Text size="sm" variant="low">
-                    Leverage
-                  </Text>
-                </th>
-                <th>
-                  <Text size="sm" variant="low">
-                    Unrealized P&L
-                  </Text>
-                </th>
-                <th>
-                  <Text size="sm" variant="low">
-                    Avg. Entry Price
-                  </Text>
-                </th>
-                <th>
-                  <Text size="sm" variant="low">
-                    Liq. Price
-                  </Text>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {new Array(4).fill(0).map((_, i) => (
-                <tr key={i}>
-                  <td>
-                    <Text size="sm" variant="heading.light">
-                      ETH-PERP
-                    </Text>
-                  </td>
-                  <td>
-                    <Text size="sm" modifier="negative" variant="heading.light">
-                      SHORT
-                    </Text>
-                  </td>
-                  <td>
-                    <Text size="sm" variant="heading.light">
-                      0.05 (%71.89)
-                    </Text>
-                  </td>
-                  <td>
-                    <Text size="sm" variant="heading.light">
-                      1.40 X
-                    </Text>
-                  </td>
-                  <td>
-                    <Text size="sm" modifier="positive" variant="heading.light">
-                      $0.24 (0.46%)
-                    </Text>
-                  </td>
-                  <td>
-                    <Text size="sm" variant="heading.light">
-                      $1,657.20
-                    </Text>
-                  </td>
-                  <td>
-                    <Text size="sm" variant="heading.light">
-                      $2,235.29
-                    </Text>
-                  </td>
-                  <td>
-                    <Button variant="underline.secondary">close</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                )}
+              </TableRow>
+            </TableBody>
+          </Table>
         </Flex>
       </TabPanel.Screen>
     </TabPanel.Root>
