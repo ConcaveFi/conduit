@@ -1,15 +1,13 @@
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { Button, Flex, ItemInfo, Popover, Text } from '@tradex/interface'
+import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
 import Image from 'next/image'
-import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-import { mainnet, optimism, optimismGoerli } from 'wagmi/chains'
+import { truncateAddress } from 'src/utils/truncateAddress'
+import { useAccount } from 'wagmi'
 import { SearchInput } from './SearchInput'
-import { ConnectButton } from './wallet/ConnectButton'
 
 export function Topbar() {
-  const { address, isConnected } = useAccount()
-  const { switchNetwork } = useSwitchNetwork()
-  const { chain } = useNetwork()
+  const { isConnected } = useAccount()
   return (
     <Flex align="center" justify="between">
       <Flex align="center" className="gap-2">
@@ -42,51 +40,34 @@ export function Topbar() {
           <Flex className="w-full h-full rounded-full bg-sky-300" />
         </Flex>
         <NotificationIcon className="w-5 h-5 fill-ocean-200" />
-        {isConnected && (
-          <>
-            <Popover column centered>
-              <Popover.Button variant="secondary" size="lg" className={'py-2'}>
-                {chain?.name}
-                <ChevronIcon className="w-3 h-3 fill-ocean-200" />
-              </Popover.Button>
-              <Popover.Panel className="w-52 p-2 gap-2" column>
+        <ConnectButton.Custom>
+          {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
+            if (!isConnected) {
+              return (
                 <Button
-                  variant="primary"
-                  size="xl"
-                  centered={false}
-                  className="justify-start px-2 items-center"
-                  onClick={() => switchNetwork && switchNetwork(mainnet.id)}
+                  onClick={openConnectModal}
+                  variant={'green-gradient'}
+                  className="py-2"
+                  size={'lg'}
                 >
-                  <img src="/assets/networks/eth.png" className="rounded-full w-6" />
-                  Ethereum
+                  Connect wallet
                 </Button>
-                <Button
-                  variant="primary"
-                  size="xl"
-                  centered={false}
-                  className="justify-start px-2 items-center"
-                  onClick={() => switchNetwork && switchNetwork(optimism.id)}
-                >
-                  <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
-                  Optimism
+              )
+            }
+            return (
+              <Flex className="gap-4">
+                <Button variant={'primary'} size="lg" onClick={openChainModal} className="gap-2">
+                  <img src={chain?.iconUrl} className="w-6" alt="" />
+                  {chain?.name}
+                  <ChevronIcon className="w-3 h-3 fill-ocean-200" />
                 </Button>
-                <Button
-                  variant="primary"
-                  size="xl"
-                  centered={false}
-                  className="justify-start px-2 items-center"
-                  onClick={() => switchNetwork && switchNetwork(optimismGoerli.id)}
-                >
-                  <img src="/assets/networks/optimism.png" className="rounded-full w-6" />
-                  Optimism Goerli
+                <Button onClick={openAccountModal}>
+                  <ItemInfo info={truncateAddress(account?.address)} value="$ 2,548.04" />
                 </Button>
-              </Popover.Panel>
-            </Popover>
-
-            <ItemInfo info="0xb30...9af7f" value="$ 2,548.04" />
-          </>
-        )}
-        {!isConnected && <ConnectButton />}
+              </Flex>
+            )
+          }}
+        </ConnectButton.Custom>
         <Flex className="w-9 h-9 rounded-full border-[5px] border-ocean-300 p-2">
           <Flex className="w-full h-full bg-green-300 rounded-full"></Flex>
         </Flex>

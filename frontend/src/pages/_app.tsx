@@ -1,3 +1,4 @@
+import '@rainbow-me/rainbowkit/styles.css'
 import { Flex } from '@tradex/interface'
 import { ConnectWalletProvider } from 'src/context/ConnectWalletProvider'
 import { WagmiProvider } from 'src/context/WagmiProvider'
