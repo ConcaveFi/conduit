@@ -14,7 +14,12 @@ export function useScriptLoader(props: ScriptLoader) {
   const onload = () => (setLoaded(true), onLoad?.())
 
   function loadScript() {
-    if (!enabled || !src || !type || hasScript(src)) return
+    if (!enabled || !src || !type) return
+    if (hasScript(src)) {
+      setLoaded(true)
+      return
+    }
+    console.log('passou aqui também')
     createScript({ src, type, onload })
   }
 

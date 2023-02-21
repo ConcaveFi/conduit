@@ -1,6 +1,6 @@
 import { PlusIcon } from '@tradex/icons'
 import { Button, Container } from '@tradex/interface'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useState } from 'react'
 import { AddWidgetModal } from 'src/components/widgets/AddWidgetModal'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 import {
@@ -13,12 +13,12 @@ import {
 interface WidgetsContext {
   addWidgets(_widgets: GridWidgetKeys[]): void
   removeWidget(widget: GridWidgetKeys): Promise<GridWidgetKeys | undefined>
+  hasWidget(_widgets: GridWidgetKeys): boolean
   widgets: GridWidgetKeys[]
 }
 const WidgetsContext = createContext<WidgetsContext>({
-  async removeWidget() {
-    return undefined
-  },
+  removeWidget: async () => undefined,
+  hasWidget: () => true,
   addWidgets() {},
   widgets: [],
 })
@@ -44,8 +44,13 @@ export function WidgetsProvider({ children }: any) {
     return widget
   }
 
+  function hasWidget(_widget: GridWidgetKeys) {
+    const _hasWidget = widgets.filter((w) => w === _widget).length === 1
+    return _hasWidget
+  }
+
   return (
-    <WidgetsContext.Provider value={{ widgets, addWidgets, removeWidget }}>
+    <WidgetsContext.Provider value={{ hasWidget, widgets, addWidgets, removeWidget }}>
       {children}
       <Container
         expand={'all'}

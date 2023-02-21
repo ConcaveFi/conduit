@@ -56,7 +56,11 @@ export function useRouterEvents(props: RouterEventsHook) {
     const events = atatchEvents()
     return () => detatchEvents(events)
   }, [])
-  useEffect(() => (router.isReady ? props.onIsReady?.(router) : undefined), [router.isReady])
+
+  useEffect(() => {
+    if (!router.isReady) return
+    props.onIsReady?.(router)
+  }, [router.isReady])
 
   return { router }
 }

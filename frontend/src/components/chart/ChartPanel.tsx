@@ -1,7 +1,8 @@
 import { Panel } from '@tradex/interface'
 import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
 import { NextRouter } from 'next/router'
-import { forwardRef, useCallback, useEffect, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react'
+import { useWidgets } from 'src/context/WidgetsProvider'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { useScriptLoader } from 'src/hooks/useScriptLoader'
 import { createTVwidget } from 'src/utils/createTVwidget'
@@ -24,10 +25,10 @@ export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, 
   const { loaded } = useScriptLoader({ onLoad: loadChart, src: TRADING_VIEW_SRC, enabled: !!asset })
 
   useEffect(() => {
-    if (!asset || !loaded || !widget?.iframe) return
-    widget.iframe.remove()
+    if (!asset || !loaded) return
+    if (widget) widget.iframe.remove()
     loadChart()
-  }, [asset])
+  }, [asset, loaded])
 
   return (
     <Panel name="Chart" variant="secondary" {...props} ref={ref} bodyProps={{ id: container_id }} />
