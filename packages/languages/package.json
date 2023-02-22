@@ -1,0 +1,12 @@
+{
+  "name": "@tradex/languages",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "next": "^13.1.6",
+    "react": "^18.2.0",
+    "react-query": "^3.39.3"
+  },
+  "dependencies": {}
+}

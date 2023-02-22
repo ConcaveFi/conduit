@@ -7,24 +7,23 @@ import {
   TableRow,
   TabPanel,
   Text,
-  TextAttributes,
   THead,
 } from '@tradex/interface'
+import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
-import { queryUrl } from 'src/utils/urlHandler'
 
 // CONSTANTS -------------------------------------------------------------------
 
-const TABS = ['Trade', 'Charts', 'Trading History', 'Activity Log']
+const TABS = ['trade', 'charts', 'trading_history', 'activity_log'] as LanguageKeys[]
 const HEADERS = [
-  'Market',
-  'Side',
-  'Size',
-  'Leverage',
-  'Unrealized P&L',
-  'Avg. Entry Price',
-  'Liq. Price',
-] as const
+  'market',
+  'side.place',
+  'size',
+  'leverage',
+  'unrealized',
+  'avg_entry_price',
+  'liq_price',
+] as LanguageKeys[]
 
 const MOCK_ROWS = [
   'ETH-PERP',
@@ -37,26 +36,26 @@ const MOCK_ROWS = [
 ] as const
 
 const STYLES = {
-  Market: { variant: 'heading.light' },
-  Side: { modifier: 'negative' },
-  Size: { variant: 'heading.light' },
-  Leverage: { variant: 'heading.light' },
-  'Unrealized P&L': { modifier: 'positive' },
-  'Avg. Entry Price': { variant: 'heading.light' },
-  'Liq. Price': { variant: 'heading.light' },
-} as Readonly<{ [key: string]: TextAttributes }>
+  market: { variant: 'heading.light' },
+  'side.place': { modifier: 'negative' },
+  size: { variant: 'heading.light' },
+  leverage: { variant: 'heading.light' },
+  unrealized: { modifier: 'positive' },
+  avg_entry_price: { variant: 'heading.light' },
+  liq_price: { variant: 'heading.light' },
+}
 
 // COMPONENT ---------------------------------------------------------------------
 
 export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
-  const {} = queryUrl('teste', ...HEADERS)
+  const { t } = useTranslation()
   return (
     <TabPanel.Root {...props} ref={ref} variant="secondary">
       {TABS.map((tab) => (
         <TabPanel.Tab key={tab}>
           {(selected) => (
             <Button size="sm" variant={selected ? 'secondary' : 'underline.secondary'}>
-              {tab}
+              {t(tab)}
             </Button>
           )}
         </TabPanel.Tab>
@@ -68,7 +67,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
               <TableRow rows={HEADERS}>
                 {(element, index) => (
                   <Text key={index} size="sm" variant="low">
-                    {element}
+                    {t(element)}
                   </Text>
                 )}
               </TableRow>

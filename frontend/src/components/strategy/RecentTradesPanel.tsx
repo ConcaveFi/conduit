@@ -1,26 +1,28 @@
 import { Arrow } from '@tradex/icons'
 import { Flex, Panel, PanelProps, Text } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 
 export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
+  const { t } = useTranslation()
   return (
-    <Panel {...props} ref={ref} name="Recent Trades" variant="secondary">
+    <Panel {...props} ref={ref} name={t('recent_trades')} variant="secondary">
       <table className="text-end">
         <thead className="border-b-2 border-ocean-400">
           <tr>
             <th className="w-[33%] ">
               <Text size="xs" variant="low">
-                Price
+                {t('price')}
               </Text>
             </th>
             <th className="w-[32%]">
               <Text size="xs" variant="low">
-                Amount
+                {t('amount')}
               </Text>
             </th>
             <th className="pr-2 w-[40%]">
               <Text size="xs" variant="low">
-                total
+                {t('total')}
               </Text>
             </th>
           </tr>

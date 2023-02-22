@@ -1,11 +1,13 @@
 import { ChevronIcon, CloseIcon } from '@tradex/icons'
 import { Button, CheckBox, Flex, Input, Panel, PanelProps, Slider, Text } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import { ChangeEvent, forwardRef, useState } from 'react'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const [value, setValue] = useState<number>()
+  const { t } = useTranslation()
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     let value = +e.target.value
     if (value >= 50) value = 50
@@ -17,14 +19,14 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
       <OrderTab />
       <Flex column className="gap-2">
         <Text variant="low" className="px-4">
-          Amount
+          {t('amount')}
         </Text>
         <CurrencyInput currency="USD" />
         <CurrencyInput currency="BTC" />
       </Flex>
       <Flex column className="gap-2">
         <Text variant="low" className="px-4">
-          Limit Price
+          {t('limit price')}
         </Text>
         <Flex centered>
           <CurrencyInput currency="USD" />
@@ -34,12 +36,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         </Flex>
       </Flex>
       <Flex className="gap-6 mx-4 ">
-        <CheckBox onToggle={() => {}} info="Reduce" />
-        <CheckBox onToggle={() => {}} info="Post" />
-        <CheckBox onToggle={() => {}} info="Hidden" />
+        <CheckBox onToggle={() => {}} info={t('reduce')} />
+        <CheckBox onToggle={() => {}} info={t('post')} />
+        <CheckBox onToggle={() => {}} info={t('hidden')} />
       </Flex>
       <Flex justify="between" centered>
-        <Text variant="medium">Leverage</Text>
+        <Text variant="medium">{t('leverage')}</Text>
         <Flex className="w-[40%] justify-end items-center px-2 gap-2 h-12 rounded-full relative bg-ocean-600 ">
           <Input
             className="w-[60%] text-end"
@@ -61,14 +63,14 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
       <Slider max={50} step={0.1} track onChange={handleInput} value={value || 0} />
       <Flex className="gap-4 -mb-2 mt-4">
         <Button className="w-full" variant="secondary.underline" size="lg">
-          Position 0
+          {`${t('position')} 0`}
         </Button>
         <Button className="w-full" variant="secondary.underline" size="lg">
-          Position 0
+          {`${t('position')} 0`}
         </Button>
       </Flex>
       <Button variant="green-gradient" size="xl">
-        Buy
+        {t('buy')}
       </Button>
     </Panel>
   )

@@ -1,13 +1,17 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount } from 'wagmi'
-import { SearchInput } from './SearchInput'
+import { SearchInput } from '../SearchInput'
+import { LocationSelector } from './LocationSelector'
 
 export function Topbar() {
   const { isConnected } = useAccount()
+  const { t } = useTranslation()
+
   return (
     <Flex align="center" justify="between">
       <Flex align="center" className="gap-2">
@@ -16,25 +20,18 @@ export function Topbar() {
           TRADE <strong>X</strong>
         </Text>
         <Button className="ml-8" variant="underline" size="lg">
-          Futures
+          {t('futures')}
         </Button>
         <Button variant="underline" size="lg">
-          Options
+          {t('options')}
         </Button>
         <Button variant="bottom-glow" size="lg">
-          Strategy
-          <ChevronIcon />
+          {t('strategy')} <ChevronIcon />
         </Button>
         <SearchInput />
       </Flex>
       <Flex align="center" className="gap-6 w-fit">
-        <Image
-          src={'/assets/usa.png'}
-          className="object-contain"
-          alt="usa"
-          width={25}
-          height={10}
-        />
+        <LocationSelector />
         <DashboardIcon className="w-5 h-5 fill-ocean-200" />
         <Flex className="w-9 h-9 p-[5px] rounded-full bg-sky-300 bg-opacity-70">
           <Flex className="w-full h-full rounded-full bg-sky-300" />

@@ -1,7 +1,7 @@
 import { Container } from '@tradex/interface'
 import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
-import { Topbar } from 'src/components/Topbar'
+import { Topbar } from 'src/components/topbar/Topbar'
 import { WidgetsProvider } from 'src/context/WidgetsProvider'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 
