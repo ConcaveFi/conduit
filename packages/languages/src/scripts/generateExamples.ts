@@ -1,7 +1,7 @@
 import { readdirSync, writeFile } from 'fs'
 import { join } from 'path'
 import { example } from '..'
-import { readJsonFile } from './readJsonFile'
+import { readJsonFile } from '../utils/readJsonFile'
 
 const DEFAULT_LANG_JSON = 'example.json'
 const matchJsonRegex = /\w{0,}\.json/
@@ -60,6 +60,6 @@ console.log('Analyzing translations files.')
 incrementMissing()
 
 console.log('Finished generation off missing attributes.')
-console.log(`${totalIcrements} in total.`)
+console.log(`${totalIcrements} increments in total.`)
 
 console.log('\n-----------------------------')
