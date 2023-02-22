@@ -1,8 +1,11 @@
 import { BalanceIcon, CoinIcon, FundingIcon, PercentIcon } from '@tradex/icons'
 import { Flex, ItemInfo } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import { MarketList } from './MarketList'
 
 export function StrategyHeader() {
+  const {} = useTranslation()
+
   return (
     <Flex className="w-full min-h-[80px] px-6 rounded-2xl bg-ocean-600 " justify="between">
       <MarketList />

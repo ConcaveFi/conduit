@@ -1,5 +1,14 @@
 {
-  "testing": "testing",
+  "cross": "Cross",
+  "market": "Market",
+  "isolated": "Isolated",
+  "amount": "Amount",
+  "limit price": "Limit Price",
+  "order form": "Order Form",
+  "reduce": "Reduce",
+  "post": "Post",
   "hidden": "Hidden",
-  "cross": "Cross"
+  "leverage": "Leverage",
+  "position": "Position",
+  "buy": "Buy"
 }

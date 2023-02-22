@@ -1,5 +1,14 @@
 {
-  "testing": "Testando",
+  "cross": "Oposto",
+  "market": "Mercado",
+  "isolated": "Isolado",
+  "amount": "Quantia",
+  "limit price": "Preço limite",
+  "order form": "Encomenda",
+  "reduce": "Reduzir",
+  "post": "Postar",
   "hidden": "Escondido",
-  "cross": "Oposto"
+  "leverage": "Influencia",
+  "position": "Posição",
+  "buy": "Comprar"
 }

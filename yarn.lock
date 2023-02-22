@@ -5632,34 +5632,9 @@ negotiator@0.6.3:
   resolved "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
 
-next@^13.0.2:
+next@^13.0.2, next@^13.1.6:
   version "13.1.6"
   resolved "https://registry.npmjs.org/next/-/next-13.1.6.tgz"
-  integrity sha512-hHlbhKPj9pW+Cymvfzc15lvhaOZ54l+8sXDXJWm3OBNBzgrVj6hwGPmqqsXg40xO1Leq+kXpllzRPuncpC0Phw==
-  dependencies:
-    "@next/env" "13.1.6"
-    "@swc/helpers" "0.4.14"
-    caniuse-lite "^1.0.30001406"
-    postcss "8.4.14"
-    styled-jsx "5.1.1"
-  optionalDependencies:
-    "@next/swc-android-arm-eabi" "13.1.6"
-    "@next/swc-android-arm64" "13.1.6"
-    "@next/swc-darwin-arm64" "13.1.6"
-    "@next/swc-darwin-x64" "13.1.6"
-    "@next/swc-freebsd-x64" "13.1.6"
-    "@next/swc-linux-arm-gnueabihf" "13.1.6"
-    "@next/swc-linux-arm64-gnu" "13.1.6"
-    "@next/swc-linux-arm64-musl" "13.1.6"
-    "@next/swc-linux-x64-gnu" "13.1.6"
-    "@next/swc-linux-x64-musl" "13.1.6"
-    "@next/swc-win32-arm64-msvc" "13.1.6"
-    "@next/swc-win32-ia32-msvc" "13.1.6"
-    "@next/swc-win32-x64-msvc" "13.1.6"
-
-next@^13.1.6:
-  version "13.1.6"
-  resolved "https://registry.yarnpkg.com/next/-/next-13.1.6.tgz#054babe20b601f21f682f197063c9b0b32f1a27c"
   integrity sha512-hHlbhKPj9pW+Cymvfzc15lvhaOZ54l+8sXDXJWm3OBNBzgrVj6hwGPmqqsXg40xO1Leq+kXpllzRPuncpC0Phw==
   dependencies:
     "@next/env" "13.1.6"
@@ -6430,7 +6405,7 @@ react-is@^16.13.1:
 
 react-query@^3.39.3:
   version "3.39.3"
-  resolved "https://registry.npmjs.org/react-query/-/react-query-3.39.3.tgz"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-3.39.3.tgz#4cea7127c6c26bdea2de5fb63e51044330b03f35"
   integrity sha512-nLfLz7GiohKTJDuT4us4X3h/8unOh+00MLb2yJoGTPjxKs2bc1iDhkNx2bd5MKklXnOD3NrVZ+J2UXujA5In4g==
   dependencies:
     "@babel/runtime" "^7.5.5"
