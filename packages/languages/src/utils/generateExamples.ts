@@ -1,6 +1,6 @@
 import { readdirSync, writeFile } from 'fs'
 import { join } from 'path'
-import { example } from '../translations'
+import { example } from '..'
 import { readJsonFile } from './readJsonFile'
 
 const DEFAULT_LANG_JSON = 'example.json'

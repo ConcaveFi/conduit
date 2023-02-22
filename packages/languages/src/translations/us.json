@@ -10,5 +10,6 @@
   "hidden": "Hidden",
   "leverage": "Leverage",
   "position": "Position",
-  "buy": "Buy"
+  "buy": "Buy",
+  "recent_trades": ""
 }
