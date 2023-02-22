@@ -1,3 +1,6 @@
+import { NumericInput } from '@tradex/interface'
+import { BigNumber, BigNumberish } from 'ethers'
+import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import {
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
@@ -8,9 +11,6 @@ import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
-import { NumericInput } from '@tradex/interface'
-import { BigNumber, BigNumberish } from 'ethers'
-import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import { useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 import { useDebounce } from 'usehooks-ts'
@@ -142,7 +142,7 @@ const DEFAULT_PRICE_IMPACT_DELTA: Percent = 50 // 0.5%
 const bps_divider = 10_000n
 export const bpsToWei = (bps: Percent) => (BigInt(bps) * 10n ** 18n) / bps_divider
 
-const n = (v: BigNumberish) => BigNumber.from(v||0)
+const n = (v: BigNumberish) => BigNumber.from(v || 0)
 
 const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
   const [input, setInput] = useState('')

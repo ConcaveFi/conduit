@@ -1,5 +1,5 @@
-import { defineConfig, ContractConfig } from '@wagmi/cli'
-import { react, erc } from '@wagmi/cli/plugins'
+import { ContractConfig, defineConfig } from '@wagmi/cli'
+import { erc, react } from '@wagmi/cli/plugins'
 
 import { optimismGoerli } from 'wagmi/chains'
 import { marketAbi, marketDataAbi, marketSettingsAbi } from './abis'
@@ -22,4 +22,8 @@ const contracts = [
   { name: 'Market', abi: marketAbi },
 ] satisfies ContractConfig[]
 
-export default defineConfig({ out: 'perps-hooks/index.ts', contracts, plugins: [erc(), react()] })
+export default defineConfig({
+  out: 'perps-hooks/generated.ts',
+  contracts,
+  plugins: [erc(), react()],
+})
