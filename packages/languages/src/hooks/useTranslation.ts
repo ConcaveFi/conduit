@@ -1,15 +1,14 @@
 import { useRouter } from 'next/router'
 import { useQuery } from 'react-query'
-import example from '../translations/example.json'
+import { LanguageKeys } from '../../types/languages'
 import { getLanguageByLocale } from '../utils/handleLocale'
-type Options = keyof typeof example
 
 export function useTranslation() {
   const router = useRouter()
   const locale = router.locale
   const { data } = useQuery([locale], async () => getLanguageByLocale(locale))
 
-  function t(toTranslate: Options) {
+  function t(toTranslate: LanguageKeys) {
     if (!data) return ''
     return data[toTranslate]
   }

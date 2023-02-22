@@ -1,5 +1,6 @@
 import { Panel } from '@tradex/interface'
 import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
+import { useTranslation } from '@tradex/languages'
 import { NextRouter } from 'next/router'
 import { forwardRef, useEffect, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
@@ -15,6 +16,7 @@ const PERP_SYMBOL = 'PERP'
 export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
   const [widget, setWidget] = useState<TVWidget>()
   const [asset, setAsset] = useState('')
+  const { t } = useTranslation()
 
   const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + PERP_SYMBOL }))
   const onRouteChange = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
@@ -30,6 +32,12 @@ export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, 
   }, [asset, loaded])
 
   return (
-    <Panel name="Chart" variant="secondary" {...props} ref={ref} bodyProps={{ id: container_id }} />
+    <Panel
+      name={t('chart')}
+      variant="secondary"
+      {...props}
+      ref={ref}
+      bodyProps={{ id: container_id }}
+    />
   )
 })

@@ -1,6 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { truncateAddress } from 'src/utils/truncateAddress'
@@ -12,6 +13,7 @@ export function Topbar() {
   const router = useRouter()
   const { asPath, pathname, query } = router
   const locale = router.locale === 'pt' ? 'us' : 'pt'
+  const { t } = useTranslation()
 
   return (
     <Flex align="center" justify="between">
@@ -21,14 +23,13 @@ export function Topbar() {
           TRADE <strong>X</strong>
         </Text>
         <Button className="ml-8" variant="underline" size="lg">
-          Futures
+          {t('futures')}
         </Button>
         <Button variant="underline" size="lg">
-          Options
+          {t('options')}
         </Button>
         <Button variant="bottom-glow" size="lg">
-          Strategy
-          <ChevronIcon />
+          {t('strategy')} <ChevronIcon />
         </Button>
         <SearchInput />
       </Flex>

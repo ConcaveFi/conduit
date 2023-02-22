@@ -1,9 +1,11 @@
 import { Flex, Panel, PanelProps, Text } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 
 export const NewsPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
+  const { t } = useTranslation()
   return (
-    <Panel name="News" variant="secondary" className="w-full h-[300px]" ref={ref} {...props}>
+    <Panel name={t('news')} variant="secondary" className="w-full h-[300px]" ref={ref} {...props}>
       <Flex column className="gap-2 ">
         <Text>Silvergate slides pre-market after suspending preferred dividends</Text>
         <Text size="xs" variant="low">
