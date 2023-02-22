@@ -1296,7 +1296,7 @@
     abitype "^0.3.0"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@0.9.6", "@wagmi/core@^0.9.6":
+"@wagmi/core@0.9.6", "@wagmi/core@^0.9.0", "@wagmi/core@^0.9.6":
   version "0.9.6"
   resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.9.6.tgz#19969e3f1711071d594754c08c82f0705c585dab"
   integrity sha512-TGAnA9sNjm3s8evBVxN3yRjZqKGBlhFW1Bk2nX1C1UtlrA5uTIPDWGxHw0CAPmSnE4MLL89Um4JA12jubNqLZg==

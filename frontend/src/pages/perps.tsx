@@ -1,6 +1,8 @@
-import { NumericInput } from '@tradex/interface'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { cx, NumericInput } from '@tradex/interface'
 import { BigNumber, BigNumberish } from 'ethers'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
+import { useRouter } from 'next/router'
 import {
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
@@ -9,18 +11,38 @@ import {
   useMarketRemainingMargin,
   useMarketSettingsOffchainDelayedOrderMaxAge,
   useMarketSubmitOffchainDelayedOrderWithTracking,
+  useMarketTransferMargin,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
+  usePrepareMarketTransferMargin,
 } from 'perps-hooks'
 import { useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 import { useDebounce } from 'usehooks-ts'
-import { Address } from 'wagmi'
+import { Address, useAccount } from 'wagmi'
 import { format } from '../utils/format'
 
+const useRouteMarket = () => {
+  const router = useRouter()
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  })
+
+  const asset = router.query.asset
+  if (markets?.length && router.isReady && !asset) router.replace(`/perps?asset=sETH`)
+
+  return markets?.find((m) => parseBytes32String(m.asset) === asset)
+}
+
 const Markets = () => {
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries()
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  })
 
   const isMounted = useIsMounted()
+
+  const router = useRouter()
 
   if (!markets || !isMounted) return null
 
@@ -31,7 +53,9 @@ const Markets = () => {
         {markets.map(({ market, key, asset, price }) => (
           <a
             key={market}
-            href="#"
+            onClick={() => {
+              router.replace(`?asset=${parseBytes32String(asset)}`, undefined, { shallow: true })
+            }}
             className="px-2 py-1 hover:bg-neutral-800 rounded-lg flex justify-between items-center w-40"
           >
             <span className="text-neutral-200 text-sm font-semibold">
@@ -45,19 +69,24 @@ const Markets = () => {
   )
 }
 
-const Orders = ({
-  market,
-}: {
-  market: { address: Address; key: string; orderMaxAge?: number }
-}) => {
-  //   const { address } = useAccount()
-  const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
+const Orders = () => {
+  const market = useRouteMarket()
 
-  const { data: order } = useMarketDelayedOrders({ args: [address], address: market.address })
+  const { data: offchainDelayedOrderMaxAge } = useMarketSettingsOffchainDelayedOrderMaxAge({
+    args: market && [market.key],
+    select: (v) => v.toNumber(),
+  })
+
+  const { address } = useAccount()
+
+  const { data: order } = useMarketDelayedOrders({
+    args: address && [address],
+    address: market?.market,
+  })
 
   const isMounted = useIsMounted()
 
-  if (!order || !isMounted) return null
+  if (!market || !order || !isMounted) return null
 
   const size = order.sizeDelta.toBigInt()
   const side = size > 0 ? 'Long' : 'Short'
@@ -65,8 +94,8 @@ const Orders = ({
   const hasOpenOrder = size !== 0n
 
   const submittedAt = order.intentionTime.toNumber() * 1000
-  const isExpired = market.orderMaxAge
-    ? Date.now() > submittedAt + market.orderMaxAge * 1000
+  const isExpired = offchainDelayedOrderMaxAge
+    ? Date.now() > submittedAt + offchainDelayedOrderMaxAge * 1000
     : false
 
   return (
@@ -99,15 +128,18 @@ const Orders = ({
   )
 }
 
-const Position = ({ market }: { market: { address: Address; key: string } }) => {
-  //   const { address } = useAccount()
-  const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
+const Position = () => {
+  const { address } = useAccount()
+  const market = useRouteMarket()
 
-  const { data: position } = useMarketPositions({ args: [address], address: market.address })
+  const { data: position } = useMarketPositions({
+    args: address && [address],
+    address: market && market.market,
+  })
 
   const isMounted = useIsMounted()
 
-  if (!position || !isMounted) return null
+  if (!market || !position || !isMounted) return null
 
   const size = position.size.toBigInt()
   const side = size > 0 ? 'Long' : 'Short'
@@ -144,7 +176,9 @@ export const bpsToWei = (bps: Percent) => (BigInt(bps) * 10n ** 18n) / bps_divid
 
 const n = (v: BigNumberish) => BigNumber.from(v || 0)
 
-const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
+const OpenPosition = () => {
+  const market = useRouteMarket()
+
   const [input, setInput] = useState('')
   const debouncedInput = useDebounce(input, 500)
 
@@ -154,6 +188,7 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
   const size = side === 'long' ? debouncedInput : -debouncedInput
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+    address: market && market.market,
     args: [n(size), n(priceImpact), TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
@@ -169,10 +204,22 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
         />
       </div>
       <div className="flex gap-3 items-center justify-center">
-        <button className="px-5 py-1 rounded-full bg-green-600 hover:opacity-80 active:scale-[.99]">
+        <button
+          className={cx(
+            side === 'long' ? 'outline outline-green-700' : '',
+            'px-5 py-1 rounded-full bg-green-600/20 hover:opacity-80 active:scale-[.99] outline-1 outline-offset-2',
+          )}
+          onClick={() => setSide('long')}
+        >
           <span className="text-neutral-200 font-bold">Buy/Long</span>
         </button>
-        <button className="px-5 py-1 rounded-full bg-red-600 hover:opacity-80 active:scale-[.99]">
+        <button
+          className={cx(
+            side === 'short' ? 'outline outline-red-700' : '',
+            'px-5 py-1 rounded-full bg-red-600/20 hover:opacity-80 active:scale-[.99] outline-1 outline-offset-2',
+          )}
+          onClick={() => setSide('short')}
+        >
           <span className="text-neutral-200 font-bold">Sell/Short</span>
         </button>
       </div>
@@ -180,56 +227,95 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
   )
 }
 
-const Margin = ({ market }: { market: { address: Address; key: string } }) => {
-  const address = '0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0'
+const RemainingMargin = ({ address }: { address: Address }) => {
+  const market = useRouteMarket()
 
   const { data: remainingMargin } = useMarketRemainingMargin({
     args: [address],
-    address: market.address,
+    address: market && market.market,
     select: (d) => d.marginRemaining.toBigInt(),
   })
+  if (!remainingMargin) return null
+  return <span className="text-neutral-200 text-xs">Remaining: {format(remainingMargin, 18)}</span>
+}
+
+type Market = { address: Address; key: string }
+
+const AccessibleMargin = () => {
+  const { address } = useAccount()
+
+  const market = useRouteMarket()
+
   const { data: accessibleMargin } = useMarketAccessibleMargin({
-    args: [address],
-    address: market.address,
+    address: market && market.market,
+    args: address && [address],
     select: (d) => d.marginAccessible.toBigInt(),
   })
+  if (!accessibleMargin) return null
+  return <>{format(accessibleMargin, 18)}</>
+}
+
+const DepositMargin = () => {
+  const market = useRouteMarket()
+
+  const { config } = usePrepareMarketTransferMargin({
+    address: market && market.market,
+    args: [BigNumber.from(10)],
+  })
+  const { write } = useMarketTransferMargin(config)
+  return (
+    <button
+      className="px-4 py-1.5 rounded-full bg-neutral-800 mt-3 font-bold text-white text-sm hover:opacity-75"
+      disabled={!!write}
+      onClick={() => write?.()}
+    >
+      Deposit margin
+    </button>
+  )
+}
+
+const Margin = () => {
+  const { address } = useAccount()
 
   const isMounted = useIsMounted()
 
-  if (!remainingMargin || !accessibleMargin || !isMounted) return null
+  if (!isMounted) return null
 
   return (
     <div className="flex flex-col gap-1 px-3 rounded-xl bg-neutral-800/40 py-2">
       <h1 className="text-xs text-neutral-400">Margin</h1>
-      <span className="text-neutral-200 text-xs">Remaining: {format(remainingMargin, 18)}</span>
-      <span className="text-neutral-200 text-xs">Accessible: {format(accessibleMargin, 18)}</span>
+      {address && <RemainingMargin address={address} />}
+      <span className="text-neutral-200 text-xs">Accessible: {<AccessibleMargin />}</span>
+      <DepositMargin />
     </div>
   )
 }
 
-const market = {
-  address: '0x111BAbcdd66b1B60A20152a2D3D06d36F8B5703c',
-  key: 'sETH',
-} as const
+const ConnectWallet = () => {
+  const { openConnectModal } = useConnectModal()
+  const { isConnected } = useAccount()
+  const isMounted = useIsMounted()
+  if (isConnected || !isMounted) return null
+  return (
+    <button
+      className="px-4 py-1.5 rounded-full bg-neutral-100 mt-3 font-bold text-neutral-900 text-sm hover:opacity-75"
+      onClick={openConnectModal}
+    >
+      Connect Wallet
+    </button>
+  )
+}
 
 export default function Home() {
-  const { data: offchainDelayedOrderMaxAge } = useMarketSettingsOffchainDelayedOrderMaxAge({
-    args: [formatBytes32String('sETHPERP')],
-  })
-
   return (
     <div className="bg-neutral-900 w-screen h-screen flex items-center justify-center font-medium">
       <div className="h-[500px] flex gap-2">
         <Markets />
         <div className="w-[300px] h-[500px] flex flex-col gap-2">
-          <Orders
-            market={{
-              ...market,
-              orderMaxAge: offchainDelayedOrderMaxAge?.toNumber(),
-            }}
-          />
-          <Position market={market} />
-          <Margin market={market} />
+          <ConnectWallet />
+          <Orders />
+          <Position />
+          <Margin />
           <OpenPosition />
         </div>
       </div>
