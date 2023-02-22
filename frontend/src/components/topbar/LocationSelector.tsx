@@ -15,8 +15,8 @@ export function LocationSelector() {
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
           className="object-contain"
           alt="usa"
-          width={25}
-          height={10}
+          width={30}
+          height={15}
         />
       </Menu.Button>
       <Menu.Items column className="p-2 w-14" variant={'glass'}>
