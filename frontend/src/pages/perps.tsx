@@ -8,6 +8,7 @@ import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from '@tradex/contracts'
+import { NumericInput } from '@tradex/interface'
 import { BigNumber } from 'ethers'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import { useState } from 'react'
@@ -158,7 +159,7 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
   return (
     <div className="flex flex-col gap-4 items-center justify-center p-4 rounded-xl bg-neutral-800/40">
       <div className="flex max-w-full">
-        <input
+        <NumericInput
           className="font-bold bg-transparent max-w-full w-auto text-3xl placeholder:text-neutral-400 text-neutral-200 outline-none "
           placeholder="0.00"
           value={input}
