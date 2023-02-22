@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { forwardRef } from 'react'
 import { format } from 'src/utils/format'
+import { handleTokenLogo } from 'src/utils/handleTokenLogo'
 import { useContractRead } from 'wagmi'
 import { optimismGoerli } from 'wagmi/chains'
 
@@ -63,7 +64,15 @@ interface MarketButton extends ButtonProps {
 const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
   ({ asset, price, percent, ...props }, ref) => {
     const styles = 'gap-6 h-fit justify-between even:bg-ocean-600 p-2 px-3 rounded-lg'
-    const icon = <Image alt="bitcoin icon" src="/assets/bitcoin.png" width={30} height={30} />
+    const icon = (
+      <Image
+        alt="bitcoin icon"
+        src={`/assets/tokens/${handleTokenLogo(asset)}.png`}
+        className="rounded-full"
+        width={30}
+        height={30}
+      />
+    )
 
     return (
       <Button ref={ref} className={styles} {...props}>
