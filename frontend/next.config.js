@@ -10,7 +10,7 @@ const nextConfig = {
     '@tradex/languages',
   ],
   i18n: {
-    locales: ['pt', 'us'],
+    locales: ['br', 'us'],
     defaultLocale: 'us',
     localeDetection: true,
   },

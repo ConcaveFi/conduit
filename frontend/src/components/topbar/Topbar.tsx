@@ -3,16 +3,13 @@ import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount } from 'wagmi'
-import { SearchInput } from './SearchInput'
+import { SearchInput } from '../SearchInput'
+import { LocationSelector } from './LocationSelector'
 
 export function Topbar() {
   const { isConnected } = useAccount()
-  const router = useRouter()
-  const { asPath, pathname, query } = router
-  const locale = router.locale === 'pt' ? 'us' : 'pt'
   const { t } = useTranslation()
 
   return (
@@ -34,15 +31,7 @@ export function Topbar() {
         <SearchInput />
       </Flex>
       <Flex align="center" className="gap-6 w-fit">
-        <Button onClick={() => router.push({ query, pathname }, asPath, { locale })}>
-          <Image
-            src={'/assets/usa.png'}
-            className="object-contain"
-            alt="usa"
-            width={25}
-            height={10}
-          />
-        </Button>
+        <LocationSelector />
         <DashboardIcon className="w-5 h-5 fill-ocean-200" />
         <Flex className="w-9 h-9 p-[5px] rounded-full bg-sky-300 bg-opacity-70">
           <Flex className="w-full h-full rounded-full bg-sky-300" />

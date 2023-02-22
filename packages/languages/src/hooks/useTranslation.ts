@@ -6,6 +6,7 @@ import { getLanguageByLocale } from '../utils/handleLocale'
 export function useTranslation() {
   const router = useRouter()
   const locale = router.locale
+
   const { data } = useQuery([locale], async () => getLanguageByLocale(locale))
 
   function t(toTranslate: LanguageKeys) {
