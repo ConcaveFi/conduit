@@ -22,4 +22,4 @@ const contracts = [
   { name: 'Market', abi: marketAbi },
 ] satisfies ContractConfig[]
 
-export default defineConfig({ out: 'index.ts', contracts, plugins: [erc(), react()] })
+export default defineConfig({ out: 'perps-hooks/index.ts', contracts, plugins: [erc(), react()] })

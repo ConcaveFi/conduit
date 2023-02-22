@@ -23,9 +23,9 @@ const client = createClient({
 export function WagmiProvider({ children }: PropsWithChildren) {
   return (
     <WagmiConfig client={client}>
-      <RainbowKitProvider theme={darkTheme()} chains={chains}>
+      {/* <RainbowKitProvider theme={darkTheme()} chains={chains}> */}
         {children}
-      </RainbowKitProvider>
+      {/* </RainbowKitProvider> */}
     </WagmiConfig>
   )
 }

@@ -7,9 +7,9 @@ import {
   useMarketSettingsOffchainDelayedOrderMaxAge,
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
-} from '@tradex/contracts'
+} from 'perps-hooks'
 import { NumericInput } from '@tradex/interface'
-import { BigNumber } from 'ethers'
+import { BigNumber, BigNumberish } from 'ethers'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import { useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
@@ -142,6 +142,8 @@ const DEFAULT_PRICE_IMPACT_DELTA: Percent = 50 // 0.5%
 const bps_divider = 10_000n
 export const bpsToWei = (bps: Percent) => (BigInt(bps) * 10n ** 18n) / bps_divider
 
+const n = (v: BigNumberish) => BigNumber.from(v||0)
+
 const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
   const [input, setInput] = useState('')
   const debouncedInput = useDebounce(input, 500)
@@ -152,7 +154,7 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
   const size = side === 'long' ? debouncedInput : -debouncedInput
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    args: [BigNumber.from(size), BigNumber.from(priceImpact), TrackingCode],
+    args: [n(size), n(priceImpact), TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
@@ -163,7 +165,7 @@ const OpenPosition = ({ market }: { market: { address: Address; key: string } })
           className="font-bold bg-transparent max-w-full w-auto text-3xl placeholder:text-neutral-400 text-neutral-200 outline-none "
           placeholder="0.00"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onValueChange={({ value }) => setInput(value)}
         />
       </div>
       <div className="flex gap-3 items-center justify-center">
@@ -228,7 +230,7 @@ export default function Home() {
           />
           <Position market={market} />
           <Margin market={market} />
-          {/* <OpenPosition /> */}
+          <OpenPosition />
         </div>
       </div>
     </div>
