@@ -26,7 +26,7 @@ const Markets = () => {
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="text-xs text-neutral-400 px-1">Markets</h1>
-      <div className="overflow-auto">
+      <div className="overflow-y-auto">
         {markets.map(({ market, key, asset, price }) => (
           <a
             key={market}
@@ -140,6 +140,7 @@ export type Percent = bigint | number
 const DEFAULT_PRICE_IMPACT_DELTA: Percent = 50 // 0.5%
 const bps_divider = 10_000n
 export const bpsToWei = (bps: Percent) => (BigInt(bps) * 10n ** 18n) / bps_divider
+
 const OpenPosition = ({ market }: { market: { address: Address; key: string } }) => {
   const [input, setInput] = useState('')
   const debouncedInput = useDebounce(input, 500)

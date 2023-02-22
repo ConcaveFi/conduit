@@ -6,7 +6,7 @@
   },
   "include": [
     "next-env.d.ts",
-    "types/window.d.ts",
+    "types/*.d.ts",
     "../packages/core/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
