@@ -1,4 +1,5 @@
 import { Button, Menu } from '@tradex/interface'
+import { storeLocale } from '@tradex/languages'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { LOCALE_NAME } from 'src/utils/localeNames'
@@ -8,6 +9,12 @@ export function LocationSelector() {
   const { asPath, pathname, query } = router
   const locales = router.locales as string[]
   const locale = router.locale as string
+
+  function handleClick(locale: string) {
+    storeLocale(locale)
+    router.push({ query, pathname }, asPath, { locale })
+  }
+
   return (
     <Menu centered>
       <Menu.Button>
@@ -22,7 +29,7 @@ export function LocationSelector() {
       <Menu.Items column className="p-2 w-14" variant={'glass'}>
         {locales.map((locale) => (
           <Menu.Item key={locale}>
-            <Button onClick={() => router.push({ query, pathname }, asPath, { locale })}>
+            <Button onClick={() => handleClick(locale)}>
               <Flag loc={locale} />
             </Button>
           </Menu.Item>
