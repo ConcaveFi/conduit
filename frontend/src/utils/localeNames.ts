@@ -1,4 +1,4 @@
 export const LOCALE_NAME = {
-  br: 'brasil',
-  us: 'united_states',
+  br: 'brazil',
+  us: 'united-states',
 } as { [key: string]: string }

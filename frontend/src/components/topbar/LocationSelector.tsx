@@ -1,7 +1,7 @@
 import { Button, Menu } from '@tradex/interface'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { LOCALE_NAME } from 'src/utils/localeToFlag'
+import { LOCALE_NAME } from 'src/utils/localeNames'
 
 export function LocationSelector() {
   const router = useRouter()
