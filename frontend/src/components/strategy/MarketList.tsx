@@ -1,4 +1,4 @@
-import { marketDataABI } from '@tradex/contracts'
+import { marketDataABI } from 'perps-hooks'
 import { ChevronIcon } from '@tradex/icons'
 import { Button, ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import { parseBytes32String } from 'ethers/lib/utils.js'

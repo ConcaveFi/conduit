@@ -10,3 +10,21 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const _styles = inputStyles({ className, variant })
   return React.createElement('input', { type, ref, className: _styles, ...inputProps })
 })
+
+import { NumericFormat, NumericFormatProps } from 'react-number-format'
+
+export type NumericInputProps = InputProps & NumericFormatProps
+export const NumericInput = (props: NumericInputProps) => {
+  return (
+    <NumericFormat
+      customInput={Input}
+      inputMode="decimal"
+      allowedDecimalSeparators={['.', ',']}
+      thousandsGroupStyle="thousand"
+      thousandSeparator
+      allowLeadingZeros
+      allowNegative={false}
+      {...props}
+    />
+  )
+}

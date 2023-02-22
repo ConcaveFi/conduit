@@ -13,7 +13,7 @@ const nextConfig = {
     locales: ['br', 'us'],
     defaultLocale: 'us',
     localeDetection: true,
-  },
+  }
 }
 
 module.exports = nextConfig
