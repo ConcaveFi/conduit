@@ -22,13 +22,14 @@ export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, 
   const onRouteChange = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
   const onIsReady = ({ query }: NextRouter) => setAsset((query.asset as string) || DEFAULT_MARKET)
 
-  useRouterEvents({ routeComplete: onRouteChange, onIsReady })
+  const { router } = useRouterEvents({ routeComplete: onRouteChange, onIsReady })
   const { loaded } = useScriptLoader({ onLoad: loadChart, src: TRADING_VIEW_SRC, enabled: !!asset })
 
   useEffect(() => {
     if (!asset || !loaded) return
     if (widget) widget.iframe.remove()
     loadChart()
+    return () => widget?.iframe.remove()
   }, [asset, loaded])
 
   return (

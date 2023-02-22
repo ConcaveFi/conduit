@@ -3,10 +3,12 @@ import { ChevronIcon } from '@tradex/icons'
 import { Button, ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import { parseBytes32String } from 'ethers/lib/utils.js'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
-import { forwardRef } from 'react'
+import { NextRouter } from 'next/router'
+import { forwardRef, useMemo, useState } from 'react'
+import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { format } from 'src/utils/format'
-import { handleTokenLogo } from 'src/utils/handleTokenLogo'
+import { handleTokenLogo, SYNTH_TO_NORMAL } from 'src/utils/handleTokenLogo'
+import { findValueOnUrl } from 'src/utils/urlHandler'
 import { useContractRead } from 'wagmi'
 import { optimismGoerli } from 'wagmi/chains'
 
@@ -17,14 +19,40 @@ export function MarketList() {
     chainId: optimismGoerli.id,
     functionName: 'allProxiedMarketSummaries',
   })
-  const router = useRouter()
+  const [asset, setAsset] = useState('')
+
+  const onIsReady = ({ query }: NextRouter) => setAsset(query.asset as string)
+  const routeComplete = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
+  const { router } = useRouterEvents({ onIsReady, routeComplete })
+
+  const price = useMemo(() => {
+    const mapped = markets
+      ?.filter((m) => {
+        let toCompare = parseBytes32String(m.asset || '')
+        toCompare = SYNTH_TO_NORMAL[toCompare] || toCompare
+        return toCompare == asset
+      })
+      .map(({ price }) => format(price.toBigInt(), 18))[0]
+    return mapped
+  }, [asset, markets])
+
+  const normalized_asset = useMemo(() => SYNTH_TO_NORMAL[asset] || asset, [asset])
+
   return (
     <Menu className={'h-fit my-auto'}>
       <Menu.Button className="gap-6 outline-none">
         <ItemInfo
-          info="BTC Perpetual"
-          value="$ 22,910"
-          Icon={<Image alt="bitcoin icon" src="/assets/bitcoin.png" width={30} height={30} />}
+          info={`${normalized_asset} Perpetual`}
+          value={`$${price}`}
+          Icon={
+            <Image
+              alt={`${normalized_asset} icon`}
+              src={`/assets/tokens/${normalized_asset?.toLowerCase()}.png`}
+              className="rounded-full"
+              width={30}
+              height={30}
+            />
+          }
         />
         <ChevronIcon />
       </Menu.Button>
@@ -34,16 +62,16 @@ export function MarketList() {
         className="w-[360px] h-[500px] left-10 rounded-tl-sm overflow-y-auto p-2"
         origin={'top-left'}
       >
-        {markets?.map(({ asset, price }, i) => (
+        {markets?.map(({ asset: _asset, price }, i) => (
           <Menu.Item key={i}>
             {({ close }) => (
               <MarketButton
                 price={format(price.toBigInt(), 18)}
-                asset={parseBytes32String(asset || '')}
+                asset={parseBytes32String(_asset || '')}
                 onClick={() => {
-                  router.replace('/', {
-                    query: { asset: parseBytes32String(asset || '') },
-                  })
+                  let asset = parseBytes32String(_asset || '')
+                  asset = SYNTH_TO_NORMAL[asset] || asset //OBS: On prod this `SYNTH_TO_NORMAL` will be removed
+                  router.replace('/', { query: { asset } })
                   close()
                 }}
               />
