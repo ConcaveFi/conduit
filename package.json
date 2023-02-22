@@ -10,13 +10,15 @@
     "build": "turbo run build",
     "dev": "turbo run dev frontend",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "gen:examples": "ts-node -O '{\"module\": \"commonjs\"}' packages/languages/src/utils/generateExamples"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.0.2",
     "eslint-config-custom": "*",
     "prettier": "^2.8.4",
     "prettier-plugin-organize-imports": "^3.2.2",
+    "ts-node": "^10.9.1",
     "turbo": "^1.8.1"
   },
   "engines": {
