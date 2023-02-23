@@ -29,7 +29,6 @@ export function MarketList() {
     const mapped = markets?.find((m) => {
       let toCompare = parseBytes32String(m.asset || '')
       toCompare = SYNTH_TO_NORMAL[toCompare] || toCompare
-      console.log(parseBytes32String(m.asset || ''), m)
       return toCompare == asset
     })
     if (!mapped?.price) return '$0.00'
@@ -42,7 +41,7 @@ export function MarketList() {
       <Menu.Button className="gap-6 outline-none">
         <ItemInfo
           info={`${normalized_asset} Perpetual`}
-          value={`$${price}`}
+          value={`${price}`}
           Icon={
             <Image
               alt={`${normalized_asset} icon`}

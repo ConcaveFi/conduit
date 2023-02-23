@@ -1,11 +1,10 @@
-import { sUSD_ADDRESS } from '@tradex/core'
+import { AVAX_ADDRESS, LINK_ADDRESS, sBTC_ADDRESS, sETH_ADDRES, sUSD_ADDRESS } from '@tradex/core'
 import { CloseIcon } from '@tradex/icons'
 import {
   Button,
   CheckBox,
   Flex,
   Input,
-  Modal,
   NumericInput,
   Panel,
   PanelProps,
@@ -13,78 +12,47 @@ import {
   Text,
 } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { formatUnits } from 'ethers/lib/utils'
 import { NextRouter } from 'next/router'
 import { ChangeEvent, forwardRef, useState } from 'react'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
-import { Address, useNetwork, useToken } from 'wagmi'
-import { optimismGoerli } from 'wagmi/chains'
-import { CurrencyInput } from '../CurrencyInput'
-import { OrderTab } from './OrderSelector'
+import { findValueOnUrl } from 'src/utils/urlHandler'
+import { useNetwork, useToken } from 'wagmi'
+import { CurrencyInput } from '../../CurrencyInput'
+import { OrderTab } from '../OrderSelector'
+import { DepositMarginModal } from './DepositMarginModal'
 
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const [value, setValue] = useState<number>()
   const { t } = useTranslation()
+  const { chain } = useNetwork()
   const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
     let value = +e.target.value
     if (value >= 50) value = 50
     if (value <= 0) value = 0
     setValue(value || undefined)
   }
+  const [market, setMarket] = useState('')
+  const onIsReady = ({ query }: NextRouter) => setMarket((query.asset as string) || '')
+  const routeComplete = (e: string) => setMarket(findValueOnUrl(e, 'asset'))
+  useRouterEvents({ onIsReady, routeComplete })
 
-  const [market, setMarket] = useState<Address>()
-  const onIsReady = ({ query }: NextRouter) => setMarket((query.market as Address) || '')
-  useRouterEvents({ onIsReady })
-
-  const { chain } = useNetwork()
   const { isOpen, onClose, onOpen } = useDisclosure()
-  const { data } = useToken({
-    address: sUSD_ADDRESS[chain?.id || optimismGoerli.id],
-    enabled: Boolean(chain),
-  })
-
-  const { data: inputToken } = useToken({ address: '0x2db9cB23277C4A73F1c53822AE61A68e55147E33' })
-  const [usdValue, setUsd] = useState<number>()
+  const address = TOKEN_ADDRESSES[market as string]?.[chain?.id!]
+  const { data } = useToken({ address })
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
       <Button onClick={onOpen} variant={'secondary'} size="xl">
         Deposit Margin
       </Button>
-      <Modal
-        centered
-        column
-        isOpen={isOpen}
-        onClose={onClose}
-        className="w-[400px] h-fit"
-        space={'medium.eq'}
-      >
-        <Text size={'xl'} variant={'heading'}>
-          Deposit Margin
-        </Text>
-        <CurrencyInput
-          onValueChange={(v) => setUsd(v.floatValue)}
-          onClickBalance={(balance, decimals) => setUsd(+formatUnits(balance, decimals))}
-          value={usdValue}
-          currency={data}
-        />
-        <Button
-          disabled={!usdValue}
-          className="rounded-lg py-6"
-          variant={'primary.outline'}
-          size="xl"
-        >
-          {usdValue && ' Confirm deposit'}
-          {!usdValue && 'Enter an amount'}
-        </Button>
-      </Modal>
+      <DepositMarginModal isOpen={isOpen} onClose={onClose} />
       <OrderTab />
       <Flex column className={'gap-2'}>
         <Text variant="low" className="px-4">
           {t('amount')}
         </Text>
-        <CurrencyInput currency={inputToken} />
+        <CurrencyInput currency={data} />
         <Flex className="w-full min-h-[60px] bg-ocean-600 rounded-xl px-6">
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
         </Flex>
@@ -141,3 +109,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
     </Panel>
   )
 })
+
+// Temporaly solution to get token addresses
+const TOKEN_ADDRESSES = {
+  sETH: sETH_ADDRES,
+  sBTC: sBTC_ADDRESS,
+  sUSD: sUSD_ADDRESS,
+  AVAX: AVAX_ADDRESS,
+  LINK: LINK_ADDRESS,
+}

@@ -26,6 +26,7 @@ export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyIn
           </Text>
           <Text size={'xs'} variant="heading">
             {data && format(data?.value.toBigInt(), 18)}
+            {!data && '$0.00'}
           </Text>
         </Button>
       </Flex>

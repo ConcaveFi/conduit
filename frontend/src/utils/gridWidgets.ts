@@ -1,7 +1,7 @@
 import { PanelProps } from '@tradex/interface'
 import { ChartPanel } from 'src/components/chart/ChartPanel'
 import { NewsPanel } from 'src/components/strategy/NewsPanel'
-import { OrderFormPanel } from 'src/components/strategy/OrderFormPanel'
+import { OrderFormPanel } from 'src/components/strategy/order-form/OrderFormPanel'
 import { RecentTradesPanel } from 'src/components/strategy/RecentTradesPanel'
 import { ViewPanels } from 'src/components/ViewPanels'
 
