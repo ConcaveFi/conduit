@@ -19,6 +19,7 @@ import { ChangeEvent, forwardRef, useState } from 'react'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { Address, useNetwork, useToken } from 'wagmi'
+import { optimismGoerli } from 'wagmi/chains'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 
@@ -38,7 +39,10 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
   const { chain } = useNetwork()
   const { isOpen, onClose, onOpen } = useDisclosure()
-  const { data } = useToken({ address: sUSD_ADDRESS[chain?.id!], enabled: Boolean(chain) })
+  const { data } = useToken({
+    address: sUSD_ADDRESS[chain?.id || optimismGoerli.id],
+    enabled: Boolean(chain),
+  })
 
   const { data: inputToken } = useToken({ address: '0x2db9cB23277C4A73F1c53822AE61A68e55147E33' })
   const [usdValue, setUsd] = useState<number>()

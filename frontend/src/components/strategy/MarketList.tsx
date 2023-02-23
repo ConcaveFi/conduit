@@ -7,7 +7,7 @@ import { marketDataAbi } from 'perps-hooks/abis'
 import { forwardRef, useMemo, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { format } from 'src/utils/format'
-import { handleTokenLogo, SYNTH_TO_NORMAL } from 'src/utils/handleTokenLogo'
+import { handleSynth, SYNTH_TO_NORMAL } from 'src/utils/handleTokenLogo'
 import { findValueOnUrl } from 'src/utils/urlHandler'
 import { useContractRead } from 'wagmi'
 import { optimismGoerli } from 'wagmi/chains'
@@ -29,6 +29,7 @@ export function MarketList() {
     const mapped = markets?.find((m) => {
       let toCompare = parseBytes32String(m.asset || '')
       toCompare = SYNTH_TO_NORMAL[toCompare] || toCompare
+      console.log(parseBytes32String(m.asset || ''), m)
       return toCompare == asset
     })
     if (!mapped?.price) return '$0.00'
@@ -68,7 +69,6 @@ export function MarketList() {
                 asset={parseBytes32String(_asset || '')}
                 onClick={() => {
                   let asset = parseBytes32String(_asset || '')
-                  asset = SYNTH_TO_NORMAL[asset] || asset //OBS: On prod this `SYNTH_TO_NORMAL` will be removed
                   router.replace('/', { query: { asset } })
                   close()
                 }}
@@ -93,7 +93,7 @@ const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
     const icon = (
       <Image
         alt="bitcoin icon"
-        src={`/assets/tokens/${handleTokenLogo(asset)}.png`}
+        src={`/assets/tokens/${handleSynth(asset).toLowerCase()}.png`}
         className="rounded-full"
         width={30}
         height={30}

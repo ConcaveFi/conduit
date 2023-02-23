@@ -9,7 +9,7 @@ interface CurrencyInput extends NumericInputProps {
 }
 export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyInput) {
   const { address } = useAccount()
-  const enabled = Boolean(currency?.address) && Boolean(address)
+  const enabled = Boolean(currency?.address)
   const { data } = useBalance({ address, token: currency?.address, enabled })
 
   const handleClickBalance = () => data && onClickBalance?.(data?.value.toBigInt(), data.decimals)
@@ -19,16 +19,15 @@ export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyIn
       <NumericInput variant="simple" className="w-full" placeholder="0.0" {...props} />
       <Flex column align={'end'}>
         <Text variant="low">{currency?.symbol}</Text>
-        {data && (
-          <Button variant={'underline'} onClick={handleClickBalance}>
-            <Text size={'xs'} variant="medium">
-              Balance
-            </Text>
-            <Text size={'xs'} variant="heading">
-              {format(data?.value.toBigInt(), 18)}
-            </Text>
-          </Button>
-        )}
+
+        <Button variant={'underline'} onClick={handleClickBalance}>
+          <Text size={'xs'} variant="medium">
+            Balance
+          </Text>
+          <Text size={'xs'} variant="heading">
+            {data && format(data?.value.toBigInt(), 18)}
+          </Text>
+        </Button>
       </Flex>
     </Flex>
   )
