@@ -49,7 +49,7 @@ const Markets = () => {
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
-      <h1 className="text-xs text-neutral-400 px-1">Markets</h1>
+      <h1 className="px-1 text-xs text-neutral-400">Markets</h1>
       <div className="overflow-y-auto overflow-x-hidden">
         {markets.map(({ market, key, asset, price }) => (
           <a
@@ -58,12 +58,12 @@ const Markets = () => {
               router.replace(`?asset=${parseBytes32String(asset)}`, undefined, { shallow: true })
             }}
             data-selected={routeMarket?.market === market}
-            className="px-2 py-1 hover:bg-neutral-800 rounded-lg flex justify-between items-center w-40 data-[selected=true]:bg-neutral-800"
+            className="flex w-40 items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800 data-[selected=true]:bg-neutral-800"
           >
-            <span className="text-neutral-200 text-sm font-semibold">
+            <span className="text-sm font-semibold text-neutral-200">
               {parseBytes32String(asset)}
             </span>
-            <span className="text-neutral-400 text-xs">{format(price.toBigInt(), 18)}</span>
+            <span className="text-xs text-neutral-400">{format(price.toBigInt(), 18)}</span>
           </a>
         ))}
       </div>
@@ -104,7 +104,7 @@ const Orders = () => {
   return (
     <div className="flex flex-col gap-2 rounded-xl bg-neutral-800/40 p-2">
       <div className="px-1">
-        <h1 className="text-xs text-neutral-400 mb-0.5">Delayed Order</h1>
+        <h1 className="mb-0.5 text-xs text-neutral-400">Delayed Order</h1>
         {hasOpenOrder ? (
           <p className="text-xs text-neutral-500">You can have only one order per market</p>
         ) : (
@@ -112,14 +112,14 @@ const Orders = () => {
         )}
       </div>
       {hasOpenOrder && (
-        <div className="px-2 py-1 hover:bg-neutral-800 rounded-lg flex justify-between items-center">
-          <span className="text-neutral-200 text-sm">{market.key}</span>
+        <div className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800">
+          <span className="text-sm text-neutral-200">{market.key}</span>
           {isExpired && (
-            <button className="bg-red-400/10 rounded-lg text-xs text-red-400 px-2 py-0.5">
+            <button className="rounded-lg bg-red-400/10 px-2 py-0.5 text-xs text-red-400">
               expired
             </button>
           )}
-          <span className="text-neutral-400 text-xs">
+          <span className="text-xs text-neutral-400">
             <span className={`mr-3 text-xs ${size > 0 ? 'text-green-400' : 'text-red-400'}`}>
               {side}
             </span>
@@ -152,16 +152,16 @@ const Position = () => {
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
-      <h1 className="text-xs text-neutral-400 px-1">Position</h1>
+      <h1 className="px-1 text-xs text-neutral-400">Position</h1>
       {!hasPosition ? (
         <span className="px-1 text-xs text-neutral-500">No open position</span>
       ) : (
-        <div className="px-2 py-1 hover:bg-neutral-800 rounded-lg flex  justify-between items-center">
-          <span className="text-neutral-200 text-sm">{market.key}</span>
+        <div className="flex items-center justify-between rounded-lg px-2  py-1 hover:bg-neutral-800">
+          <span className="text-sm text-neutral-200">{market.key}</span>
           <span className={`text-xs ${size > 0 ? 'text-green-400' : 'text-red-400'}`}>{side}</span>
-          <span className="text-neutral-400 text-xs">{format(size, 18)} ETH</span>
+          <span className="text-xs text-neutral-400">{format(size, 18)} ETH</span>
           {/* <span className="text-neutral-400 text-xs">x{format(position.margin.toBigInt(), 18)}</span> */}
-          <span className="text-neutral-400 text-xs">
+          <span className="text-xs text-neutral-400">
             {format(position.lastPrice.toBigInt(), 18)}
           </span>
         </div>
@@ -198,33 +198,33 @@ const OpenPosition = () => {
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
   return (
-    <div className="flex flex-col gap-4 items-center justify-center p-4 rounded-xl bg-neutral-800/40">
+    <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-neutral-800/40 p-4">
       <div className="flex max-w-full">
         <NumericInput
-          className="font-bold bg-transparent max-w-full w-auto text-3xl placeholder:text-neutral-400 text-neutral-200 outline-none "
+          className="w-auto max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
           value={input}
           onValueChange={({ value }) => setInput(value)}
         />
       </div>
-      <div className="flex gap-3 items-center justify-center">
+      <div className="flex items-center justify-center gap-3">
         <button
           className={cx(
             side === 'long' ? 'outline outline-green-700' : '',
-            'px-5 py-1 rounded-full bg-green-600/20 hover:opacity-80 active:scale-[.99] outline-1 outline-offset-2',
+            'rounded-full bg-green-600/20 px-5 py-1 outline-1 outline-offset-2 hover:opacity-80 active:scale-[.98]',
           )}
           onClick={() => setSide('long')}
         >
-          <span className="text-neutral-200 font-bold">Buy/Long</span>
+          <span className="font-bold text-neutral-200">Buy/Long</span>
         </button>
         <button
           className={cx(
             side === 'short' ? 'outline outline-red-700' : '',
-            'px-5 py-1 rounded-full bg-red-600/20 hover:opacity-80 active:scale-[.99] outline-1 outline-offset-2',
+            'rounded-full bg-red-600/20 px-5 py-1 outline-1 outline-offset-2 hover:opacity-80 active:scale-[.98]',
           )}
           onClick={() => setSide('short')}
         >
-          <span className="text-neutral-200 font-bold">Sell/Short</span>
+          <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
     </div>
@@ -242,7 +242,7 @@ const DepositMargin = () => {
   const { write } = useMarketTransferMargin(config)
   return (
     <button
-      className="px-4 py-1.5 rounded-full bg-neutral-800 mt-3 font-bold text-white text-sm hover:opacity-75 disabled:text-neutral-600"
+      className="mt-3 rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600"
       disabled={!!write}
       onClick={() => write?.()}
     >
@@ -277,16 +277,16 @@ const Margin = () => {
   const marginUsed = accessibleMargin - remainingMargin
 
   return (
-    <div className="flex flex-col gap-1 px-3 rounded-xl bg-neutral-800/40 py-2">
+    <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 px-3 py-2">
       <h1 className="text-xs text-neutral-400">Margin</h1>
-      <span className="text-neutral-200 text-xs">
+      <span className="text-xs text-neutral-200">
         Available margin: {format(remainingMargin, 18)}
       </span>
       <div className="flex gap-1">
-        <span className="text-neutral-200 text-xs">Buying power: {buyingPower}</span>
-        <span className="text-neutral-400 text-xs">x{format(maxLeverage, 18)}</span>
+        <span className="text-xs text-neutral-200">Buying power: {buyingPower}</span>
+        <span className="text-xs text-neutral-400">x{format(maxLeverage, 18)}</span>
       </div>
-      <span className="text-neutral-200 text-xs">Margin used: {marginUsed.toString()}</span>
+      <span className="text-xs text-neutral-200">Margin used: {marginUsed.toString()}</span>
       <DepositMargin />
     </div>
   )
@@ -299,7 +299,7 @@ const ConnectWallet = () => {
   if (isConnected || !isMounted) return null
   return (
     <button
-      className="px-4 py-1.5 rounded-full bg-neutral-100 mt-3 font-bold text-neutral-900 text-sm hover:opacity-75"
+      className="mt-3 rounded-full bg-neutral-100 px-4 py-1.5 text-sm font-bold text-neutral-900 hover:opacity-75"
       onClick={openConnectModal}
     >
       Connect Wallet
@@ -309,10 +309,10 @@ const ConnectWallet = () => {
 
 export default function Home() {
   return (
-    <div className="bg-neutral-900 w-screen h-screen flex items-center justify-center font-medium">
-      <div className="h-[500px] flex gap-2">
+    <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
+      <div className="flex h-[500px] gap-2">
         <Markets />
-        <div className="w-[300px] h-[500px] flex flex-col gap-2">
+        <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
           <Orders />
           <Position />
