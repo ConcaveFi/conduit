@@ -1,9 +1,12 @@
-import { Flex, Input, Text } from '@tradex/interface'
+import { Flex, NumericInput, NumericInputProps, Text } from '@tradex/interface'
 
-export function CurrencyInput({ currency }: { currency: string }) {
+interface CurrencyInput extends NumericInputProps {
+  currency: string
+}
+export function CurrencyInput({ currency, ...props }: CurrencyInput) {
   return (
-    <Flex className="w-full h-14 bg-ocean-600 rounded-full px-6" centered>
-      <Input variant="simple" className="w-full" placeholder="0.0" />
+    <Flex className="w-full min-h-[60px] bg-ocean-600 rounded-xl px-6" centered>
+      <NumericInput variant="simple" className="w-full" placeholder="0.0" {...props} />
       <Text variant="low">{currency}</Text>
     </Flex>
   )

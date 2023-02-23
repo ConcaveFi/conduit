@@ -1,9 +1,9 @@
-import { marketDataABI } from 'perps-hooks'
 import { ChevronIcon } from '@tradex/icons'
 import { Button, ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import { parseBytes32String } from 'ethers/lib/utils.js'
 import Image from 'next/image'
 import { NextRouter } from 'next/router'
+import { marketDataAbi } from 'perps-hooks/abis'
 import { forwardRef, useMemo, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { format } from 'src/utils/format'
@@ -14,7 +14,7 @@ import { optimismGoerli } from 'wagmi/chains'
 
 export function MarketList() {
   const { data: markets } = useContractRead({
-    abi: marketDataABI,
+    abi: marketDataAbi,
     address: '0x0D9eFa310a4771c444233B10bfB57e5b991ad529',
     chainId: optimismGoerli.id,
     functionName: 'allProxiedMarketSummaries',

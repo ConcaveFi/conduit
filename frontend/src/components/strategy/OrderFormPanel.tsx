@@ -1,7 +1,18 @@
 import { ChevronIcon, CloseIcon } from '@tradex/icons'
-import { Button, CheckBox, Flex, Input, Panel, PanelProps, Slider, Text } from '@tradex/interface'
+import {
+  Button,
+  CheckBox,
+  Flex,
+  Input,
+  Modal,
+  Panel,
+  PanelProps,
+  Slider,
+  Text,
+} from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { ChangeEvent, forwardRef, useState } from 'react'
+import { useDisclosure } from 'src/hooks/useDisclosure'
 import { CurrencyInput } from '../CurrencyInput'
 import { OrderTab } from './OrderSelector'
 
@@ -14,10 +25,30 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
     if (value <= 0) value = 0
     setValue(value || undefined)
   }
+  const { isOpen, onClose, onOpen } = useDisclosure()
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
+      <Button onClick={onOpen} variant={'secondary'} size="xl">
+        Deposit Margin
+      </Button>
+      <Modal
+        centered
+        column
+        isOpen={isOpen}
+        onClose={onClose}
+        className="w-fit h-fit"
+        space={'medium.eq'}
+      >
+        <Text size={'xl'} variant={'heading'}>
+          Deposit Margin
+        </Text>
+        <CurrencyInput currency="sUSD" />
+        <Button className="rounded-lg py-6" variant={'primary'} size="xl">
+          Deposit
+        </Button>
+      </Modal>
       <OrderTab />
-      <Flex column className="gap-2">
+      <Flex column className={'gap-2'}>
         <Text variant="low" className="px-4">
           {t('amount')}
         </Text>
@@ -36,10 +67,11 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         </Flex>
       </Flex>
       <Flex className="gap-6 mx-4 ">
-        <CheckBox onToggle={() => {}} info={t('reduce')} />
-        <CheckBox onToggle={() => {}} info={t('post')} />
-        <CheckBox onToggle={() => {}} info={t('hidden')} />
+        <CheckBox ripple onToggle={() => {}} info={t('reduce')} />
+        <CheckBox ripple onToggle={() => {}} info={t('post')} />
+        <CheckBox ripple onToggle={() => {}} info={t('hidden')} />
       </Flex>
+
       <Flex justify="between" centered>
         <Text variant="medium">{t('leverage')}</Text>
         <Flex className="w-[40%] justify-end items-center px-2 gap-2 h-12 rounded-full relative bg-ocean-600 ">
