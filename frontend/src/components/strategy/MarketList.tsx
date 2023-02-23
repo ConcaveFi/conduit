@@ -19,11 +19,15 @@ export function MarketList() {
     chainId: optimismGoerli.id,
     functionName: 'allProxiedMarketSummaries',
   })
-  const [asset, setAsset] = useState('sBTC')
+  const [asset, setAsset] = useState('sETH')
 
-  const onIsReady = ({ query }: NextRouter) => setAsset(query.asset as string)
-  const routeComplete = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
   const { router } = useRouterEvents({ onIsReady, routeComplete })
+  function onIsReady({ query }: NextRouter) {
+    if (!query.asset) router.push('/', { query: { asset: 'sETH' } })
+  }
+  function routeComplete(e: string) {
+    setAsset(findValueOnUrl(e, 'asset'))
+  }
 
   const price = useMemo(() => {
     const mapped = markets?.find((m) => parseBytes32String(m.asset) === asset)

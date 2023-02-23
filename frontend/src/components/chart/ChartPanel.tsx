@@ -20,7 +20,7 @@ export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, 
   const { t } = useTranslation()
 
   const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + SECOND_SYMBOL }))
-  const onRouteChange = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
+  const onRouteChange = (e: string) => setAsset(handleSynth(findValueOnUrl(e, 'asset')))
   const onIsReady = ({ query }: NextRouter) => {
     setAsset(handleSynth(query.asset as string) || DEFAULT_MARKET)
   }

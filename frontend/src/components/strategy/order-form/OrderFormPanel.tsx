@@ -1,15 +1,6 @@
 import { sUSD_ADDRESS } from '@tradex/core'
 import { CloseIcon } from '@tradex/icons'
-import {
-  Button,
-  CheckBox,
-  Flex,
-  NumericInput,
-  Panel,
-  PanelProps,
-  Slider,
-  Text,
-} from '@tradex/interface'
+import { Button, Flex, NumericInput, Panel, PanelProps, Slider, Text } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { NextRouter } from 'next/router'
 import { ChangeEvent, forwardRef, useState } from 'react'
@@ -50,7 +41,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         Deposit Margin
       </Button>
       <DepositMarginModal isOpen={isOpen} onClose={onClose} />
-      {/* <OrderTab /> */}
+
+      {/* Place oder section ----------------------------------- */}
       <Flex className="gap-4">
         <Button
           onClick={() => setOrderType('long')}
@@ -78,23 +70,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
         </Flex>
       </Flex>
-      {/* <Flex column className="gap-2">
-        <Text variant="low" className="px-4">
-          {t('limit price')}
-        </Text>
-        <Flex centered>
-          <CurrencyInput currency="USD" />
-          <Button variant="underline" className="px-3">
-            GTC <ChevronIcon />
-          </Button>
-        </Flex>
-      </Flex> */}
-      <Flex className="gap-6 mx-4 ">
-        <CheckBox ripple onToggle={() => {}} info={t('reduce')} />
-        <CheckBox ripple onToggle={() => {}} info={t('post')} />
-        <CheckBox ripple onToggle={() => {}} info={t('hidden')} />
-      </Flex>
 
+      {/* Leverage handler ----------------------- */}
       <Flex justify="between" centered>
         <Text variant="medium">{t('leverage')}</Text>
         {[10, 25, 50].map((value) => (
