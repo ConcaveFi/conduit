@@ -17,7 +17,7 @@ export function ItemInfo({ Icon, info, value, align = 'start', modifier = 'none'
         <Text size="sm" variant="medium" weight="medium">
           {info}
         </Text>
-        <Text className="-mt-1" variant="heading" size="md" modifier={modifier}>
+        <Text className="-mt-1 " variant="heading" size="md" modifier={modifier}>
           {value}
         </Text>
       </Flex>

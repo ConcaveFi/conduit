@@ -7,7 +7,7 @@ import { marketDataAbi } from 'perps-hooks/abis'
 import { forwardRef, useMemo, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { format } from 'src/utils/format'
-import { handleSynth, SYNTH_TO_NORMAL } from 'src/utils/handleTokenLogo'
+import { handleSynth } from 'src/utils/handleTokenLogo'
 import { findValueOnUrl } from 'src/utils/urlHandler'
 import { useContractRead } from 'wagmi'
 import { optimismGoerli } from 'wagmi/chains'
@@ -19,23 +19,19 @@ export function MarketList() {
     chainId: optimismGoerli.id,
     functionName: 'allProxiedMarketSummaries',
   })
-  const [asset, setAsset] = useState('')
+  const [asset, setAsset] = useState('sBTC')
 
   const onIsReady = ({ query }: NextRouter) => setAsset(query.asset as string)
   const routeComplete = (e: string) => setAsset(findValueOnUrl(e, 'asset'))
   const { router } = useRouterEvents({ onIsReady, routeComplete })
 
   const price = useMemo(() => {
-    const mapped = markets?.find((m) => {
-      let toCompare = parseBytes32String(m.asset || '')
-      toCompare = SYNTH_TO_NORMAL[toCompare] || toCompare
-      return toCompare == asset
-    })
+    const mapped = markets?.find((m) => parseBytes32String(m.asset) === asset)
     if (!mapped?.price) return '$0.00'
     return format(mapped.price.toBigInt(), 18)
   }, [asset, markets])
 
-  const normalized_asset = useMemo(() => SYNTH_TO_NORMAL[asset] || asset, [asset])
+  const normalized_asset = useMemo(() => handleSynth(asset), [asset])
   return (
     <Menu className={'h-fit my-auto'}>
       <Menu.Button className="gap-6 outline-none">

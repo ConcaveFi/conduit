@@ -1,10 +1,9 @@
-import { AVAX_ADDRESS, LINK_ADDRESS, sBTC_ADDRESS, sETH_ADDRES, sUSD_ADDRESS } from '@tradex/core'
+import { sUSD_ADDRESS } from '@tradex/core'
 import { CloseIcon } from '@tradex/icons'
 import {
   Button,
   CheckBox,
   Flex,
-  Input,
   NumericInput,
   Panel,
   PanelProps,
@@ -19,7 +18,6 @@ import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { findValueOnUrl } from 'src/utils/urlHandler'
 import { useNetwork, useToken } from 'wagmi'
 import { CurrencyInput } from '../../CurrencyInput'
-import { OrderTab } from '../OrderSelector'
 import { DepositMarginModal } from './DepositMarginModal'
 
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
@@ -38,16 +36,39 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   useRouterEvents({ onIsReady, routeComplete })
 
   const { isOpen, onClose, onOpen } = useDisclosure()
-  const address = TOKEN_ADDRESSES[market as string]?.[chain?.id!]
-  const { data } = useToken({ address })
+  const { data } = useToken({ address: sUSD_ADDRESS[chain?.id!] })
+  const [orderType, setOrderType] = useState<'long' | 'short'>('long')
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
-      <Button onClick={onOpen} variant={'secondary'} size="xl">
+      <Button
+        onClick={onOpen}
+        variant={'secondary.underline'}
+        className="rounded-lg h-16"
+        size="xl"
+      >
         Deposit Margin
       </Button>
       <DepositMarginModal isOpen={isOpen} onClose={onClose} />
-      <OrderTab />
+      {/* <OrderTab /> */}
+      <Flex className="gap-4">
+        <Button
+          onClick={() => setOrderType('long')}
+          variant={orderType === 'long' ? 'green-gradient' : 'down'}
+          className="rounded-lg"
+          size={'xl'}
+        >
+          Long
+        </Button>
+        <Button
+          onClick={() => setOrderType('short')}
+          variant={orderType === 'short' ? 'red-gradient' : 'down'}
+          className="rounded-lg"
+          size={'xl'}
+        >
+          Short
+        </Button>
+      </Flex>
       <Flex column className={'gap-2'}>
         <Text variant="low" className="px-4">
           {t('amount')}
@@ -76,13 +97,17 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
       <Flex justify="between" centered>
         <Text variant="medium">{t('leverage')}</Text>
+        {[10, 25, 50].map((value) => (
+          <Button key={value} onClick={() => setValue(value)} variant={'underline.secondary'}>
+            {value}x
+          </Button>
+        ))}
         <Flex className="w-[40%] justify-end items-center px-2 gap-2 h-12 rounded-full relative bg-ocean-600 ">
-          <Input
+          <NumericInput
             className="w-[60%] text-end"
             max={50}
             min={0}
             variant="simple"
-            type={'number'}
             placeholder={'0.0'}
             value={value || ''}
             onChange={handleInput}
@@ -94,27 +119,10 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           )}
         </Flex>
       </Flex>
-      <Slider max={50} step={0.1} track onChange={handleInput} value={value || 0} />
-      <Flex className="gap-4 -mb-2 mt-4">
-        <Button className="w-full" variant="secondary.underline" size="lg">
-          {`${t('position')} 0`}
-        </Button>
-        <Button className="w-full" variant="secondary.underline" size="lg">
-          {`${t('position')} 0`}
-        </Button>
-      </Flex>
-      <Button variant="green-gradient" size="xl">
-        {t('buy')}
+      <Slider max={50} step={0.1} onChange={handleInput} value={value || 0} />
+      <Button className="h-16 rounded-lg opacity-50" variant="green-gradient" size="xl">
+        Place Order
       </Button>
     </Panel>
   )
 })
-
-// Temporaly solution to get token addresses
-const TOKEN_ADDRESSES = {
-  sETH: sETH_ADDRES,
-  sBTC: sBTC_ADDRESS,
-  sUSD: sUSD_ADDRESS,
-  AVAX: AVAX_ADDRESS,
-  LINK: LINK_ADDRESS,
-}
