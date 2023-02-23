@@ -26,18 +26,16 @@ export function MarketList() {
   const { router } = useRouterEvents({ onIsReady, routeComplete })
 
   const price = useMemo(() => {
-    const mapped = markets
-      ?.filter((m) => {
-        let toCompare = parseBytes32String(m.asset || '')
-        toCompare = SYNTH_TO_NORMAL[toCompare] || toCompare
-        return toCompare == asset
-      })
-      .map(({ price }) => format(price.toBigInt(), 18))[0]
-    return mapped
+    const mapped = markets?.find((m) => {
+      let toCompare = parseBytes32String(m.asset || '')
+      toCompare = SYNTH_TO_NORMAL[toCompare] || toCompare
+      return toCompare == asset
+    })
+    if (!mapped?.price) return '$0.00'
+    return format(mapped.price.toBigInt(), 18)
   }, [asset, markets])
 
   const normalized_asset = useMemo(() => SYNTH_TO_NORMAL[asset] || asset, [asset])
-
   return (
     <Menu className={'h-fit my-auto'}>
       <Menu.Button className="gap-6 outline-none">

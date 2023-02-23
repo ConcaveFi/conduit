@@ -11,7 +11,7 @@ export const WETH_ADDRESS: TokenAddress = {
   [optimismGoerli.id]: '0x',
 }
 
-export const sETH_ADDRES: TokenAddress = {
+export const ETH_ADDRES: TokenAddress = {
   [optimism.id]: '0xE405de8F52ba7559f9df3C368500B6E6ae6Cee49',
   [optimismGoerli.id]: '0x2db9cB23277C4A73F1c53822AE61A68e55147E33',
 }

@@ -1,10 +1,10 @@
 import { cva } from 'class-variance-authority'
 
-const PRIMARY = 'bg-ocean-700 rounded-full hover:bg-ocean-500 text-ocean-200 fill-ocean-200'
-const SECONDARY = 'bg-ocean-500 rounded-full hover:bg-ocean-400 text-ocean-200 fill-ocean-200'
 export const BUTTON_VARIANTS = {
-  primary: PRIMARY,
-  secondary: SECONDARY,
+  primary: 'bg-ocean-700 rounded-full hover:bg-ocean-500 text-ocean-200 fill-ocean-200',
+  'primary.outline':
+    'border-2 border-ocean-500 text-ocean-200 disabled:text-ocean-300 fill-ocean-200',
+  secondary: 'bg-ocean-500 rounded-full hover:bg-ocean-400 text-ocean-200 fill-ocean-200',
   'secondary.underline':
     'border-2 border-ocean-300 rounded-full hover:bg-ocean-500 text-ocean-200 fill-ocean-200',
   'green-gradient': 'bg-green-gradient rounded-full',
