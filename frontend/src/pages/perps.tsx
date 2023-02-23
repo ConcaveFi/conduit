@@ -18,7 +18,7 @@ import {
 import { useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 import { useDebounce } from 'usehooks-ts'
-import { Address, useAccount } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { format } from '../utils/format'
 
 const useRouteMarket = () => {
@@ -43,20 +43,22 @@ const Markets = () => {
   const isMounted = useIsMounted()
 
   const router = useRouter()
+  const routeMarket = useRouteMarket()
 
   if (!markets || !isMounted) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="text-xs text-neutral-400 px-1">Markets</h1>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto overflow-x-hidden">
         {markets.map(({ market, key, asset, price }) => (
           <a
             key={market}
             onClick={() => {
               router.replace(`?asset=${parseBytes32String(asset)}`, undefined, { shallow: true })
             }}
-            className="px-2 py-1 hover:bg-neutral-800 rounded-lg flex justify-between items-center w-40"
+            data-selected={routeMarket?.market === market}
+            className="px-2 py-1 hover:bg-neutral-800 rounded-lg flex justify-between items-center w-40 data-[selected=true]:bg-neutral-800"
           >
             <span className="text-neutral-200 text-sm font-semibold">
               {parseBytes32String(asset)}
@@ -74,6 +76,7 @@ const Orders = () => {
 
   const { data: offchainDelayedOrderMaxAge } = useMarketSettingsOffchainDelayedOrderMaxAge({
     args: market && [market.key],
+    enabled: !!market,
     select: (v) => v.toNumber(),
   })
 
@@ -135,6 +138,7 @@ const Position = () => {
   const { data: position } = useMarketPositions({
     args: address && [address],
     address: market && market.market,
+    enabled: !!market?.market,
   })
 
   const isMounted = useIsMounted()
@@ -227,45 +231,18 @@ const OpenPosition = () => {
   )
 }
 
-const RemainingMargin = ({ address }: { address: Address }) => {
-  const market = useRouteMarket()
-
-  const { data: remainingMargin } = useMarketRemainingMargin({
-    args: [address],
-    address: market && market.market,
-    select: (d) => d.marginRemaining.toBigInt(),
-  })
-  if (!remainingMargin) return null
-  return <span className="text-neutral-200 text-xs">Remaining: {format(remainingMargin, 18)}</span>
-}
-
-type Market = { address: Address; key: string }
-
-const AccessibleMargin = () => {
-  const { address } = useAccount()
-
-  const market = useRouteMarket()
-
-  const { data: accessibleMargin } = useMarketAccessibleMargin({
-    address: market && market.market,
-    args: address && [address],
-    select: (d) => d.marginAccessible.toBigInt(),
-  })
-  if (!accessibleMargin) return null
-  return <>{format(accessibleMargin, 18)}</>
-}
-
 const DepositMargin = () => {
   const market = useRouteMarket()
 
   const { config } = usePrepareMarketTransferMargin({
     address: market && market.market,
-    args: [BigNumber.from(10)],
+    enabled: !!market?.market,
+    args: [BigNumber.from(100)],
   })
   const { write } = useMarketTransferMargin(config)
   return (
     <button
-      className="px-4 py-1.5 rounded-full bg-neutral-800 mt-3 font-bold text-white text-sm hover:opacity-75"
+      className="px-4 py-1.5 rounded-full bg-neutral-800 mt-3 font-bold text-white text-sm hover:opacity-75 disabled:text-neutral-600"
       disabled={!!write}
       onClick={() => write?.()}
     >
@@ -277,15 +254,39 @@ const DepositMargin = () => {
 const Margin = () => {
   const { address } = useAccount()
 
+  const market = useRouteMarket()
+
+  const { data: accessibleMargin } = useMarketAccessibleMargin({
+    address: market && market.market,
+    args: address && [address],
+    select: (d) => d.marginAccessible.toBigInt(),
+  })
+  const { data: remainingMargin } = useMarketRemainingMargin({
+    address: market && market.market,
+    args: address && [address],
+    select: (d) => d.marginRemaining.toBigInt(),
+  })
+
   const isMounted = useIsMounted()
 
-  if (!isMounted) return null
+  if (!accessibleMargin || !remainingMargin || !market || !isMounted) return null
+
+  const maxLeverage = market.maxLeverage.toBigInt()
+  const buyingPower = format(remainingMargin * maxLeverage, 18 * 2)
+
+  const marginUsed = accessibleMargin - remainingMargin
 
   return (
     <div className="flex flex-col gap-1 px-3 rounded-xl bg-neutral-800/40 py-2">
       <h1 className="text-xs text-neutral-400">Margin</h1>
-      {address && <RemainingMargin address={address} />}
-      <span className="text-neutral-200 text-xs">Accessible: {<AccessibleMargin />}</span>
+      <span className="text-neutral-200 text-xs">
+        Available margin: {format(remainingMargin, 18)}
+      </span>
+      <div className="flex gap-1">
+        <span className="text-neutral-200 text-xs">Buying power: {buyingPower}</span>
+        <span className="text-neutral-400 text-xs">x{format(maxLeverage, 18)}</span>
+      </div>
+      <span className="text-neutral-200 text-xs">Margin used: {marginUsed.toString()}</span>
       <DepositMargin />
     </div>
   )
@@ -316,7 +317,7 @@ export default function Home() {
           <Orders />
           <Position />
           <Margin />
-          <OpenPosition />
+          {/* <OpenPosition /> */}
         </div>
       </div>
     </div>
@@ -336,4 +337,7 @@ query {
     timestamp
   }
 }
+
+orchard depart inflict heart inhale velvet twelve cover cute hybrid weird flat
+
 */
