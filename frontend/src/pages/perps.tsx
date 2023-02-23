@@ -18,15 +18,12 @@ import {
 import { useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount } from 'wagmi'
+import { useAccount, useBlockNumber } from 'wagmi'
 import { format } from '../utils/format'
 
 const useRouteMarket = () => {
   const router = useRouter()
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
-    staleTime: Infinity,
-    cacheTime: Infinity,
-  })
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries()
 
   const asset = router.query.asset
   if (markets?.length && router.isReady && !asset) router.replace(`/perps?asset=sETH`)
@@ -35,9 +32,14 @@ const useRouteMarket = () => {
 }
 
 const Markets = () => {
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
-    staleTime: Infinity,
-    cacheTime: Infinity,
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries()
+
+  const blocksPerDay = 7100
+  const { data: blockNumber } = useBlockNumber()
+
+  const { data: markets24hrsAgo } = useMarketDataAllProxiedMarketSummaries({
+    overrides: { blockTag: blockNumber && blockNumber - blocksPerDay },
+    enabled: !!blockNumber,
   })
 
   const isMounted = useIsMounted()
@@ -51,7 +53,7 @@ const Markets = () => {
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Markets</h1>
       <div className="overflow-y-auto overflow-x-hidden">
-        {markets.map(({ market, key, asset, price }) => (
+        {markets.map(({ market, key, asset, price }, i) => (
           <a
             key={market}
             onClick={() => {
@@ -63,7 +65,14 @@ const Markets = () => {
             <span className="text-sm font-semibold text-neutral-200">
               {parseBytes32String(asset)}
             </span>
-            <span className="text-xs text-neutral-400">{format(price.toBigInt(), 18)}</span>
+            <div className="flex flex-col items-end">
+              <span className="text-xs text-neutral-400">{format(price.toBigInt(), 18)}</span>
+              {markets24hrsAgo && (
+                <span className="text-xs text-neutral-600">
+                  {format(markets24hrsAgo[i].price.toBigInt(), 18)}
+                </span>
+              )}
+            </div>
           </a>
         ))}
       </div>
@@ -240,6 +249,7 @@ const DepositMargin = () => {
     args: [BigNumber.from(100)],
   })
   const { write } = useMarketTransferMargin(config)
+
   return (
     <button
       className="mt-3 rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600"
