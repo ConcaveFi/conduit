@@ -207,53 +207,45 @@ const TrackingCode = formatBytes32String('tradex')
 
 const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
-const convertTo = (to: 'asset' | 'sUsd', v: FixedNumber, price: FixedNumber) =>
-  to === 'asset' ? v.mulUnsafe(price) : v.divUnsafe(price)
-
-const usePositionSizeInput = (price: FixedNumber) => {
-  const [input, setInput] = useState('')
-
-  const fixedInput = FixedNumber.from(input || 0)
-
-  const [inputType, toggleInputType] = useReducer((s) => {
-    setInput(convertTo(s, fixedInput, price).toString())
-    return s === 'sUsd' ? 'asset' : 'sUsd'
-  }, 'sUsd')
-
-  const isAssetType = inputType === 'asset'
-  const isSUsdType = inputType === 'sUsd'
-  return {
-    size: {
-      asset: isAssetType ? fixedInput : convertTo('sUsd', fixedInput, price),
-      sUsd: isSUsdType ? fixedInput : convertTo('asset', fixedInput, price),
-    },
-    inputProps: {
-      value: input,
-      onValueChange: ({ value }) => setInput(value),
-    },
-    inputTypeProps: {
-      children: inputType,
-      onClick: toggleInputType,
-    },
-  }
-}
+const convertTo = (to: 'asset' | 'usd', v: FixedNumber, price: FixedNumber) =>
+  to === 'usd' ? v.mulUnsafe(price) : v.divUnsafe(price)
 
 const OpenPosition = () => {
   const market = useRouteMarket()
 
   const price = market ? market.price : FixedNumber.from(1)
-  const { inputProps, inputTypeProps, size } = usePositionSizeInput(price)
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const debouncedSize = useDebounce(size.sUsd, 500)
-  const sizeDelta = side === 'long' ? debouncedSize : debouncedSize.mulUnsafe(FixedNumber.from(-1))
+  const [amountDenominatedIn, toggleAmountDenominatedIn] = useReducer(
+    (s) => (s === 'usd' ? 'asset' : 'usd'),
+    'usd',
+  )
+
+  const [size, setAmount] = useReducer(
+    (a, amount) => {
+      const fixedAmount = FixedNumber.from(amount || 0)
+      const other = amountDenominatedIn === 'usd' ? 'asset' : 'usd'
+      const size = {
+        [amountDenominatedIn]: amount,
+        [other]: convertTo(other, fixedAmount, price),
+      }
+      return size
+    },
+    { usd: '', asset: '' },
+  )
+
+  const inputValue = size[amountDenominatedIn].toString()
+
+  const debouncedSizeUsd = useDebounce(size.usd, 200)
+  const fixedSize = FixedNumber.from(debouncedSizeUsd || 0)
+  const sizeDelta = side === 'long' ? fixedSize : fixedSize.mulUnsafe(FixedNumber.from(-1))
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
-    enabled: !debouncedSize.isZero(),
+    enabled: !sizeDelta.isZero(),
     args: [BigNumber.from(sizeDelta), BigNumber.from(priceImpact), TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
@@ -266,10 +258,19 @@ const OpenPosition = () => {
         <NumericInput
           className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
-          {...inputProps}
+          value={inputValue}
+          onValueChange={({ value }) => setAmount(value)}
         />
-        <button {...inputTypeProps} className="text-sm font-medium text-neutral-600" />
+        <button
+          onClick={toggleAmountDenominatedIn}
+          className="text-sm font-medium text-neutral-600"
+        >
+          {amountDenominatedIn}
+        </button>
       </div>
+      <span className="text-xs text-neutral-200">
+        Position size {format(size.asset)} {market.asset}
+      </span>
       <div className="flex items-center justify-center gap-3">
         <button
           className={cx(
@@ -290,14 +291,14 @@ const OpenPosition = () => {
           <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
-      {market && <Fees positionSize={size.sUsd} />}
-      {/* <button
+      {market && <Fees positionSize={sizeDelta} />}
+      <button
         className="w-full rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600 disabled:hover:opacity-100 disabled:active:scale-100"
         disabled={!submitOrder}
         onClick={() => submitOrder?.()}
       >
         Place order
-      </button> */}
+      </button>
     </div>
   )
 }

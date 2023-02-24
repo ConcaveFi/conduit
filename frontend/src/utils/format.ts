@@ -17,7 +17,8 @@ import { FixedNumber } from 'ethers'
 //   return f.format(+formatUnits(amount, decimals))
 // }
 
-export const format = (value: FixedNumber, options?: Intl.NumberFormatOptions) => {
+export const format = (value: FixedNumber | string, options?: Intl.NumberFormatOptions) => {
+  if (typeof value === 'string') value = FixedNumber.from(value || 0)
   const f = Intl.NumberFormat('en-US', {
     maximumSignificantDigits: 6,
     minimumSignificantDigits: 3,
