@@ -1,47 +1,30 @@
 import { ChevronIcon } from '@tradex/icons'
 import { Button, ButtonProps, ItemInfo, Menu } from '@tradex/interface'
-import { parseBytes32String } from 'ethers/lib/utils.js'
 import Image from 'next/image'
-import { NextRouter } from 'next/router'
-import { marketDataAbi } from 'perps-hooks/abis'
-import { forwardRef, useMemo, useState } from 'react'
-import { useRouterEvents } from 'src/hooks/useRouterEvents'
+import { useRouter } from 'next/router'
+import { useMarketDataAllProxiedMarketSummaries } from 'perps-hooks'
+import { forwardRef, useMemo } from 'react'
+import { parseMarketSummaries, useRouteMarket } from 'src/pages/perps'
 import { format } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
-import { findValueOnUrl } from 'src/utils/urlHandler'
-import { useContractRead } from 'wagmi'
-import { optimismGoerli } from 'wagmi/chains'
 
 export function MarketList() {
-  const { data: markets } = useContractRead({
-    abi: marketDataAbi,
-    address: '0x0D9eFa310a4771c444233B10bfB57e5b991ad529',
-    chainId: optimismGoerli.id,
-    functionName: 'allProxiedMarketSummaries',
-  })
-  const [asset, setAsset] = useState('sETH')
+  const router = useRouter()
 
-  const { router } = useRouterEvents({ onIsReady, routeComplete })
-  function onIsReady({ query }: NextRouter) {
-    if (!query.asset) router.push('/', { query: { asset: 'sETH' } })
-  }
-  function routeComplete(e: string) {
-    setAsset(findValueOnUrl(e, 'asset'))
-  }
+  const market = useRouteMarket()
 
-  const price = useMemo(() => {
-    const mapped = markets?.find((m) => parseBytes32String(m.asset) === asset)
-    if (!mapped?.price) return '$0.00'
-    return format(mapped.price.toBigInt(), 18)
-  }, [asset, markets])
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries({ select: parseMarketSummaries })
 
-  const normalized_asset = useMemo(() => handleSynth(asset), [asset])
+  const normalized_asset = useMemo(() => handleSynth(market?.asset), [market?.asset])
+
+  if (!market || !markets) return null
+
   return (
-    <Menu className={'h-fit my-auto'}>
+    <Menu className={'my-auto h-fit'}>
       <Menu.Button className="gap-6 outline-none">
         <ItemInfo
           info={`${normalized_asset} Perpetual`}
-          value={`${price}`}
+          value={format(market.price)}
           Icon={
             <Image
               alt={`${normalized_asset} icon`}
@@ -57,18 +40,17 @@ export function MarketList() {
       <Menu.Items
         column
         variant={'glass'}
-        className="w-[360px] h-[500px] left-10 rounded-tl-sm overflow-y-auto p-2"
+        className="left-10 h-[500px] w-[360px] overflow-y-auto rounded-tl-sm p-2"
         origin={'top-left'}
       >
-        {markets?.map(({ asset: _asset, price }, i) => (
+        {markets.map(({ asset, price }, i) => (
           <Menu.Item key={i}>
             {({ close }) => (
               <MarketButton
-                price={format(price.toBigInt(), 18)}
-                asset={parseBytes32String(_asset || '')}
+                price={format(price)}
+                asset={asset}
                 onClick={() => {
-                  let asset = parseBytes32String(_asset || '')
-                  router.replace('/', { query: { asset } })
+                  router.replace({ query: { asset } }, undefined, { shallow: true })
                   close()
                 }}
               />
