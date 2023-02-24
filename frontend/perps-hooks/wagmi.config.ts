@@ -2,7 +2,7 @@ import { ContractConfig, defineConfig } from '@wagmi/cli'
 import { erc, react } from '@wagmi/cli/plugins'
 
 import { optimismGoerli } from 'wagmi/chains'
-import { marketAbi, marketDataAbi, marketSettingsAbi } from './abis'
+import { chainLinkFeedAbi, marketAbi, marketDataAbi, marketSettingsAbi } from './abis'
 
 const contracts = [
   {
@@ -19,6 +19,7 @@ const contracts = [
       [optimismGoerli.id]: '0x14fA3376E2ffa41708A0636009A35CAE8D8E2bc7',
     },
   },
+  { name: 'ChainLink', abi: chainLinkFeedAbi },
   { name: 'Market', abi: marketAbi },
 ] satisfies ContractConfig[]
 

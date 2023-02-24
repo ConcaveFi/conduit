@@ -4,6 +4,7 @@ import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { useRouter } from 'next/router'
 import {
+  useChainLinkLatestRoundData,
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDelayedOrders,
@@ -376,12 +377,21 @@ const ConnectWallet = () => {
   )
 }
 
+const op_usd_feed = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
+
 export default function Home() {
+  const { data } = useChainLinkLatestRoundData({
+    address: op_usd_feed,
+    chainId: 10,
+    select: (v) => FixedNumber.fromValue(v.answer),
+  })
+
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
         <Markets />
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
+          {data && <span className="text-neutral-200">op price: {format(data)}</span>}
           <ConnectWallet />
           <Orders />
           <Position />
