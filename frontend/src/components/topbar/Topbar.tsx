@@ -19,24 +19,24 @@ export function Topbar() {
         <Text variant="heading.light">
           TRADE <strong>X</strong>
         </Text>
-        <Button className="ml-8" variant="underline" size="lg">
+        <Button className="ml-8" variant="bottom-glow" size="lg">
           {t('futures')}
         </Button>
         <Button variant="underline" size="lg">
           {t('options')}
         </Button>
-        <Button variant="bottom-glow" size="lg">
+        <Button variant="underline" size="lg">
           {t('strategy')} <ChevronIcon />
         </Button>
         <SearchInput />
       </Flex>
-      <Flex align="center" className="gap-6 w-fit">
+      <Flex align="center" className="w-fit gap-6">
         <LocationSelector />
-        <DashboardIcon className="w-5 h-5 fill-ocean-200" />
-        <Flex className="w-9 h-9 p-[5px] rounded-full bg-sky-300 bg-opacity-70">
-          <Flex className="w-full h-full rounded-full bg-sky-300" />
+        <DashboardIcon className="fill-ocean-200 h-5 w-5" />
+        <Flex className="h-9 w-9 rounded-full bg-sky-300 bg-opacity-70 p-[5px]">
+          <Flex className="h-full w-full rounded-full bg-sky-300" />
         </Flex>
-        <NotificationIcon className="w-5 h-5 fill-ocean-200" />
+        <NotificationIcon className="fill-ocean-200 h-5 w-5" />
         <ConnectButton.Custom>
           {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
             if (!isConnected) {
@@ -56,7 +56,7 @@ export function Topbar() {
                 <Button variant={'primary'} size="lg" onClick={openChainModal} className="gap-2">
                   <img src={chain?.iconUrl} className="w-6" alt="" />
                   {chain?.name}
-                  <ChevronIcon className="w-3 h-3 fill-ocean-200" />
+                  <ChevronIcon className="fill-ocean-200 h-3 w-3" />
                 </Button>
                 <Button onClick={openAccountModal}>
                   <ItemInfo info={truncateAddress(account?.address)} value="$ 2,548.04" />
@@ -65,8 +65,8 @@ export function Topbar() {
             )
           }}
         </ConnectButton.Custom>
-        <Flex className="w-9 h-9 rounded-full border-[5px] border-ocean-300 p-2">
-          <Flex className="w-full h-full bg-green-300 rounded-full"></Flex>
+        <Flex className="border-ocean-300 h-9 w-9 rounded-full border-[5px] p-2">
+          <Flex className="h-full w-full rounded-full bg-green-300"></Flex>
         </Flex>
       </Flex>
     </Flex>

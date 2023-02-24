@@ -4,8 +4,7 @@ import { Flex, ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { FixedNumber } from 'ethers'
 import { format } from 'src/utils/format'
-import { useAccount, useBalance, useNetwork, useToken } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { useAccount, useBalance, useFeeData, useNetwork } from 'wagmi'
 import { MarketList } from './MarketList'
 
 export function StrategyHeader() {
@@ -13,10 +12,10 @@ export function StrategyHeader() {
   const { chain } = useNetwork()
   const { address } = useAccount()
   const enabled = Boolean(chain?.id)
+
   const { data: sUSD_Balance } = useBalance({ address, token: sUSD_ADDRESS[chain?.id!], enabled })
   const { data: OP_Balance } = useBalance({ address, token: OP_ADDRESS[chain?.id!], enabled })
-
-  const { data } = useToken({ address: OP_ADDRESS[optimism.id] })
+  const { data: GasPrice } = useFeeData()
 
   return (
     <Flex className="gap-3">
@@ -50,7 +49,7 @@ export function StrategyHeader() {
           value={`$ ${format(FixedNumber.from(OP_Balance?.formatted || '0'))}`}
           Icon={<CoinIcon />}
         />
-        <ItemInfo info={'GWEI'} value="$ 370,526,580" Icon={<GasIcon />} />
+        <ItemInfo info={'GWEI'} value={GasPrice?.formatted.gasPrice || '0.0'} Icon={<GasIcon />} />
       </Flex>
     </Flex>
   )
