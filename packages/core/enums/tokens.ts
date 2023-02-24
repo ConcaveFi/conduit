@@ -6,6 +6,11 @@ export const sUSD_ADDRESS: TokenAddress = {
   [optimismGoerli.id]: '0xeBaEAAD9236615542844adC5c149F86C36aD1136',
 }
 
+export const OP_ADDRESS: TokenAddress = {
+  [optimism.id]: '0x4200000000000000000000000000000000000042',
+  [optimismGoerli.id]: '0x4200000000000000000000000000000000000042',
+}
+
 export const WETH_ADDRESS: TokenAddress = {
   [optimism.id]: '0x4200000000000000000000000000000000000006',
   [optimismGoerli.id]: '0x',
