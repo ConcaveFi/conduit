@@ -1,9 +1,12 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
+import { ReadContractResult } from '@wagmi/core'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
 import { useRouter } from 'next/router'
 import {
+  marketABI,
+  marketDataABI,
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDelayedOrders,
@@ -23,7 +26,9 @@ import { format } from '../utils/format'
 
 const useRouteMarket = () => {
   const router = useRouter()
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries()
+  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
+    select: parseMarketSummaries,
+  })
 
   const asset = router.query.asset
   if (markets?.length && router.isReady && !asset) router.replace(`/perps?asset=sETH`)
@@ -31,13 +36,29 @@ const useRouteMarket = () => {
   return markets?.find((m) => parseBytes32String(m.asset) === asset)
 }
 
+type MarketSummaries = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
+
+const objValuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
+  Object.entries(obj).reduce(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: FixedNumber.fromValue(value, 18),
+    }),
+    {} as Record<keyof T, FixedNumber>,
+  )
+
+const parseMarketSummaries = (summaries: MarketSummaries) =>
+  summaries.map(({ market, key, asset, feeRates, ...summary }) => ({
+    address: market,
+    key: parseBytes32String(key),
+    asset: parseBytes32String(asset),
+    feeRates: objValuesToFixedNumber(feeRates),
+    ...objValuesToFixedNumber(summary),
+  }))
+
 const Markets = () => {
   const { data: markets } = useMarketDataAllProxiedMarketSummaries({
-    select: (markets) =>
-      markets.map((m) => ({
-        ...m,
-        price: FixedNumber.fromValue(m.price, 18),
-      })),
+    select: parseMarketSummaries,
   })
 
   const blocksPerDay = 7100
@@ -46,11 +67,7 @@ const Markets = () => {
   const { data: markets24hrsAgo } = useMarketDataAllProxiedMarketSummaries({
     overrides: { blockTag: blockNumber && blockNumber - blocksPerDay },
     enabled: !!blockNumber,
-    select: (markets) =>
-      markets.map((m) => ({
-        ...m,
-        price: FixedNumber.fromValue(m.price, 18),
-      })),
+    select: parseMarketSummaries,
   })
 
   const isMounted = useIsMounted()
@@ -64,13 +81,13 @@ const Markets = () => {
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Markets</h1>
       <div className="overflow-y-auto overflow-x-hidden">
-        {markets.map(({ market, key, asset, price }, i) => (
+        {markets.map(({ address, asset, price }, i) => (
           <a
-            key={market}
+            key={address}
             onClick={() => {
               router.replace(`?asset=${parseBytes32String(asset)}`, undefined, { shallow: true })
             }}
-            data-selected={routeMarket?.market === market}
+            data-selected={routeMarket?.address === address}
             className="flex w-40 items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800 data-[selected=true]:bg-neutral-800"
           >
             <span className="text-sm font-semibold text-neutral-200">
@@ -89,11 +106,29 @@ const Markets = () => {
   )
 }
 
+type Order = ReadContractResult<typeof marketABI, 'delayedOrders'>
+
+const parseOrder = ({
+  executableAtTime,
+  intentionTime,
+  isOffchain,
+  trackingCode,
+  targetRoundId,
+  ...o
+}: Order) => ({
+  executableAtTime: intentionTime.toNumber(),
+  intentionTime: intentionTime.toNumber(),
+  isOffchain,
+  trackingCode: parseBytes32String(trackingCode),
+  targetRoundId,
+  ...objValuesToFixedNumber(o),
+})
+
 const Orders = () => {
   const market = useRouteMarket()
 
   const { data: offchainDelayedOrderMaxAge } = useMarketSettingsOffchainDelayedOrderMaxAge({
-    args: market && [market.key],
+    args: market && [market.address],
     enabled: !!market,
     select: (v) => v.toNumber(),
   })
@@ -102,11 +137,8 @@ const Orders = () => {
 
   const { data: order } = useMarketDelayedOrders({
     args: address && [address],
-    address: market?.market,
-    select: (o) => ({
-      sizeDelta: FixedNumber.fromValue(o.sizeDelta, 18),
-      intentionTime: o.intentionTime.toNumber(),
-    }),
+    address: market?.address,
+    select: parseOrder,
   })
 
   const isMounted = useIsMounted()
@@ -135,7 +167,7 @@ const Orders = () => {
       </div>
       {hasOpenOrder && (
         <div className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800">
-          <span className="text-sm text-neutral-200">{market.key}</span>
+          <span className="text-sm text-neutral-200">{market.address}</span>
           {isExpired && (
             <button className="rounded-lg bg-red-400/10 px-2 py-0.5 text-xs text-red-400">
               expired
@@ -155,20 +187,23 @@ const Orders = () => {
   )
 }
 
+type Position = ReadContractResult<typeof marketABI, 'positions'>
+
+const parsePosition = ({ id, lastFundingIndex, ...p }: Position) => ({
+  id,
+  lastFundingIndex,
+  ...objValuesToFixedNumber(p),
+})
+
 const Position = () => {
   const { address } = useAccount()
   const market = useRouteMarket()
 
   const { data: position } = useMarketPositions({
     args: address && [address],
-    address: market && market.market,
-    enabled: !!market?.market,
-    select: (p) => ({
-      ...p,
-      size: FixedNumber.fromValue(p.size, 18),
-      margin: FixedNumber.fromValue(p.margin, 18),
-      lastPrice: FixedNumber.fromValue(p.lastPrice, 18),
-    }),
+    address: market && market.address,
+    enabled: !!market?.address,
+    select: parsePosition,
   })
 
   const isMounted = useIsMounted()
@@ -187,7 +222,7 @@ const Position = () => {
         <span className="px-1 text-xs text-neutral-500">No open position</span>
       ) : (
         <div className="flex items-center justify-between rounded-lg px-2  py-1 hover:bg-neutral-800">
-          <span className="text-sm text-neutral-200">{market.key}</span>
+          <span className="text-sm text-neutral-200">{market.address}</span>
           <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
             {side}
           </span>
@@ -208,13 +243,11 @@ const Fees = ({ positionSize }: { positionSize: FixedNumber }) => {
   if (!market) return null
 
   const feeRates = market.feeRates
-  const marketSkew = market.marketSkew.toBigInt()
-  const fee = FixedNumber.fromValue(
-    positionSize.isNegative() && marketSkew < 0n
+  const marketSkew = market.marketSkew
+  const fee =
+    positionSize.isNegative() && marketSkew.isNegative()
       ? feeRates.makerFeeOffchainDelayedOrder
-      : feeRates.takerFeeOffchainDelayedOrder,
-    18,
-  )
+      : feeRates.takerFeeOffchainDelayedOrder
 
   return (
     <div>
@@ -237,29 +270,24 @@ const OpenPosition = () => {
   const market = useRouteMarket()
 
   const [input, setInput] = useState('')
-  const price = market ? FixedNumber.fromValue(market.price, 18) : FixedNumber.from(1)
+
+  const price = market ? market.price : FixedNumber.from(1)
+  const fixedInput = FixedNumber.from(input || 0)
+
   const [sizeToken, toggleSizeToken] = useReducer((s) => {
-    setInput(
-      (s === 'asset'
-        ? FixedNumber.from(input).mulUnsafe(price)
-        : FixedNumber.from(input).divUnsafe(price)
-      ).toString(),
-    )
+    setInput((s === 'asset' ? fixedInput.mulUnsafe(price) : fixedInput.divUnsafe(price)).toString())
     return s === 'sUsd' ? 'asset' : 'sUsd'
   }, 'sUsd')
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const size =
-    sizeToken === 'asset'
-      ? FixedNumber.from(input || 0).mulUnsafe(price)
-      : FixedNumber.from(input || 0).divUnsafe(price)
+  const size = sizeToken === 'asset' ? fixedInput.mulUnsafe(price) : fixedInput.divUnsafe(price)
   const debouncedSize = useDebounce(size, 500)
   const sizeDelta = side === 'long' ? debouncedSize : debouncedSize.mulUnsafe(FixedNumber.from(-1))
 
   const priceImpact = bpsToWei(DEFAULT_PRICE_IMPACT_DELTA)
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    address: market && market.market,
+    address: market && market.address,
     enabled: !debouncedSize.isZero(),
     args: [BigNumber.from(sizeDelta), BigNumber.from(priceImpact), TrackingCode],
   })
@@ -309,7 +337,7 @@ const DepositMargin = () => {
   const market = useRouteMarket()
 
   const { config, error } = usePrepareMarketTransferMargin({
-    address: market?.market,
+    address: market?.address,
     args: [BigNumber.from(50)],
   })
   const { write } = useMarketTransferMargin(config)
@@ -331,12 +359,12 @@ const Margin = () => {
   const market = useRouteMarket()
 
   const { data: accessibleMargin } = useMarketAccessibleMargin({
-    address: market && market.market,
+    address: market && market.address,
     args: address && [address],
     select: (d) => FixedNumber.fromValue(d.marginAccessible, 18),
   })
   const { data: remainingMargin } = useMarketRemainingMargin({
-    address: market && market.market,
+    address: market && market.address,
     args: address && [address],
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
@@ -345,8 +373,7 @@ const Margin = () => {
 
   if (!accessibleMargin || !remainingMargin || !market || !isMounted) return null
 
-  const maxLeverage = FixedNumber.fromValue(market.maxLeverage, 18)
-  const buyingPower = remainingMargin.mulUnsafe(maxLeverage)
+  const buyingPower = remainingMargin.mulUnsafe(market.maxLeverage)
 
   const marginUsed = accessibleMargin.subUnsafe(remainingMargin)
 
@@ -356,7 +383,7 @@ const Margin = () => {
       <span className="text-xs text-neutral-200">Available margin: {format(remainingMargin)}</span>
       <div className="flex gap-1">
         <span className="text-xs text-neutral-200">Buying power: {format(buyingPower)}</span>
-        <span className="text-xs text-neutral-400">x{format(maxLeverage)}</span>
+        <span className="text-xs text-neutral-400">x{format(market.maxLeverage)}</span>
       </div>
       <span className="text-xs text-neutral-200">Margin used: {marginUsed.toString()}</span>
       <DepositMargin />
