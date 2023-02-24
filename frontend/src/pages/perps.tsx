@@ -21,7 +21,7 @@ import {
 import { useReducer, useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useBlockNumber } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { format } from '../utils/format'
 
 const useRouteMarket = () => {
@@ -33,17 +33,16 @@ const useRouteMarket = () => {
   const asset = router.query.asset
   if (markets?.length && router.isReady && !asset) router.replace(`/perps?asset=sETH`)
 
-  return markets?.find((m) => parseBytes32String(m.asset) === asset)
+  return markets?.find((m) => m.asset === asset)
 }
 
 type MarketSummaries = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
 
-const objValuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
+const valuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
   Object.entries(obj).reduce(
-    (acc, [key, value]) => ({
-      ...acc,
-      [key]: FixedNumber.fromValue(value, 18),
-    }),
+    (acc, [key, value]) =>
+      // ethers contract result is an arraylike obj, so to filter out the array part we ignore number keys
+      isNaN(+key) ? { ...acc, [key]: FixedNumber.fromValue(value, 18) } : acc,
     {} as Record<keyof T, FixedNumber>,
   )
 
@@ -52,8 +51,8 @@ const parseMarketSummaries = (summaries: MarketSummaries) =>
     address: market,
     key: parseBytes32String(key),
     asset: parseBytes32String(asset),
-    feeRates: objValuesToFixedNumber(feeRates),
-    ...objValuesToFixedNumber(summary),
+    feeRates: valuesToFixedNumber(feeRates),
+    ...valuesToFixedNumber(summary),
   }))
 
 const Markets = () => {
@@ -61,12 +60,9 @@ const Markets = () => {
     select: parseMarketSummaries,
   })
 
-  const blocksPerDay = 7100
-  const { data: blockNumber } = useBlockNumber()
-
+  const blocksAgo = -7100
   const { data: markets24hrsAgo } = useMarketDataAllProxiedMarketSummaries({
-    overrides: { blockTag: blockNumber && blockNumber - blocksPerDay },
-    enabled: !!blockNumber,
+    overrides: { blockTag: blocksAgo },
     select: parseMarketSummaries,
   })
 
@@ -85,14 +81,12 @@ const Markets = () => {
           <a
             key={address}
             onClick={() => {
-              router.replace(`?asset=${parseBytes32String(asset)}`, undefined, { shallow: true })
+              router.replace(`?asset=${asset}`, undefined, { shallow: true })
             }}
             data-selected={routeMarket?.address === address}
             className="flex w-40 items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800 data-[selected=true]:bg-neutral-800"
           >
-            <span className="text-sm font-semibold text-neutral-200">
-              {parseBytes32String(asset)}
-            </span>
+            <span className="text-sm font-semibold text-neutral-200">{asset}</span>
             <div className="flex flex-col items-end">
               <span className="text-xs text-neutral-400">{format(price)}</span>
               {markets24hrsAgo && (
@@ -121,7 +115,7 @@ const parseOrder = ({
   isOffchain,
   trackingCode: parseBytes32String(trackingCode),
   targetRoundId,
-  ...objValuesToFixedNumber(o),
+  ...valuesToFixedNumber(o),
 })
 
 const Orders = () => {
@@ -192,7 +186,7 @@ type Position = ReadContractResult<typeof marketABI, 'positions'>
 const parsePosition = ({ id, lastFundingIndex, ...p }: Position) => ({
   id,
   lastFundingIndex,
-  ...objValuesToFixedNumber(p),
+  ...valuesToFixedNumber(p),
 })
 
 const Position = () => {
@@ -235,8 +229,6 @@ const Position = () => {
   )
 }
 
-// sameSide(notionalDiff, market.marketSkew) ? takerFee : makerFee;
-
 const Fees = ({ positionSize }: { positionSize: FixedNumber }) => {
   const market = useRouteMarket()
 
@@ -260,11 +252,10 @@ const Fees = ({ positionSize }: { positionSize: FixedNumber }) => {
 
 const TrackingCode = formatBytes32String('tradex')
 
-/** percent in basis points (30 = 0.3%, 100 = 1%, ...) */
-export type Percent = bigint | number
-const DEFAULT_PRICE_IMPACT_DELTA: Percent = 50 // 0.5%
-const bps_divider = 10_000n
-export const bpsToWei = (bps: Percent) => (BigInt(bps) * 10n ** 18n) / bps_divider
+const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
+
+const convertValue = (v: FixedNumber, price: FixedNumber, token: 'asset' | 'sUsd') =>
+  token === 'asset' ? v.mulUnsafe(price) : v.divUnsafe(price)
 
 const OpenPosition = () => {
   const market = useRouteMarket()
@@ -275,17 +266,17 @@ const OpenPosition = () => {
   const fixedInput = FixedNumber.from(input || 0)
 
   const [sizeToken, toggleSizeToken] = useReducer((s) => {
-    setInput((s === 'asset' ? fixedInput.mulUnsafe(price) : fixedInput.divUnsafe(price)).toString())
+    setInput(convertValue(fixedInput, price, s).toString())
     return s === 'sUsd' ? 'asset' : 'sUsd'
   }, 'sUsd')
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const size = sizeToken === 'asset' ? fixedInput.mulUnsafe(price) : fixedInput.divUnsafe(price)
+  const size = convertValue(fixedInput, price, sizeToken)
   const debouncedSize = useDebounce(size, 500)
   const sizeDelta = side === 'long' ? debouncedSize : debouncedSize.mulUnsafe(FixedNumber.from(-1))
 
-  const priceImpact = bpsToWei(DEFAULT_PRICE_IMPACT_DELTA)
+  const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
     enabled: !debouncedSize.isZero(),
