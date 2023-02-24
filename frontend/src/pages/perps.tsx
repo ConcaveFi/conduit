@@ -24,14 +24,14 @@ import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
 import { format } from '../utils/format'
 
-const useRouteMarket = () => {
+export const useRouteMarket = () => {
   const router = useRouter()
   const { data: markets } = useMarketDataAllProxiedMarketSummaries({
     select: parseMarketSummaries,
   })
 
   const asset = router.query.asset
-  if (markets?.length && router.isReady && !asset) router.replace(`/perps?asset=sETH`)
+  if (markets?.length && router.isReady && !asset) router.replace({ query: { asset: 'sETH' } })
 
   return markets?.find((m) => m.asset === asset)
 }
@@ -46,8 +46,9 @@ const valuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
     {} as Record<keyof T, FixedNumber>,
   )
 
-const parseMarketSummaries = (summaries: MarketSummaries) =>
+export const parseMarketSummaries = (summaries: MarketSummaries) =>
   summaries.map(({ market, key, asset, feeRates, ...summary }) => ({
+    market,
     address: market,
     key: parseBytes32String(key),
     asset: parseBytes32String(asset),
@@ -254,29 +255,50 @@ const TrackingCode = formatBytes32String('tradex')
 
 const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
-const convertValue = (v: FixedNumber, price: FixedNumber, token: 'asset' | 'sUsd') =>
-  token === 'asset' ? v.mulUnsafe(price) : v.divUnsafe(price)
+const convertTo = (to: 'asset' | 'sUsd', v: FixedNumber, price: FixedNumber) =>
+  to === 'asset' ? v.mulUnsafe(price) : v.divUnsafe(price)
+
+const usePositionSizeInput = (price: FixedNumber) => {
+  const [input, setInput] = useState('')
+
+  const fixedInput = FixedNumber.from(input || 0)
+
+  const [inputType, toggleInputType] = useReducer((s) => {
+    setInput(convertTo(s, fixedInput, price).toString())
+    return s === 'sUsd' ? 'asset' : 'sUsd'
+  }, 'sUsd')
+
+  const isAssetType = inputType === 'asset'
+  const isSUsdType = inputType === 'sUsd'
+  return {
+    size: {
+      asset: isAssetType ? fixedInput : convertTo('sUsd', fixedInput, price),
+      sUsd: isSUsdType ? fixedInput : convertTo('asset', fixedInput, price),
+    },
+    inputProps: {
+      value: input,
+      onValueChange: ({ value }) => setInput(value),
+    },
+    inputTypeProps: {
+      children: inputType,
+      onClick: toggleInputType,
+    },
+  }
+}
 
 const OpenPosition = () => {
   const market = useRouteMarket()
 
-  const [input, setInput] = useState('')
-
   const price = market ? market.price : FixedNumber.from(1)
-  const fixedInput = FixedNumber.from(input || 0)
-
-  const [sizeToken, toggleSizeToken] = useReducer((s) => {
-    setInput(convertValue(fixedInput, price, s).toString())
-    return s === 'sUsd' ? 'asset' : 'sUsd'
-  }, 'sUsd')
+  const { inputProps, inputTypeProps, size } = usePositionSizeInput(price)
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const size = convertValue(fixedInput, price, sizeToken)
-  const debouncedSize = useDebounce(size, 500)
+  const debouncedSize = useDebounce(size.sUsd, 500)
   const sizeDelta = side === 'long' ? debouncedSize : debouncedSize.mulUnsafe(FixedNumber.from(-1))
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
+
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
     enabled: !debouncedSize.isZero(),
@@ -292,12 +314,9 @@ const OpenPosition = () => {
         <NumericInput
           className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
-          value={input}
-          onValueChange={({ value }) => setInput(value)}
+          {...inputProps}
         />
-        <button onClick={toggleSizeToken} className="text-sm font-medium text-neutral-600">
-          {sizeToken}
-        </button>
+        <button {...inputTypeProps} className="text-sm font-medium text-neutral-600" />
       </div>
       <div className="flex items-center justify-center gap-3">
         <button
@@ -319,7 +338,14 @@ const OpenPosition = () => {
           <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
-      {market && <Fees positionSize={size} />}
+      {market && <Fees positionSize={size.sUsd} />}
+      {/* <button
+        className="w-full rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600 disabled:hover:opacity-100 disabled:active:scale-100"
+        disabled={!submitOrder}
+        onClick={() => submitOrder?.()}
+      >
+        Place order
+      </button> */}
     </div>
   )
 }
@@ -350,12 +376,12 @@ const Margin = () => {
   const market = useRouteMarket()
 
   const { data: accessibleMargin } = useMarketAccessibleMargin({
-    address: market && market.address,
+    address: market && market.market,
     args: address && [address],
     select: (d) => FixedNumber.fromValue(d.marginAccessible, 18),
   })
   const { data: remainingMargin } = useMarketRemainingMargin({
-    address: market && market.address,
+    address: market && market.market,
     args: address && [address],
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
