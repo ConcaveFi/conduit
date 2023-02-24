@@ -1,12 +1,9 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
-import { ReadContractResult } from '@wagmi/core'
 import { BigNumber, FixedNumber } from 'ethers'
-import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils.js'
+import { formatBytes32String } from 'ethers/lib/utils.js'
 import { useRouter } from 'next/router'
 import {
-  marketABI,
-  marketDataABI,
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDelayedOrders,
@@ -18,6 +15,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketTransferMargin,
 } from 'perps-hooks'
+import { parseMarketSummaries, parseOrder, parsePosition } from 'perps-hooks/parsers'
 import { useReducer, useState } from 'react'
 import { useIsMounted } from 'src/hooks/useIsMounted'
 import { useDebounce } from 'usehooks-ts'
@@ -35,26 +33,6 @@ export const useRouteMarket = () => {
 
   return markets?.find((m) => m.asset === asset)
 }
-
-type MarketSummaries = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
-
-const valuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
-  Object.entries(obj).reduce(
-    (acc, [key, value]) =>
-      // ethers contract result is an arraylike obj, so to filter out the array part we ignore number keys
-      isNaN(+key) ? { ...acc, [key]: FixedNumber.fromValue(value, 18) } : acc,
-    {} as Record<keyof T, FixedNumber>,
-  )
-
-export const parseMarketSummaries = (summaries: MarketSummaries) =>
-  summaries.map(({ market, key, asset, feeRates, ...summary }) => ({
-    market,
-    address: market,
-    key: parseBytes32String(key),
-    asset: parseBytes32String(asset),
-    feeRates: valuesToFixedNumber(feeRates),
-    ...valuesToFixedNumber(summary),
-  }))
 
 const Markets = () => {
   const { data: markets } = useMarketDataAllProxiedMarketSummaries({
@@ -100,24 +78,6 @@ const Markets = () => {
     </div>
   )
 }
-
-type Order = ReadContractResult<typeof marketABI, 'delayedOrders'>
-
-const parseOrder = ({
-  executableAtTime,
-  intentionTime,
-  isOffchain,
-  trackingCode,
-  targetRoundId,
-  ...o
-}: Order) => ({
-  executableAtTime: intentionTime.toNumber(),
-  intentionTime: intentionTime.toNumber(),
-  isOffchain,
-  trackingCode: parseBytes32String(trackingCode),
-  targetRoundId,
-  ...valuesToFixedNumber(o),
-})
 
 const Orders = () => {
   const market = useRouteMarket()
@@ -181,14 +141,6 @@ const Orders = () => {
     </div>
   )
 }
-
-type Position = ReadContractResult<typeof marketABI, 'positions'>
-
-const parsePosition = ({ id, lastFundingIndex, ...p }: Position) => ({
-  id,
-  lastFundingIndex,
-  ...valuesToFixedNumber(p),
-})
 
 const Position = () => {
   const { address } = useAccount()
