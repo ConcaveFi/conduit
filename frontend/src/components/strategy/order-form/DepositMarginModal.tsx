@@ -4,17 +4,17 @@ import { formatUnits } from 'ethers/lib/utils'
 import { useState } from 'react'
 import { CurrencyInput } from 'src/components/CurrencyInput'
 import { useNetwork, useToken } from 'wagmi'
+import { optimismGoerli } from 'wagmi/chains'
 
 export function DepositMarginModal(props: ModalProps) {
   const [value, setValue] = useState<number>()
   const { chain } = useNetwork()
-  const address = sUSD_ADDRESS[chain?.id!]
-  const { data } = useToken({
-    address,
-    enabled: Boolean(chain),
-  })
+
+  const address = sUSD_ADDRESS[chain?.id || optimismGoerli.id]
+  const { data } = useToken({ address, enabled: Boolean(chain) })
+
   return (
-    <Modal centered column className="w-[400px] h-fit" space={'medium.eq'} {...props}>
+    <Modal centered column className="h-fit w-[400px]" space={'medium.eq'} {...props}>
       <Text size={'xl'} variant={'heading'}>
         Deposit Margin
       </Text>

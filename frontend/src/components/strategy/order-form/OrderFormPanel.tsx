@@ -8,6 +8,7 @@ import { useDisclosure } from 'src/hooks/useDisclosure'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { findValueOnUrl } from 'src/utils/urlHandler'
 import { useNetwork, useToken } from 'wagmi'
+import { optimismGoerli } from 'wagmi/chains'
 import { CurrencyInput } from '../../CurrencyInput'
 import { DepositMarginModal } from './DepositMarginModal'
 
@@ -27,7 +28,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   useRouterEvents({ onIsReady, routeComplete })
 
   const { isOpen, onClose, onOpen } = useDisclosure()
-  const { data } = useToken({ address: sUSD_ADDRESS[chain?.id!] })
+  const { data } = useToken({ address: sUSD_ADDRESS[chain?.id || optimismGoerli.id] })
   const [orderType, setOrderType] = useState<'long' | 'short'>('long')
 
   return (
@@ -35,7 +36,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
       <Button
         onClick={onOpen}
         variant={'secondary.underline'}
-        className="rounded-lg h-16"
+        className="h-16 rounded-lg"
         size="xl"
       >
         Deposit Margin
@@ -66,7 +67,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           {t('amount')}
         </Text>
         <CurrencyInput currency={data} />
-        <Flex className="w-full min-h-[60px] bg-ocean-600 rounded-xl px-6">
+        <Flex className="bg-ocean-600 min-h-[60px] w-full rounded-xl px-6">
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
         </Flex>
       </Flex>
@@ -79,7 +80,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
             {value}x
           </Button>
         ))}
-        <Flex className="w-[40%] justify-end items-center px-2 gap-2 h-12 rounded-full relative bg-ocean-600 ">
+        <Flex className="bg-ocean-600 relative h-12 w-[40%] items-center justify-end gap-2 rounded-full px-5 ">
           <NumericInput
             className="w-[60%] text-end"
             max={50}
@@ -91,7 +92,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           />
           {!!value && (
             <Button onClick={() => setValue(0)}>
-              <CloseIcon className="w-3 h-3 fill-ocean-300 absolute left-3" />
+              <CloseIcon className="fill-ocean-300 absolute left-3 h-3 w-3" />
             </Button>
           )}
         </Flex>

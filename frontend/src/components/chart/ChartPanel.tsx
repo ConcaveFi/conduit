@@ -1,7 +1,6 @@
 import { Panel } from '@tradex/interface'
 import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
 import { useTranslation } from '@tradex/languages'
-import { NextRouter } from 'next/router'
 import { forwardRef, useEffect, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { useScriptLoader } from 'src/hooks/useScriptLoader'
@@ -21,9 +20,7 @@ export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, 
 
   const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + SECOND_SYMBOL }))
   const onRouteChange = (e: string) => setAsset(handleSynth(findValueOnUrl(e, 'asset')))
-  const onIsReady = ({ query }: NextRouter) => {
-    setAsset(handleSynth(query.asset as string) || DEFAULT_MARKET)
-  }
+  const onIsReady = ({ query }) => setAsset(handleSynth(query.asset as string) || DEFAULT_MARKET)
 
   const { router } = useRouterEvents({ routeComplete: onRouteChange, onIsReady })
   const { loaded } = useScriptLoader({ onLoad: loadChart, src: TRADING_VIEW_SRC, enabled: !!asset })

@@ -3,7 +3,7 @@ import ReactGridLayout from 'react-grid-layout'
 import { useWidgets } from 'src/context/WidgetsProvider'
 import { useGridLayout } from 'src/hooks/useGridLayout'
 import { useResizeObserver } from 'src/hooks/useResizeObserver'
-import { DEFAULT_LAYOUT, WIDGET_PRESETS } from 'src/utils/gridLayout'
+import { WIDGET_PRESETS } from 'src/utils/gridLayout'
 import { GRID_WIDGETS } from 'src/utils/gridWidgets'
 
 const DEFAULT_COLS = 12
@@ -23,7 +23,7 @@ export function GridLayout() {
   const { widgets, removeWidget } = useWidgets()
 
   return (
-    <Flex ref={ref} className="w-full h-full bg-ocean-900">
+    <Flex ref={ref} className="bg-ocean-900 h-full w-full">
       <ReactGridLayout
         style={{ height: isMaximized ? '100%' : 'fit-content' }}
         rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
@@ -33,7 +33,7 @@ export function GridLayout() {
         onLayoutChange={handleChange}
         containerPadding={[0, 0]}
         useCSSTransforms
-        layout={DEFAULT_LAYOUT}
+        layout={layout}
         width={width}
       >
         {widgets.map((key) => {
