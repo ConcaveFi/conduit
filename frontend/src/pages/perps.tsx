@@ -251,7 +251,7 @@ const OpenPosition = () => {
   const debouncedSizeUsd = useDebounce(size.usd, 200)
   const fixedSize = FixedNumber.isFixedNumber(debouncedSizeUsd)
     ? debouncedSizeUsd
-    : FixedNumber.fromString(debouncedSizeUsd || 0)
+    : FixedNumber.fromString(debouncedSizeUsd || '0')
 
   const sizeDelta = side === 'long' ? fixedSize : negative(fixedSize)
 
