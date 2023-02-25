@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import {
   useChainLinkLatestRoundData,
   useMarketAccessibleMargin,
+  useMarketAssetPrice,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDelayedOrders,
   useMarketPositions,
@@ -28,6 +29,7 @@ export const useRouteMarket = () => {
 
   const { data: markets } = useMarketDataAllProxiedMarketSummaries({
     select: parseMarketSummaries,
+    // cacheOnBlock: true,
   })
 
   const asset = router.query.asset
@@ -189,18 +191,18 @@ const Fees = ({ positionSize }: { positionSize: FixedNumber }) => {
 
   if (!market) return null
 
-  const feeRates = market.feeRates
-  const marketSkew = market.marketSkew
+  const { feeRates, marketSkew } = market
+
   const fee =
     positionSize.isNegative() && marketSkew.isNegative()
       ? feeRates.makerFeeOffchainDelayedOrder
       : feeRates.takerFeeOffchainDelayedOrder
 
+  const positionFee = positionSize.mulUnsafe(fee)
+
   return (
     <div>
-      <span className="text-xs text-neutral-200">
-        Fee: {format(fee.mulUnsafe(positionSize))} sUsd
-      </span>
+      <span className="text-xs text-neutral-200">Fee: {format(positionFee)} sUsd</span>
     </div>
   )
 }
@@ -209,15 +211,21 @@ const TrackingCode = formatBytes32String('tradex')
 
 const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
-const convertTo = (to: 'asset' | 'usd', v: FixedNumber, price: FixedNumber) =>
-  to === 'usd' ? v.mulUnsafe(price) : v.divUnsafe(price)
+const minusOne = FixedNumber.from(-1)
+const negative = (v: FixedNumber) => v.mulUnsafe(minusOne)
 
 const OpenPosition = () => {
   const market = useRouteMarket()
 
-  const price = market ? market.price : FixedNumber.from(1)
-
-  const [side, setSide] = useState<'long' | 'short'>('long')
+  const { data: _price } = useMarketAssetPrice({
+    address: market?.address,
+    select: ({ price }) => FixedNumber.fromValue(price || 0),
+    watch: true,
+    cacheOnBlock: true,
+    // initialData: {
+    //   price: BigNumber.from(market?.price || 0),
+    // } as ReadContractResult<typeof marketABI, 'assetPrice'>,
+  })
 
   const [amountDenominatedIn, toggleAmountDenominatedIn] = useReducer(
     (s) => (s === 'usd' ? 'asset' : 'usd'),
@@ -225,23 +233,27 @@ const OpenPosition = () => {
   )
 
   const [size, setAmount] = useReducer(
-    (a, amount) => {
-      const fixedAmount = FixedNumber.from(amount || 0)
+    (s, amount) => {
+      const price = _price || market?.price
+      if (!price || !amount) return { asset: amount, usd: amount }
+      const fixedAmount = FixedNumber.from(amount)
       const other = amountDenominatedIn === 'usd' ? 'asset' : 'usd'
-      const size = {
+      return {
         [amountDenominatedIn]: amount,
-        [other]: convertTo(other, fixedAmount, price),
-      }
-      return size
+        [other]: other === 'usd' ? fixedAmount.mulUnsafe(price) : fixedAmount.divUnsafe(price),
+      } as Record<'usd' | 'asset', FixedNumber | string>
     },
     { usd: '', asset: '' },
   )
 
-  const inputValue = size[amountDenominatedIn].toString()
+  const [side, setSide] = useState<'long' | 'short'>('long')
 
   const debouncedSizeUsd = useDebounce(size.usd, 200)
-  const fixedSize = FixedNumber.from(debouncedSizeUsd || 0)
-  const sizeDelta = side === 'long' ? fixedSize : fixedSize.mulUnsafe(FixedNumber.from(-1))
+  const fixedSize = FixedNumber.isFixedNumber(debouncedSizeUsd)
+    ? debouncedSizeUsd
+    : FixedNumber.fromString(debouncedSizeUsd || 0)
+
+  const sizeDelta = side === 'long' ? fixedSize : negative(fixedSize)
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
 
@@ -260,7 +272,7 @@ const OpenPosition = () => {
         <NumericInput
           className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
-          value={inputValue}
+          value={size[amountDenominatedIn].toString()}
           onValueChange={({ value }) => setAmount(value)}
         />
         <button
@@ -293,7 +305,7 @@ const OpenPosition = () => {
           <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
-      {market && <Fees positionSize={sizeDelta} />}
+      <Fees positionSize={sizeDelta} />
       <button
         className="w-full rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600 disabled:hover:opacity-100 disabled:active:scale-100"
         disabled={!submitOrder}
