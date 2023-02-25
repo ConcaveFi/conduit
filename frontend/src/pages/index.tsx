@@ -3,14 +3,14 @@ import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
 import { WidgetsProvider } from 'src/context/WidgetsProvider'
-import { useIsMounted } from 'src/hooks/useIsMounted'
+import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 
 export default function Home() {
-  const isMounted = useIsMounted()
-  if (!isMounted) return <></>
+  const isClientRendered = useIsClientRendered()
+  if (!isClientRendered) return null
   return (
     <WidgetsProvider>
-      <Container space="medium.eq" column className="w-full h-full">
+      <Container space="medium.eq" column className="h-full w-full">
         <Topbar />
         <StrategyHeader />
         <GridLayout />

@@ -18,13 +18,14 @@ import {
 } from 'perps-hooks'
 import { parseMarketSummaries, parseOrder, parsePosition } from 'perps-hooks/parsers'
 import { useReducer, useState } from 'react'
-import { useIsMounted } from 'src/hooks/useIsMounted'
+import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
-import { format } from '../utils/format'
+import { format, formatUsd } from '../utils/format'
 
 export const useRouteMarket = () => {
   const router = useRouter()
+
   const { data: markets } = useMarketDataAllProxiedMarketSummaries({
     select: parseMarketSummaries,
   })
@@ -46,12 +47,12 @@ const Markets = () => {
     select: parseMarketSummaries,
   })
 
-  const isMounted = useIsMounted()
+  const isClientRendered = useIsClientRendered()
 
   const router = useRouter()
   const routeMarket = useRouteMarket()
 
-  if (!markets || !isMounted) return null
+  if (!markets || !isClientRendered) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
@@ -97,9 +98,9 @@ const Orders = () => {
     select: parseOrder,
   })
 
-  const isMounted = useIsMounted()
+  const isClientRendered = useIsClientRendered()
 
-  if (!market || !order || !isMounted) return null
+  if (!market || !order || !isClientRendered) return null
 
   const size = order.sizeDelta
   const side = size.isNegative() ? 'Short' : 'Long'
@@ -154,9 +155,9 @@ const Position = () => {
     select: parsePosition,
   })
 
-  const isMounted = useIsMounted()
+  const isClientRendered = useIsClientRendered()
 
-  if (!market || !position || !isMounted) return null
+  if (!market || !position || !isClientRendered) return null
 
   const size = position.size
   const side = size.isNegative() ? 'Short' : 'Long'
@@ -340,9 +341,9 @@ const Margin = () => {
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
 
-  const isMounted = useIsMounted()
+  const isClientRendered = useIsClientRendered()
 
-  if (!accessibleMargin || !remainingMargin || !market || !isMounted) return null
+  if (!accessibleMargin || !remainingMargin || !market || !isClientRendered) return null
 
   const buyingPower = remainingMargin.mulUnsafe(market.maxLeverage)
 
@@ -365,8 +366,8 @@ const Margin = () => {
 const ConnectWallet = () => {
   const { openConnectModal } = useConnectModal()
   const { isConnected } = useAccount()
-  const isMounted = useIsMounted()
-  if (isConnected || !isMounted) return null
+  const isClientRendered = useIsClientRendered()
+  if (isConnected || !isClientRendered) return null
   return (
     <button
       className="mt-3 rounded-full bg-neutral-100 px-4 py-1.5 text-sm font-bold text-neutral-900 hover:opacity-75"
@@ -378,22 +379,31 @@ const ConnectWallet = () => {
 }
 
 const op_usd_feed = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
-
-export default function Home() {
-  const { data } = useChainLinkLatestRoundData({
+const OPPrice = () => {
+  const { data: opPrice } = useChainLinkLatestRoundData({
     address: op_usd_feed,
     chainId: 10,
     select: (v) => FixedNumber.fromValue(v.answer, 8),
   })
-  const isMounted = useIsMounted()
+  const isClientRendered = useIsClientRendered()
 
+  if (!isClientRendered || !opPrice) return null
+
+  return (
+    <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 px-3 py-2">
+      <span className="text-sm font-medium text-neutral-400">OP price: {formatUsd(opPrice)}</span>
+    </div>
+  )
+}
+
+export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
         <Markets />
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
-          {isMounted && data && <span className="text-neutral-200">op price: {format(data)}</span>}
           <ConnectWallet />
+          <OPPrice />
           <Orders />
           <Position />
           <Margin />
