@@ -18,7 +18,7 @@ import {
   usePrepareMarketTransferMargin,
 } from 'perps-hooks'
 import { parseMarketSummaries, parseOrder, parsePosition } from 'perps-hooks/parsers'
-import { useReducer, useState } from 'react'
+import { useMemo, useReducer, useState } from 'react'
 import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
@@ -212,7 +212,22 @@ const TrackingCode = formatBytes32String('tradex')
 const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
 const minusOne = FixedNumber.from(-1)
-const negative = (v: FixedNumber) => v.mulUnsafe(minusOne)
+
+const getSizeDelta = (
+  amount: string | FixedNumber,
+  leverage: FixedNumber,
+  side: 'long' | 'short',
+) => {
+  const fixedAmount = FixedNumber.isFixedNumber(amount)
+    ? amount
+    : FixedNumber.fromString(amount || '0')
+
+  const size = fixedAmount.mulUnsafe(leverage)
+
+  const sizeDelta = side === 'long' ? size : size.mulUnsafe(minusOne)
+
+  return sizeDelta
+}
 
 const OpenPosition = () => {
   const market = useRouteMarket()
@@ -230,10 +245,10 @@ const OpenPosition = () => {
     'usd',
   )
 
-  const [size, setAmount] = useReducer(
+  const [amounts, setAmount] = useReducer(
     (s, amount) => {
       if (!price || !amount) return { asset: amount, usd: amount }
-      const fixedAmount = FixedNumber.from(amount)
+      const fixedAmount = FixedNumber.fromString(amount)
       const other = amountDenominatedIn === 'usd' ? 'asset' : 'usd'
       return {
         [amountDenominatedIn]: amount,
@@ -244,13 +259,13 @@ const OpenPosition = () => {
   )
 
   const [side, setSide] = useState<'long' | 'short'>('long')
+  const [leverage, setLeverage] = useState(FixedNumber.from(25))
 
-  const debouncedSizeUsd = useDebounce(size.usd, 200)
-  const fixedSize = FixedNumber.isFixedNumber(debouncedSizeUsd)
-    ? debouncedSizeUsd
-    : FixedNumber.fromString(debouncedSizeUsd || '0')
-
-  const sizeDelta = side === 'long' ? fixedSize : negative(fixedSize)
+  const debouncedAmountUsd = useDebounce(amounts.usd, 200)
+  const sizeDelta = useMemo(
+    () => getSizeDelta(debouncedAmountUsd, leverage, side),
+    [debouncedAmountUsd, side, leverage],
+  )
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
 
@@ -269,7 +284,7 @@ const OpenPosition = () => {
         <NumericInput
           className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
-          value={size[amountDenominatedIn].toString()}
+          value={amounts[amountDenominatedIn].toString()}
           onValueChange={({ value }) => setAmount(value)}
         />
         <button
@@ -280,7 +295,7 @@ const OpenPosition = () => {
         </button>
       </div>
       <span className="text-xs text-neutral-200">
-        Position size {format(size.asset)} {market.asset}
+        Position size {format(sizeDelta.mulUnsafe(price))} {market.asset}
       </span>
       <div className="flex items-center justify-center gap-3">
         <button
