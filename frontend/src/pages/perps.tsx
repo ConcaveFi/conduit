@@ -217,14 +217,12 @@ const negative = (v: FixedNumber) => v.mulUnsafe(minusOne)
 const OpenPosition = () => {
   const market = useRouteMarket()
 
-  const { data: _price } = useMarketAssetPrice({
+  const { data: price } = useMarketAssetPrice({
     address: market?.address,
     select: ({ price }) => FixedNumber.fromValue(price || 0),
     watch: true,
     cacheOnBlock: true,
-    // initialData: {
-    //   price: BigNumber.from(market?.price || 0),
-    // } as ReadContractResult<typeof marketABI, 'assetPrice'>,
+    // initialData: { price: market?.price },
   })
 
   const [amountDenominatedIn, toggleAmountDenominatedIn] = useReducer(
@@ -234,7 +232,6 @@ const OpenPosition = () => {
 
   const [size, setAmount] = useReducer(
     (s, amount) => {
-      const price = _price || market?.price
       if (!price || !amount) return { asset: amount, usd: amount }
       const fixedAmount = FixedNumber.from(amount)
       const other = amountDenominatedIn === 'usd' ? 'asset' : 'usd'
@@ -403,7 +400,7 @@ const OPPrice = () => {
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 px-3 py-2">
-      <span className="text-sm font-medium text-neutral-400">OP price: {formatUsd(opPrice)}</span>
+      <span className="text-xs font-medium text-neutral-400">OP price: {formatUsd(opPrice)}</span>
     </div>
   )
 }
