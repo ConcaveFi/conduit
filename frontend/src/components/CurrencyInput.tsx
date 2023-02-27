@@ -1,5 +1,6 @@
 import { Button, Flex, NumericInput, NumericInputProps, Text } from '@tradex/interface'
 import { FetchTokenResult } from '@wagmi/core'
+import { format } from 'src/utils/format'
 import { useAccount, useBalance } from 'wagmi'
 
 interface CurrencyInput extends NumericInputProps {
@@ -9,12 +10,7 @@ interface CurrencyInput extends NumericInputProps {
 export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyInput) {
   const { address } = useAccount()
   const enabled = Boolean(currency?.address)
-  const { data } = useBalance({
-    address,
-    token: currency?.address,
-    enabled,
-    // select: (v) => FixedNumber.fromValue(v.value, currency?.decimals),
-  })
+  const { data } = useBalance({ address, token: currency?.address, enabled })
 
   const handleClickBalance = () => data && onClickBalance?.(data?.value.toBigInt(), data.decimals)
 
@@ -29,7 +25,7 @@ export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyIn
             Balance
           </Text>
           <Text size={'xs'} variant="heading">
-            {data && data?.formatted}
+            {data && format(data?.formatted)}
             {!data && '$0.00'}
           </Text>
         </Button>
