@@ -3,6 +3,7 @@ const colors = require('tailwindcss/colors')
 const customColors = require('@tradex/theme/utils/colors')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
     '../packages/icons/components/**/*.tsx',

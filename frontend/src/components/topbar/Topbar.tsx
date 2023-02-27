@@ -1,9 +1,9 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
+import { Button, Flex, ItemInfo, Menu, Text } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
-import { format } from 'src/utils/format'
+import { Themes } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { SearchInput } from '../SearchInput'
@@ -70,9 +70,24 @@ export function Topbar() {
             )
           }}
         </ConnectButton.Custom>
-        <Flex className="border-ocean-300 h-9 w-9 rounded-full border-[5px] p-2">
-          <Flex className="h-full w-full rounded-full bg-green-300"></Flex>
-        </Flex>
+        <Menu>
+          <Menu.Button>
+            <span className="testing">{theme}</span>
+          </Menu.Button>
+          <Menu.Items column variant={'glass'} className="testing right-0 gap-2 p-3 dark:text-left">
+            {Object.values(Themes)
+              .filter((_theme) => _theme !== theme)
+              .map((_theme) => (
+                <Menu.Button
+                  key={_theme}
+                  onClick={handleTheme(_theme)}
+                  variant="underline.secondary"
+                >
+                  {_theme}
+                </Menu.Button>
+              ))}
+          </Menu.Items>
+        </Menu>
       </Flex>
     </Flex>
   )
