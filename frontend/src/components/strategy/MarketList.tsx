@@ -18,9 +18,10 @@ export function MarketList() {
 
   if (!market || !markets) return null
 
-  const handleAssetClick = (asset: string, close: VoidFunction) => () => (
-    router.replace({ query: { asset } }, undefined, { shallow: true }), close()
-  )
+  const handleAssetClick = (asset: string, close: VoidFunction) => () => {
+    router.replace({ query: { asset } }, undefined, { shallow: true })
+    close()
+  }
 
   return (
     <Menu className={'my-auto h-fit'}>

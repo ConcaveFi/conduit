@@ -3,16 +3,20 @@ import { BalanceIcon, CoinIcon, FundingIcon, GasIcon, PercentIcon } from '@trade
 import { Flex, ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { FixedNumber } from 'ethers'
-import { format } from 'src/utils/format'
+import { useChainLinkLatestRoundData } from 'perps-hooks'
+import { format, formatUsd } from 'src/utils/format'
 import { useAccount, useBalance, useFeeData, useNetwork } from 'wagmi'
 import { MarketList } from './MarketList'
 
+const OP_USD_FEED = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
+const select = (v) => FixedNumber.fromValue(v.answer, 8)
 export function StrategyHeader() {
   const { t } = useTranslation()
   const { chain } = useNetwork()
   const { address } = useAccount()
   const enabled = Boolean(chain?.id)
 
+  const opPrice = useChainLinkLatestRoundData({ address: OP_USD_FEED, chainId: 10, select })
   const { data: sUSD_Balance } = useBalance({ address, token: sUSD_ADDRESS[chain?.id!], enabled })
   const { data: OP_Balance } = useBalance({ address, token: OP_ADDRESS[chain?.id!], enabled })
   const { data: GasPrice } = useFeeData()
@@ -45,8 +49,8 @@ export function StrategyHeader() {
           Icon={<CoinIcon />}
         />
         <ItemInfo
-          info={'OP'}
-          value={`$ ${format(FixedNumber.from(OP_Balance?.formatted || '0'))}`}
+          info={`OP - ${formatUsd(opPrice?.data || '0.0')}`}
+          value={`${format(FixedNumber.from(OP_Balance?.formatted || '0'))}`}
           Icon={<CoinIcon />}
         />
         <ItemInfo info={'GWEI'} value={GasPrice?.formatted.gasPrice || '0.0'} Icon={<GasIcon />} />
