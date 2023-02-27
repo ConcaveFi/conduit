@@ -3,8 +3,9 @@ import { Button, ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useMarketDataAllProxiedMarketSummaries } from 'perps-hooks'
+import { parseMarketSummaries } from 'perps-hooks/parsers'
 import { forwardRef, useMemo } from 'react'
-import { parseMarketSummaries, useRouteMarket } from 'src/pages/perps'
+import { useRouteMarket } from 'src/pages/perps'
 import { format } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
 
@@ -12,12 +13,14 @@ export function MarketList() {
   const router = useRouter()
 
   const market = useRouteMarket()
-
   const { data: markets } = useMarketDataAllProxiedMarketSummaries({ select: parseMarketSummaries })
-
   const normalized_asset = useMemo(() => handleSynth(market?.asset), [market?.asset])
 
   if (!market || !markets) return null
+
+  const handleAssetClick = (asset: string, close: VoidFunction) => () => (
+    router.replace({ query: { asset } }, undefined, { shallow: true }), close()
+  )
 
   return (
     <Menu className={'my-auto h-fit'}>
@@ -47,12 +50,9 @@ export function MarketList() {
           <Menu.Item key={i}>
             {({ close }) => (
               <MarketButton
-                price={format(price)}
                 asset={asset}
-                onClick={() => {
-                  router.replace({ query: { asset } }, undefined, { shallow: true })
-                  close()
-                }}
+                price={format(price)}
+                onClick={handleAssetClick(asset, close)}
               />
             )}
           </Menu.Item>
