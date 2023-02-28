@@ -1,3 +1,5 @@
+const colors = require('../utils/colors')
+
 function greenSlider(theme) {
   return {
     appearance: 'none',
@@ -10,7 +12,10 @@ function greenSlider(theme) {
     '&::-webkit-slider-runnable-track': {
       'border-radius': '20px',
       height: '5px',
-      background: `${theme('colors.ocean.600')}`,
+      background: colors.light[300],
+    },
+    '.ocean &::-webkit-slider-runnable-track': {
+      background: colors.ocean[600],
     },
     '&::-webkit-slider-thumb': {
       height: '14px',

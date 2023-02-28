@@ -1,4 +1,3 @@
-import { Flex } from '@tradex/interface'
 import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface TabProps {
@@ -29,9 +28,9 @@ export function Tab({ children, onChange }: TabProps) {
   }, [ref, children])
 
   return (
-    <Flex ref={ref} className="w-full bg-ocean-600 h-12 p-1 rounded-full">
+    <div ref={ref} className="bg-ocean-600 flex h-12 w-full rounded-full p-1">
       {tabs}
-    </Flex>
+    </div>
   )
 }
 interface TabButton {

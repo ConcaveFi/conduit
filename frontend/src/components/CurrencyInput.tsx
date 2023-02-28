@@ -1,4 +1,4 @@
-import { Button, Flex, NumericInput, NumericInputProps, Text } from '@tradex/interface'
+import { NumericInput, NumericInputProps } from '@tradex/interface'
 import { FetchTokenResult } from '@wagmi/core'
 import { format } from 'src/utils/format'
 import { useAccount, useBalance } from 'wagmi'
@@ -15,21 +15,19 @@ export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyIn
   const handleClickBalance = () => data && onClickBalance?.(data?.value.toBigInt(), data.decimals)
 
   return (
-    <Flex className="bg-ocean-600 min-h-[60px] w-full rounded-xl px-6" centered>
+    <div className="bg-light-300 ocean:bg-ocean-600 centered flex min-h-[60px] w-full rounded-xl px-6">
       <NumericInput variant="simple" className="w-full" placeholder="0.0" {...props} />
-      <Flex column align={'end'}>
-        <Text variant="low">{currency?.symbol}</Text>
+      <div className="flex flex-col items-end">
+        <span className="text-light-500 ocean:text-ocean-300 text-lg">{currency?.symbol}</span>
 
-        <Button variant={'underline'} onClick={handleClickBalance}>
-          <Text size={'xs'} variant="medium">
-            Balance
-          </Text>
-          <Text size={'xs'} variant="heading">
+        <button className="btn btn-underline" onClick={handleClickBalance}>
+          <span className="text-light-500 ocean:text-ocean-200 text-xs font-medium ">Balance</span>
+          <span className="text-light-600 ocean:text-white text-xs font-medium">
             {data && format(data?.formatted)}
             {!data && '$0.00'}
-          </Text>
-        </Button>
-      </Flex>
-    </Flex>
+          </span>
+        </button>
+      </div>
+    </div>
   )
 }

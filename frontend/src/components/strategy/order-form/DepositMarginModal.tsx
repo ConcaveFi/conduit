@@ -1,5 +1,5 @@
 import { sUSD_ADDRESS } from '@tradex/core'
-import { Button, Modal, ModalProps, Text } from '@tradex/interface'
+import { Modal, ModalProps } from '@tradex/interface'
 import { formatUnits, parseEther } from 'ethers/lib/utils'
 import { useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
 import { useState } from 'react'
@@ -21,26 +21,22 @@ export function DepositMarginModal(props: ModalProps) {
   const { write } = useMarketTransferMargin(config)
 
   return (
-    <Modal centered column className="h-fit w-[400px]" space={'medium.eq'} {...props}>
-      <Text size={'xl'} variant={'heading'}>
-        Deposit Margin
-      </Text>
+    <Modal className="centered card card-primary h-fit w-[400px] gap-4 p-4" {...props}>
+      <span className="text-light-500 ocean:text-white text-xl">Deposit Margin</span>
       <CurrencyInput
         onValueChange={(v) => setValue(v.floatValue)}
         onClickBalance={(balance, decimals) => setValue(+formatUnits(balance, decimals))}
         value={value}
         currency={data}
       />
-      <Button
+      <button
         disabled={!value || !write}
         onClick={write}
-        className="rounded-lg py-6"
-        variant={'primary.outline'}
-        size="xl"
+        className="btn btn-primary.outlined centered h-14 w-full rounded-lg py-6"
       >
         {Boolean(value) && ' Confirm deposit'}
         {!Boolean(value) && 'Enter an amount'}
-      </Button>
+      </button>
     </Modal>
   )
 }

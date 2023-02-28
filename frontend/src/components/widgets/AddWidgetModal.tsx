@@ -1,4 +1,4 @@
-import { Button, Flex, Modal, ModalProps, Text } from '@tradex/interface'
+import { Modal, ModalProps } from '@tradex/interface'
 import { useReducer } from 'react'
 import { useWidgets } from 'src/context/WidgetsProvider'
 import { GridWidgetKeys, GRID_WIDGETS } from 'src/utils/gridWidgets'
@@ -18,38 +18,36 @@ export function AddWidgetModal(props: ModalProps) {
   }
 
   return (
-    <Modal {...props} column overlay space={'medium.eq'} className="w-[400px] h-[300px] ">
-      <Flex column>
-        <Text className="mx-auto" variant={'heading'} size="2xl">
-          Add widget
-        </Text>
-        <Text variant={'low'} className="px-12">
-          These are the widgets not included on your layout
-        </Text>
-      </Flex>
-      <Flex grow className="flex-wrap w-full gap-4 bg-ocean-900 rounded-xl py-3" centered>
+    <Modal {...props} overlay className="card card-primary h-[300px] w-[400px] gap-4 p-5 ">
+      <span className="text-light-400 ocean:text-ocean-200 mx-auto text-2xl font-medium">
+        Add widget
+      </span>
+      <span className="text-light-500 ocean:bg-ocean-300 -mt-4 px-12 text-center">
+        These are the widgets not included on your layout
+      </span>
+      <div className="bg-light-300 ocean:bg-ocean-900 flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
         {Object.keys(GRID_WIDGETS)
           .filter((widget) => !widgets.includes(widget as GridWidgetKeys))
           .map((key) => (
-            <Button
+            <button
               key={key}
-              variant={selecteds.includes(key) ? 'primary' : 'underline.secondary'}
               onClick={() => dispatch(key)}
-              className="py-2"
-              size="md"
+              className={`btn py-2 ${
+                selecteds.includes(key) ? 'btn-primary' : 'btn-underline.secondary'
+              }`}
             >
               {key.replace('-', ' ')}
-            </Button>
+            </button>
           ))}
-      </Flex>
-      <Flex className=" gap-3" justify={'end'}>
-        <Button className="bg-ocean-500 w-[80px] h-9 rounded-lg ">
-          <Text variant={'heading'}>Cancel</Text>
-        </Button>
-        <Button onClick={handleApply} className="bg-green-gradient w-[80px] h-9 rounded-lg">
+      </div>
+      <div className="flex justify-end gap-3">
+        <button className="btn btn-secondary centered h-9 w-[80px] rounded-lg ">
+          <span className="text-heading">Cancel</span>
+        </button>
+        <button onClick={handleApply} className="bg-green-gradient h-9 w-[80px] rounded-lg">
           Apply
-        </Button>
-      </Flex>
+        </button>
+      </div>
     </Modal>
   )
 }

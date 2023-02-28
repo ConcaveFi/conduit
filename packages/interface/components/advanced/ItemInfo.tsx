@@ -1,48 +1,39 @@
+import { cva } from 'class-variance-authority'
 import { ReactNode } from 'react'
-import { Flex } from '../primitives/Flex'
-import { Text } from '../primitives/Text'
 
+const styles = cva(cva('')(), {
+  variants: {
+    align: {
+      center: 'items-center',
+      end: 'items-end',
+      start: 'items-start',
+    },
+    modifier: {
+      positive: 'text-green-500',
+      negative: 'text-red-500',
+      none: 'text-light-600 ocean:text-white ',
+    },
+  },
+  defaultVariants: {
+    align: 'center',
+    modifier: 'none',
+  },
+})
 export interface ItemInfoProps {
   info: string
   value: string
   Icon?: ReactNode
   modifier?: 'positive' | 'negative' | 'none'
-  align?: 'center' | 'end' | 'baseline' | 'stretch' | 'start'
-  isLoading?: boolean
+  align?: 'center' | 'end' | 'start'
 }
-export function ItemInfo({
-  Icon,
-  info,
-  value,
-  isLoading,
-  align = 'start',
-  modifier = 'none',
-}: ItemInfoProps) {
+export function ItemInfo({ Icon, info, value, align = 'start', modifier }: ItemInfoProps) {
   return (
-    <Flex className="items-center gap-4">
-      {Icon && isLoading && (
-        <div className=" animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-500 h-9 w-9 rounded-full"></div>
-      )}
-      {!isLoading && Icon}
-      <Flex column align={align} className={`${isLoading && 'gap-2'}`}>
-        {!isLoading && (
-          <>
-            <Text size="sm" variant="medium" weight="medium">
-              {info}
-            </Text>
-
-            <Text className="-mt-1 " variant="heading" size="md" modifier={modifier}>
-              {value}
-            </Text>
-          </>
-        )}
-        {isLoading && (
-          <>
-            <div className="animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-500 h-3 w-14"></div>
-            <div className="animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-500 h-3 w-24"></div>
-          </>
-        )}
-      </Flex>
-    </Flex>
+    <div className="flex items-center gap-4 ">
+      {Icon}
+      <div className={`flex flex-col ${styles({ align })}`}>
+        <span className="text-light-500 ocean:text-ocean-200 text-sm font-medium">{info}</span>
+        <span className={`-mt-1 text-[16px] font-semibold ${styles({ modifier })}`}>{value}</span>
+      </div>
+    </div>
   )
 }

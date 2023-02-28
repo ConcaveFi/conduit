@@ -1,4 +1,3 @@
-import { Flex } from '@tradex/interface'
 import ReactGridLayout from 'react-grid-layout'
 import { useWidgets } from 'src/context/WidgetsProvider'
 import { useGridLayout } from 'src/hooks/useGridLayout'
@@ -23,7 +22,7 @@ export function GridLayout() {
   const { widgets, removeWidget } = useWidgets()
 
   return (
-    <Flex ref={ref} className="bg-ocean-900 h-full w-full">
+    <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full">
       <ReactGridLayout
         style={{ height: isMaximized ? '100%' : 'fit-content' }}
         rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
@@ -52,6 +51,6 @@ export function GridLayout() {
           )
         })}
       </ReactGridLayout>
-    </Flex>
+    </div>
   )
 }

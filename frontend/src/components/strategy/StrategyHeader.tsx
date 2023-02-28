@@ -1,6 +1,6 @@
 import { OP_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
 import { BalanceIcon, CoinIcon, FundingIcon, GasIcon, PercentIcon } from '@tradex/icons'
-import { Flex, ItemInfo } from '@tradex/interface'
+import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { FixedNumber } from 'ethers'
 import { useChainLinkLatestRoundData } from 'perps-hooks'
@@ -22,10 +22,10 @@ export function StrategyHeader() {
   const { data: GasPrice } = useFeeData()
 
   return (
-    <Flex className="gap-3">
-      <Flex className="bg-ocean-600 min-h-[80px] w-full rounded-2xl px-6 " justify="between">
+    <div className="flex gap-3">
+      <div className="bg-light-100 ocean:bg-ocean-600 flex min-h-[80px] w-full justify-between rounded-2xl px-6 ">
         <MarketList />
-        <Flex className="gap-20">
+        <div className="flex gap-20">
           <ItemInfo info={t('24h_volume')} value="$ 370,526,580" Icon={<BalanceIcon />} />
           <ItemInfo
             info={t('24h_change')}
@@ -40,9 +40,9 @@ export function StrategyHeader() {
             value="+ 0.245%"
             Icon={<FundingIcon />}
           />
-        </Flex>
-      </Flex>
-      <Flex className="px-  bg-ocean-600 min-h-[80px] w-[44%] rounded-2xl " justify={'around'}>
+        </div>
+      </div>
+      <div className="bg-light-100 ocean:bg-ocean-600 flex min-h-[80px] w-[44%] justify-around rounded-2xl ">
         <ItemInfo
           info={'sUSD'}
           value={`$ ${format(FixedNumber.from(sUSD_Balance?.formatted || '0'))}`}
@@ -54,7 +54,7 @@ export function StrategyHeader() {
           Icon={<CoinIcon />}
         />
         <ItemInfo info={'GWEI'} value={GasPrice?.formatted.gasPrice || '0.0'} Icon={<GasIcon />} />
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   )
 }

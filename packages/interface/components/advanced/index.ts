@@ -1,4 +1,3 @@
-export * from './Card'
 export * from './ItemInfo'
 export * from './Menu'
 export * from './panel/Panel'

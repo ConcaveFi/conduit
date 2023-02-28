@@ -1,13 +1,13 @@
 import { SearchIcon } from '@tradex/icons'
-import { Flex, Input } from '@tradex/interface'
+import { Input } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 
 export function SearchInput() {
   const { t } = useTranslation()
   return (
-    <Flex className="w-[240px] bg-ocean-700 rounded-full px-4 h-10 gap-4" centered>
-      <SearchIcon className="w-5 h-5 fill-ocean-200" />
+    <div className="bg-light-100 ocean:bg-ocean-700 centered flex h-10 w-[240px] gap-4 rounded-full px-4">
+      <SearchIcon className="ocean:fill-ocean-200 fill-light-400 h-5 w-5" />
       <Input variant="simple.high" className="w-full" placeholder={t('search')} />
-    </Flex>
+    </div>
   )
 }

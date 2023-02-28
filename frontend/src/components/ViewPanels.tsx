@@ -1,14 +1,4 @@
-import {
-  Button,
-  Flex,
-  PanelProps,
-  Table,
-  TableBody,
-  TableRow,
-  TabPanel,
-  Text,
-  THead,
-} from '@tradex/interface'
+import { PanelProps, Table, TableBody, TableRow, TabPanel, THead } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 
@@ -36,13 +26,13 @@ const MOCK_ROWS = [
 ] as const
 
 const STYLES = {
-  market: { variant: 'heading.light' },
-  'side.place': { modifier: 'negative' },
-  size: { variant: 'heading.light' },
-  leverage: { variant: 'heading.light' },
-  unrealized: { modifier: 'positive' },
-  avg_entry_price: { variant: 'heading.light' },
-  liq_price: { variant: 'heading.light' },
+  market: '<text-light-6></text-light-6>00 ocean:text-white',
+  'side.place': 'text-red-500',
+  size: '<text-light-6></text-light-6>00 ocean:text-white',
+  leverage: '<text-light-6></text-light-6>00 ocean:text-white',
+  unrealized: 'text-green-400',
+  avg_entry_price: '<text-light-6></text-light-6>00 ocean:text-white',
+  liq_price: '<text-light-6></text-light-6>00 ocean:text-white',
 }
 
 // COMPONENT ---------------------------------------------------------------------
@@ -54,35 +44,37 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
       {TABS.map((tab) => (
         <TabPanel.Tab key={tab}>
           {(selected) => (
-            <Button size="sm" variant={selected ? 'secondary' : 'underline.secondary'}>
+            <button
+              className={`${
+                selected ? 'btn-secondary' : 'btn-underline.secondary'
+              } btn px-4 py-[2px]`}
+            >
               {t(tab)}
-            </Button>
+            </button>
           )}
         </TabPanel.Tab>
       ))}
       <TabPanel.Screen>
-        <Flex>
-          <Table className="w-full" left>
-            <THead variant={'primary'}>
-              <TableRow rows={HEADERS}>
-                {(element, index) => (
-                  <Text key={index} size="sm" variant="low">
-                    {t(element)}
-                  </Text>
-                )}
-              </TableRow>
-            </THead>
-            <TableBody>
-              <TableRow rows={MOCK_ROWS}>
-                {(element, index) => (
-                  <Text key={index} size={'sm'} {...STYLES[HEADERS[index]]}>
-                    {element}
-                  </Text>
-                )}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </Flex>
+        <Table className="w-full" left>
+          <THead variant={'primary'}>
+            <TableRow rows={HEADERS}>
+              {(element, index) => (
+                <span key={index} className="text-light-500 ocean:text-ocean-300 text-sm">
+                  {t(element)}
+                </span>
+              )}
+            </TableRow>
+          </THead>
+          <TableBody>
+            <TableRow rows={MOCK_ROWS}>
+              {(element, index) => (
+                <span key={index} className={`text-sm ${STYLES[HEADERS[index]]}`}>
+                  {element}
+                </span>
+              )}
+            </TableRow>
+          </TableBody>
+        </Table>
       </TabPanel.Screen>
     </TabPanel.Root>
   )

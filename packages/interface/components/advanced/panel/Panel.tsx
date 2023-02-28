@@ -1,6 +1,5 @@
 import { forwardRef } from 'react'
-import { PrimitiveDivProps } from '../../../types/primitives'
-import { Text } from '../../primitives'
+import { DivProps } from '../../../types/primitives'
 import { PanelBody, PanelBodyProps } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
 import { PanelWrapper } from './PanelWrapper'
@@ -11,7 +10,7 @@ export interface PanelEssentials {
   onMinimize?: VoidFunction
   onClose?: VoidFunction
 }
-export interface PanelProps extends PrimitiveDivProps, PanelHeaderProps, PanelEssentials {
+export interface PanelProps extends DivProps, PanelHeaderProps, PanelEssentials {
   name?: string
 }
 export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
@@ -33,9 +32,7 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
         onClose={onClose}
         variant={variant}
       >
-        <Text size="xs" variant="medium">
-          {name}
-        </Text>
+        <span className="text-light-400 ocean:text-ocean-200 text-xs ">{name}</span>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>
         {children}

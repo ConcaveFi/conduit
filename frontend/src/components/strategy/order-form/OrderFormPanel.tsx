@@ -1,6 +1,6 @@
 import { sUSD_ADDRESS } from '@tradex/core'
 import { CloseIcon } from '@tradex/icons'
-import { Button, Flex, NumericInput, Panel, PanelProps, Slider, Text } from '@tradex/interface'
+import { NumericInput, Panel, PanelProps, Slider } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { NextRouter } from 'next/router'
 import { ChangeEvent, forwardRef, useState } from 'react'
@@ -33,54 +33,49 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
-      <Button
-        onClick={onOpen}
-        variant={'secondary.underline'}
-        className="h-16 rounded-lg"
-        size="xl"
-      >
+      <button onClick={onOpen} className="btn btn-secondary.outlined centered h-16 rounded-lg">
         Deposit Margin
-      </Button>
+      </button>
       <DepositMarginModal isOpen={isOpen} onClose={onClose} />
 
       {/* Place oder section ----------------------------------- */}
-      <Flex className="gap-4">
-        <Button
+      <div className="flex gap-4">
+        <button
           onClick={() => setOrderType('long')}
-          variant={orderType === 'long' ? 'green-gradient' : 'down'}
-          className="rounded-lg"
-          size={'xl'}
+          className={`btn centered flex-1 rounded-lg py-2
+            ${orderType === 'long' ? 'btn-green-gradient' : 'btn-down'}  `}
         >
           Long
-        </Button>
-        <Button
+        </button>
+        <button
           onClick={() => setOrderType('short')}
-          variant={orderType === 'short' ? 'red-gradient' : 'down'}
-          className="rounded-lg"
-          size={'xl'}
+          className={`centered btn flex-1 rounded-lg py-2
+            ${orderType === 'short' ? 'btn-red-gradient' : 'btn-down'}`}
         >
           Short
-        </Button>
-      </Flex>
-      <Flex column className={'gap-2'}>
-        <Text variant="low" className="px-4">
-          {t('amount')}
-        </Text>
+        </button>
+      </div>
+      <div className={'flex flex-col gap-2'}>
+        <span className="text-light-400 ocean:text-ocean-300 px-4">{t('amount')}</span>
         <CurrencyInput currency={data} />
-        <Flex className="bg-ocean-600 min-h-[60px] w-full rounded-xl px-6">
+        <div className="bg-light-300 ocean:bg-ocean-600 flex min-h-[60px] w-full items-center rounded-xl px-6">
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
-        </Flex>
-      </Flex>
+        </div>
+      </div>
 
       {/* Leverage handler ----------------------- */}
-      <Flex justify="between" centered>
-        <Text variant="medium">{t('leverage')}</Text>
+      <div className=" flex items-center justify-between px-4">
+        <span className="text-light-400 ocean:text-ocean-300">{t('leverage')}</span>
         {[10, 25, 50].map((value) => (
-          <Button key={value} onClick={() => setValue(value)} variant={'underline.secondary'}>
+          <button
+            key={value}
+            onClick={() => setValue(value)}
+            className="btn btn-underline.secondary"
+          >
             {value}x
-          </Button>
+          </button>
         ))}
-        <Flex className="bg-ocean-600 relative h-12 w-[40%] items-center justify-end gap-2 rounded-full px-5 ">
+        <div className="bg-light-300 ocean:bg-ocean-600 relative flex h-12 w-[40%] items-center justify-end gap-2 rounded-full px-5 ">
           <NumericInput
             className="w-[60%] text-end"
             max={50}
@@ -91,16 +86,16 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
             onChange={handleInput}
           />
           {!!value && (
-            <Button onClick={() => setValue(0)}>
-              <CloseIcon className="fill-ocean-300 absolute left-3 h-3 w-3" />
-            </Button>
+            <button onClick={() => setValue(0)} className="absolute left-3 ">
+              <CloseIcon className="fill-ocean-300 h-3 w-3" />
+            </button>
           )}
-        </Flex>
-      </Flex>
+        </div>
+      </div>
       <Slider max={50} step={0.1} onChange={handleInput} value={value || 0} />
-      <Button className="h-16 rounded-lg opacity-50" variant="green-gradient" size="xl">
+      <button className="btn btn-green-gradient centered h-16 rounded-lg text-xl opacity-50">
         Place Order
-      </Button>
+      </button>
     </Panel>
   )
 })

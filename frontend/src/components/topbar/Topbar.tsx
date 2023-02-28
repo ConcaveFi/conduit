@@ -1,79 +1,83 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
+import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { format } from 'src/utils/format'
+import { Theme } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { SearchInput } from '../SearchInput'
 import { LocationSelector } from './LocationSelector'
+import { ThemeSelector } from './ThemeSelector'
 
 export function Topbar() {
   const { isConnected } = useAccount()
   const { t } = useTranslation()
   const { address } = useAccount()
   const { data } = useBalance({ address })
+  const [theme, setTheme] = useState(Theme.getStoredTheme())
+
+  useEffect(() => {
+    console.log(document.documentElement.classList)
+  }, [theme])
+
   return (
-    <Flex align="center" justify="between">
-      <Flex align="center" className="gap-2">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
         <Image src={'/assets/logo.png'} alt="logo" width={45} height={30} />
-        <Text variant="heading.light">
+        <span className="text-white">
           TRADE <strong>X</strong>
-        </Text>
-        <Button className="ml-8" variant="underline" size="lg">
+        </span>
+        <button className="btn btn-bottom-glow centered w-[120px] rounded-none">
           {t('futures')}
-        </Button>
-        <Button variant="underline" size="lg">
+        </button>
+        <button className="btn btn-underline centered w-[120px] rounded-none">
           {t('options')}
-        </Button>
-        <Button variant="bottom-glow" size="lg">
-          {t('strategy')} <ChevronIcon />
-        </Button>
+        </button>
+        <button className="btn btn-underline centered w-[120px]  rounded-none">
+          {t('strategy')} <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
+        </button>
         <SearchInput />
-      </Flex>
-      <Flex align="center" className="w-fit gap-6">
+      </div>
+      <div className="flex w-fit items-center gap-6">
         <LocationSelector />
-        <DashboardIcon className="fill-ocean-200 h-5 w-5" />
-        <Flex className="h-9 w-9 rounded-full bg-sky-300 bg-opacity-70 p-[5px]">
-          <Flex className="h-full w-full rounded-full bg-sky-300" />
-        </Flex>
+        <ThemeSelector />
+        <DashboardIcon className="fill-ocean-200 btn- h-5 w-5" />
+
         <NotificationIcon className="fill-ocean-200 h-5 w-5" />
         <ConnectButton.Custom>
           {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
             if (!isConnected) {
               return (
-                <Button
+                <button
                   onClick={openConnectModal}
-                  variant={'green-gradient'}
-                  className="py-2"
-                  size={'lg'}
+                  className="btn btn-green-gradient py-22 px-6 py-2"
                 >
                   Connect wallet
-                </Button>
+                </button>
               )
             }
             return (
-              <Flex className="gap-4">
-                <Button variant={'primary'} size="lg" onClick={openChainModal} className="gap-2">
+              <div className="flex gap-4">
+                <button onClick={openChainModal} className="btn btn-primary centered gap-2 px-4">
                   <img src={chain?.iconUrl} className="w-6" alt="" />
                   {chain?.name}
                   <ChevronIcon className="fill-ocean-200 h-3 w-3" />
-                </Button>
-                <Button onClick={openAccountModal}>
+                </button>
+                <button className="btn" onClick={openAccountModal}>
                   <ItemInfo
+                    align="end"
                     info={truncateAddress(account?.address)}
                     value={format(data?.formatted || '0')}
                   />
-                </Button>
-              </Flex>
+                </button>
+              </div>
             )
           }}
         </ConnectButton.Custom>
-        <Flex className="border-ocean-300 h-9 w-9 rounded-full border-[5px] p-2">
-          <Flex className="h-full w-full rounded-full bg-green-300"></Flex>
-        </Flex>
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   )
 }

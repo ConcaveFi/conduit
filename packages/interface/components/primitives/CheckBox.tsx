@@ -1,6 +1,4 @@
 import { SVGProps, useEffect, useRef, useState } from 'react'
-import { Text } from '../primitives/Text'
-import { Flex } from './Flex'
 
 export interface CheckBox extends SVGProps<SVGSVGElement> {
   info?: string
@@ -27,12 +25,12 @@ export function CheckBox({ initialState, onToggle, className, ripple, info, ...p
   }
 
   return (
-    <Flex centered className="w-fit gap-2">
+    <div className="centered flex w-fit gap-2">
       <button
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onClick={() => handleCLick()}
-        className="relative w-fit h-fit  "
+        className="relative h-fit w-fit  "
       >
         <svg
           width="12"
@@ -40,7 +38,7 @@ export function CheckBox({ initialState, onToggle, className, ripple, info, ...p
           fill="none"
           viewBox="0 0 12 12"
           xmlns="http://www.w3.org/2000/svg"
-          className={className || 'w-4 h-4'}
+          className={className || 'h-4 w-4'}
           {...props}
         >
           {state && (
@@ -59,15 +57,15 @@ export function CheckBox({ initialState, onToggle, className, ripple, info, ...p
         {ripple && (
           <div
             ref={ref}
-            className={`absolute flex justify-center items-center
-            ${hover ? 'opacity-100' : 'opacity-0'} transition-all duration-300 ease-out 
-            overflow-hidden w-[220%] h-[220%] rounded-full pointer-events-none
-            bg-opacity-50 bg-ocean-300 -inset-[65%]
+            className={`absolute flex items-center justify-center
+            ${hover ? 'opacity-100' : 'opacity-0'} bg-ocean-300 pointer-events-none -inset-[65%] 
+            h-[220%] w-[220%] overflow-hidden rounded-full bg-opacity-50
+            transition-all duration-300 ease-out
          `}
           />
         )}
       </button>
-      {info && <Text className="capitalize">{info}</Text>}
-    </Flex>
+      {info && <span className="text-high capitalize">{info}</span>}
+    </div>
   )
 }

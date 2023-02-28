@@ -1,5 +1,5 @@
 import { Arrow } from '@tradex/icons'
-import { Flex, Panel, PanelProps, Text } from '@tradex/interface'
+import { Panel, PanelProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 
@@ -8,99 +8,75 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
   return (
     <Panel {...props} ref={ref} name={t('recent_trades')} variant="secondary">
       <table className="text-end">
-        <thead className="border-b-2 border-ocean-400">
+        <thead className="ocean:border-ocean-400 border-b-2">
           <tr>
             <th className="w-[33%] ">
-              <Text size="xs" variant="low">
-                {t('price')}
-              </Text>
+              <span className="text-light-400 ocean:text-ocean-300 text-xs">{t('price')}</span>
             </th>
             <th className="w-[32%]">
-              <Text size="xs" variant="low">
-                {t('amount')}
-              </Text>
+              <span className="text-light-400 ocean:text-ocean-300 text-xs">{t('amount')}</span>
             </th>
-            <th className="pr-2 w-[40%]">
-              <Text size="xs" variant="low">
-                {t('total')}
-              </Text>
+            <th className="w-[40%] pr-2">
+              <span className="text-light-400 ocean:text-ocean-300 text-xs">{t('total')}</span>
             </th>
           </tr>
         </thead>
         <tbody>
           {new Array(4).fill(0).map((_, i) => (
-            <tr key={i} className="odd:bg-ocean-900 h-6">
+            <tr key={i} className="odd:bg-light-300 ocean:odd:bg-ocean-900 h-6">
               <td>
-                <Text size="xs" modifier="negative">
-                  22,915.0
-                </Text>
+                <span className="text-xs text-red-500">22,915.0</span>
               </td>
               <td className=" ">
-                <Flex justify="end" className="relative h-6 " align="center">
-                  <Text size="xs" variant="medium">
-                    30
-                  </Text>
-                  <Flex
+                <div className="relative flex h-6 items-center justify-end ">
+                  <span className="text-light-500 ocean:text-ocean-300 text-xs">30</span>
+                  <div
                     style={{ width: Math.random() * (60 - 40) + 40 }}
-                    className={`absolute bg-[#FF2E2E26] left-[110%] px] h-full`}
+                    className={`px] absolute left-[110%] h-full bg-[#FF2E2E26]`}
                   />
-                </Flex>
+                </div>
               </td>
               <td className="pr-2">
-                <Text size="xs" variant="medium">
-                  213,900
-                </Text>
+                <span className="text-light-500 ocean:text-ocean-300 text-xs">213,900</span>
               </td>
             </tr>
           ))}
-          <tr className="h-14 rounded-lg px-2 bg-ocean-900">
+          <tr className="bg-light-300 ocean:bg-ocean-900 h-14 rounded-lg px-2">
             <td className="">
-              <Flex className="justify-end items-center gap-2">
-                <Text size="md" modifier="positive">
-                  22,915.0
-                </Text>
-                <Arrow className="w-3 h-3" />
-              </Flex>
+              <div className=" flex w-full items-center justify-end gap-2">
+                <span className="text-[16px] text-green-500">22,915.0</span>
+                <Arrow className="h-3 w-3" />
+              </div>
             </td>
             <td className="">
-              <Flex column align="end" justify="center">
-                <Text size="sm" className="text-white">
-                  30
-                </Text>
-                <Text size="xs">Mark</Text>
-              </Flex>
+              <div className="flex flex-col items-end justify-center">
+                <span className="text-light-500 ocean:text-white text-sm">30</span>
+                <span className="text-light-600 ocean:text-ocean-200 text-xs">Mark</span>
+              </div>
             </td>
             <td className="pr-2">
-              <Flex column align="end" justify="center">
-                <Text size="sm" className="text-white">
-                  30
-                </Text>
-                <Text size="xs">Mark</Text>
-              </Flex>
+              <div className="flex flex-col items-end justify-center">
+                <span className="text-light-500 ocean:text-white text-sm">30</span>
+                <span className="text-light-600 ocean:text-ocean-200 text-xs">Mark</span>
+              </div>
             </td>
           </tr>
           {new Array(4).fill(0).map((_, i) => (
-            <tr key={i} className="odd:bg-ocean-900 ">
+            <tr key={i} className="odd:bg-light-300 ocean:odd:bg-ocean-900 ">
               <td>
-                <Text size="xs" modifier="positive">
-                  22,915.0
-                </Text>
+                <span className="text-xs text-green-500">22,915.0</span>
               </td>
               <td className=" ">
-                <Flex justify="end" className="relative h-6 " align="center">
-                  <Text size="xs" variant="medium">
-                    30
-                  </Text>
-                  <Flex
+                <div className="relative flex h-6 items-center justify-end ">
+                  <span className="text-light-500 ocean:text-ocean-300 text-xs">30</span>
+                  <div
                     style={{ width: Math.random() * (60 - 40) + 40 }}
-                    className={`absolute bg-[#32FF2E26] left-[110%] px] h-full`}
+                    className={`px] absolute left-[110%] h-full bg-[#32FF2E26]`}
                   />
-                </Flex>
+                </div>
               </td>
               <td className="pr-2">
-                <Text size="xs" variant="medium">
-                  213,900
-                </Text>
+                <span className="text-light-500 ocean:text-ocean-300 text-xs">213,900</span>
               </td>
             </tr>
           ))}
