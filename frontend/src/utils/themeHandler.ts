@@ -11,6 +11,7 @@ export class Theme {
 
   public static getStoredTheme(): Themes {
     const theme = localStorage.getItem(THEME_ITEM) || DEFAULT_THEME
+    document.documentElement.classList.add(theme)
     return theme as Themes
   }
 
