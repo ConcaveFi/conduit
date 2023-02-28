@@ -1,15 +1,16 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { ItemInfo, Menu } from '@tradex/interface'
+import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { format } from 'src/utils/format'
-import { Theme, Themes } from 'src/utils/themeHandler'
+import { Theme } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { SearchInput } from '../SearchInput'
 import { LocationSelector } from './LocationSelector'
+import { ThemeSelector } from './ThemeSelector'
 
 export function Topbar() {
   const { isConnected } = useAccount()
@@ -42,6 +43,7 @@ export function Topbar() {
       </div>
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
+        <ThemeSelector />
         <DashboardIcon className="fill-ocean-200 btn- h-5 w-5" />
 
         <NotificationIcon className="fill-ocean-200 h-5 w-5" />
@@ -75,24 +77,6 @@ export function Topbar() {
             )
           }}
         </ConnectButton.Custom>
-        <Menu>
-          <Menu.Button>
-            <span className="testing">{theme}</span>
-          </Menu.Button>
-          <Menu.Items className="card  card-translucent-glass right-0 gap-2 p-3 font-semibold dark:text-left">
-            {Object.values(Themes)
-              .filter((_theme) => _theme !== theme)
-              .map((_theme) => (
-                <Menu.Button
-                  key={_theme}
-                  onClick={() => setTheme(Theme.select(_theme))}
-                  className="btn btn-underline.secondary centered"
-                >
-                  {_theme}
-                </Menu.Button>
-              ))}
-          </Menu.Items>
-        </Menu>
       </div>
     </div>
   )

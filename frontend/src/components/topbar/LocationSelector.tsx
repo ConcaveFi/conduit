@@ -16,9 +16,9 @@ export function LocationSelector() {
   }
 
   return (
-    <Menu className="centered">
+    <Menu className="centered flex ">
       <Menu.Button>
-        <Image
+        <img
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
           className="object-contain"
           alt="usa"
