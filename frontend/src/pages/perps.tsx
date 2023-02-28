@@ -2,7 +2,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
-import { useRouter } from 'next/router'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   useChainLinkLatestRoundData,
   useMarketAccessibleMargin,
@@ -24,17 +24,19 @@ import { useAccount } from 'wagmi'
 import { format, formatUsd } from '../utils/format'
 
 export const useRouteMarket = () => {
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const asset = searchParams?.get('asset')
 
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
-    select: parseMarketSummaries,
+  const { data: market } = useMarketDataAllProxiedMarketSummaries({
+    select: (summaries) => {
+      const markets = parseMarketSummaries(summaries)
+      return markets.find((m) => m.asset === asset)
+    },
     // cacheOnBlock: true,
+    // watch: true,
   })
 
-  const asset = router.query.asset
-  if (markets?.length && router.isReady && !asset) router.replace({ query: { asset: 'sETH' } })
-
-  return markets?.find((m) => m.asset === asset)
+  return market
 }
 
 const Markets = () => {
@@ -62,9 +64,7 @@ const Markets = () => {
         {markets.map(({ address, asset, price }, i) => (
           <a
             key={address}
-            onClick={() => {
-              router.replace(`?asset=${asset}`, undefined, { shallow: true })
-            }}
+            onClick={() => router.replace(`?asset=${asset}`)}
             data-selected={routeMarket?.address === address}
             className="flex w-40 items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800 data-[selected=true]:bg-neutral-800"
           >
@@ -288,13 +288,6 @@ const AmountInput = ({
 const OpenPosition = () => {
   const market = useRouteMarket()
 
-  // const { data: price } = useMarketAssetPrice({
-  //   address: market?.address,
-  //   select: ({ price }) => FixedNumber.fromValue(price || 0),
-  //   watch: true,
-  //   cacheOnBlock: true,
-  //   // initialData: { price: market?.price },
-  // })
   const price = market?.price
 
   const [leverage, setLeverage] = useState(FixedNumber.from(25))
@@ -466,13 +459,13 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
-        {/* <Markets /> */}
+        <Markets />
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
-          {/* <OPPrice /> */}
+          <OPPrice />
           <Orders />
           <Position />
-          {/* <Margin /> */}
+          <Margin />
           <OpenPosition />
         </div>
       </div>
