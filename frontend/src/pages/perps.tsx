@@ -294,9 +294,11 @@ const OpenPosition = () => {
           {amountDenominatedIn}
         </button>
       </div>
-      <span className="text-xs text-neutral-200">
-        Position size {format(sizeDelta.mulUnsafe(price))} {market.asset}
-      </span>
+      {price && (
+        <span className="text-xs text-neutral-200">
+          Position size {format(sizeDelta.mulUnsafe(price))} {market.asset}
+        </span>
+      )}
       <div className="flex items-center justify-center gap-3">
         <button
           className={cx(
@@ -451,7 +453,5 @@ query {
     timestamp
   }
 }
-
-orchard depart inflict heart inhale velvet twelve cover cute hybrid weird flat
 
 */
