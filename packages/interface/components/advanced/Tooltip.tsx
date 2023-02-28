@@ -1,12 +1,10 @@
 import { Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { DivProps } from '../../types/primitives'
-import { Text, TextProps } from '../primitives'
 export interface Tooltip extends DivProps {
   info?: string
-  infoProps?: TextProps
 }
-export function Tooltip({ className, info, infoProps, ...props }: Tooltip) {
+export function Tooltip({ className, info, ...props }: Tooltip) {
   const [hover, setHover] = useState(false)
   return (
     <div
@@ -28,15 +26,7 @@ export function Tooltip({ className, info, infoProps, ...props }: Tooltip) {
         leaveTo="opacity-0 scale-75"
       >
         <div className="tooltip-arrow bg-ocean-300 absolute top-full  mt-[10px] min-h-[20px] rounded-[4px]">
-          <Text
-            {...infoProps}
-            align={'center'}
-            className={'px-3 py-1 ' + infoProps?.className}
-            variant={'medium'}
-            size={'sm'}
-          >
-            {info}
-          </Text>
+          <span className={'text-medium px-3 py-1 text-center text-sm'}>{info}</span>
         </div>
       </Transition>
     </div>

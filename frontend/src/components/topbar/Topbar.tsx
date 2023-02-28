@@ -1,6 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { ItemInfo, Menu, Text } from '@tradex/interface'
+import { ItemInfo, Menu } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -21,9 +21,9 @@ export function Topbar() {
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Image src={'/assets/logo.png'} alt="logo" width={45} height={30} />
-        <Text variant="heading.light">
+        <span className="text-white">
           TRADE <strong>X</strong>
-        </Text>
+        </span>
         <button className="btn btn-bottom-glow centered w-[120px] rounded-none">
           {t('futures')}
         </button>
@@ -72,7 +72,7 @@ export function Topbar() {
           <Menu.Button>
             <span className="testing">{theme}</span>
           </Menu.Button>
-          <Menu.Items className="card card-translucent-glass right-0 gap-2 p-3 dark:text-left">
+          <Menu.Items className="card  card-translucent-glass right-0 gap-2 p-3 font-semibold dark:text-left">
             {Object.values(Themes)
               .filter((_theme) => _theme !== theme)
               .map((_theme) => (

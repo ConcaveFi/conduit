@@ -1,7 +1,6 @@
 import { Transition } from '@headlessui/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { PrimitiveInputProps } from '../../types/primitives'
-import { Text } from './Text'
 
 interface RawSliderProps extends PrimitiveInputProps {
   defaultValue?: number
@@ -51,7 +50,7 @@ function RawSlider(props: RawSliderProps) {
           style={{ width: 30, height: 30, left: left - 15 }}
         >
           <div className="centered bg-ocean-600 border-ocean-400 -mt-12 flex h-10 min-w-[40px] rounded-lg border-2 shadow-xl">
-            <Text>{value}</Text>
+            <span className="text-high">{value}</span>
           </div>
         </div>
       </Transition>
@@ -85,7 +84,7 @@ export function Slider({ track = false, ...props }: SliderProps) {
           {new Array(5).fill(0).map((_, i) => (
             <div key={i}>
               <div className="bg-ocean-300 h-[8px] w-[2px] justify-center" style={{}}>
-                <Text className="absolute mt-2">{i * steps}</Text>
+                <span className="text-high absolute mt-2">{i * steps}</span>
               </div>
               {/* {i <= 3 && (
                 <div

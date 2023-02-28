@@ -4,16 +4,12 @@ const tooltip = require('./components/tooltip')
 const variants = require('./utils/variants')
 const btn = require('./components/buttons')
 const card = require('./components/card')
+const text = require('./components/text')
 
-module.exports = plugin(function definePlugin({
-  addComponents,
-  theme,
-  addVariant,
-  matchComponents,
-}) {
-  addComponents([slider(theme), tooltip(theme), ...btn.components, ...card.components])
-  matchComponents({ card: (v) => ({ ...v }) }, { values: card.variants })
-  matchComponents({ btn: (v) => ({ ...v }) }, { values: btn.variants })
-  for (let { name, definition } of variants) addVariant(name, definition)
-},
-require('./tailwind.config'))
+module.exports = plugin(function definePlugin({ theme, ...twd }) {
+  twd.addComponents([slider(theme), tooltip(theme), ...btn.components, ...card.components])
+  twd.matchComponents({ card: (v) => ({ ...v }) }, { values: card.variants })
+  twd.matchComponents({ btn: (v) => ({ ...v }) }, { values: btn.variants })
+  twd.matchUtilities({ text: (v) => ({ ...v }) }, { values: text.variants })
+  for (let { name, definition } of variants) twd.addVariant(name, definition)
+}, require('./tailwind.config'))

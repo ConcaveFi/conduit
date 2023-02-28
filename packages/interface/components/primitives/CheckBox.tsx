@@ -1,5 +1,4 @@
 import { SVGProps, useEffect, useRef, useState } from 'react'
-import { Text } from '../primitives/Text'
 
 export interface CheckBox extends SVGProps<SVGSVGElement> {
   info?: string
@@ -66,7 +65,7 @@ export function CheckBox({ initialState, onToggle, className, ripple, info, ...p
           />
         )}
       </button>
-      {info && <Text className="capitalize">{info}</Text>}
+      {info && <span className="text-high capitalize">{info}</span>}
     </div>
   )
 }

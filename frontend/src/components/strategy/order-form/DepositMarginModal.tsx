@@ -1,5 +1,5 @@
 import { sUSD_ADDRESS } from '@tradex/core'
-import { Modal, ModalProps, Text } from '@tradex/interface'
+import { Modal, ModalProps } from '@tradex/interface'
 import { formatUnits, parseEther } from 'ethers/lib/utils'
 import { useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
 import { useState } from 'react'
@@ -22,9 +22,7 @@ export function DepositMarginModal(props: ModalProps) {
 
   return (
     <Modal className="centered card card-primary-outlined h-fit w-[400px] gap-4 p-4" {...props}>
-      <Text size={'xl'} variant={'heading'}>
-        Deposit Margin
-      </Text>
+      <span className="text-heading text-xl">Deposit Margin</span>
       <CurrencyInput
         onValueChange={(v) => setValue(v.floatValue)}
         onClickBalance={(balance, decimals) => setValue(+formatUnits(balance, decimals))}

@@ -1,4 +1,4 @@
-import { NumericInput, NumericInputProps, Text } from '@tradex/interface'
+import { NumericInput, NumericInputProps } from '@tradex/interface'
 import { FetchTokenResult } from '@wagmi/core'
 import { format } from 'src/utils/format'
 import { useAccount, useBalance } from 'wagmi'
@@ -18,16 +18,14 @@ export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyIn
     <div className="bg-ocean-600 centered flex min-h-[60px] w-full rounded-xl px-6">
       <NumericInput variant="simple" className="w-full" placeholder="0.0" {...props} />
       <div className="flex flex-col items-end">
-        <Text variant="low">{currency?.symbol}</Text>
+        <span className="text-low text-lg">{currency?.symbol}</span>
 
         <button className="btn btn-underline" onClick={handleClickBalance}>
-          <Text size={'xs'} variant="medium">
-            Balance
-          </Text>
-          <Text size={'xs'} variant="heading">
+          <span className="text-medium text-xs">Balance</span>
+          <span className="text-heading text-xs">
             {data && format(data?.formatted)}
             {!data && '$0.00'}
-          </Text>
+          </span>
         </button>
       </div>
     </div>

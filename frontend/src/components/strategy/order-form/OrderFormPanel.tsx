@@ -1,6 +1,6 @@
 import { sUSD_ADDRESS } from '@tradex/core'
 import { CloseIcon } from '@tradex/icons'
-import { NumericInput, Panel, PanelProps, Slider, Text } from '@tradex/interface'
+import { NumericInput, Panel, PanelProps, Slider } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { NextRouter } from 'next/router'
 import { ChangeEvent, forwardRef, useState } from 'react'
@@ -56,9 +56,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         </button>
       </div>
       <div className={'flex flex-col gap-2'}>
-        <Text variant="low" className="px-4">
-          {t('amount')}
-        </Text>
+        <span className="text-low px-4">{t('amount')}</span>
         <CurrencyInput currency={data} />
         <div className="bg-ocean-600 flex min-h-[60px] w-full items-center rounded-xl px-6">
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
@@ -67,7 +65,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
       {/* Leverage handler ----------------------- */}
       <div className=" flex items-center justify-between">
-        <Text variant="medium">{t('leverage')}</Text>
+        <span className="text-medium">{t('leverage')}</span>
         {[10, 25, 50].map((value) => (
           <button
             key={value}

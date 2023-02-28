@@ -1,4 +1,4 @@
-import { PanelProps, Table, TableBody, TableRow, TabPanel, Text, THead } from '@tradex/interface'
+import { PanelProps, Table, TableBody, TableRow, TabPanel, THead } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 
@@ -26,13 +26,13 @@ const MOCK_ROWS = [
 ] as const
 
 const STYLES = {
-  market: { variant: 'heading.light' },
-  'side.place': { modifier: 'negative' },
-  size: { variant: 'heading.light' },
-  leverage: { variant: 'heading.light' },
-  unrealized: { modifier: 'positive' },
-  avg_entry_price: { variant: 'heading.light' },
-  liq_price: { variant: 'heading.light' },
+  market: 'text-white',
+  'side.place': 'text-red-500',
+  size: 'text-white',
+  leverage: 'text-white',
+  unrealized: 'text-green-400',
+  avg_entry_price: 'text-white',
+  liq_price: 'text-white',
 }
 
 // COMPONENT ---------------------------------------------------------------------
@@ -55,18 +55,18 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
           <THead variant={'primary'}>
             <TableRow rows={HEADERS}>
               {(element, index) => (
-                <Text key={index} size="sm" variant="low">
+                <span key={index} className="text-low text-sm">
                   {t(element)}
-                </Text>
+                </span>
               )}
             </TableRow>
           </THead>
           <TableBody>
             <TableRow rows={MOCK_ROWS}>
               {(element, index) => (
-                <Text key={index} size={'sm'} {...STYLES[HEADERS[index]]}>
+                <span key={index} className={`text-sm ${STYLES[HEADERS[index]]}`}>
                   {element}
-                </Text>
+                </span>
               )}
             </TableRow>
           </TableBody>

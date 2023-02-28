@@ -1,17 +1,22 @@
 import { cva } from 'class-variance-authority'
 import { ReactNode } from 'react'
-import { Text } from '../primitives/Text'
 
-const alignStyles = cva(cva('')(), {
+const styles = cva(cva('')(), {
   variants: {
     align: {
       center: 'items-center',
       end: 'items-end',
       start: 'items-start',
     },
+    modifier: {
+      positive: 'text-green-500',
+      negative: 'text-red-500',
+      none: 'text-heading',
+    },
   },
   defaultVariants: {
     align: 'center',
+    modifier: 'none',
   },
 })
 export interface ItemInfoProps {
@@ -21,24 +26,13 @@ export interface ItemInfoProps {
   modifier?: 'positive' | 'negative' | 'none'
   align?: 'center' | 'end' | 'start'
 }
-export function ItemInfo({
-  Icon,
-  info,
-  value,
-  isLoading,
-  align = 'start',
-  modifier = 'none',
-}: ItemInfoProps) {
+export function ItemInfo({ Icon, info, value, align = 'start', modifier }: ItemInfoProps) {
   return (
     <div className="flex items-center gap-4 ">
       {Icon}
-      <div className={`flex flex-col ${alignStyles({ align })}`}>
-        <Text size="sm" variant="medium" weight="medium">
-          {info}
-        </Text>
-        <Text className="-mt-1 " variant="heading" size="md" modifier={modifier}>
-          {value}
-        </Text>
+      <div className={`flex flex-col ${styles({ align })}`}>
+        <span className="text-medium text-sm font-medium">{info}</span>
+        <span className={`-mt-1 text-[16px] ${styles({ modifier })}`}>{value}</span>
       </div>
     </div>
   )
