@@ -3,7 +3,7 @@ import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { ItemInfo, Menu } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Theme, Themes } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
@@ -16,6 +16,10 @@ export function Topbar() {
   const { address } = useAccount()
   const { data } = useBalance({ address })
   const [theme, setTheme] = useState(Theme.getStoredTheme())
+
+  useEffect(() => {
+    console.log(document.documentElement.classList)
+  }, [theme])
 
   return (
     <div className="flex items-center justify-between">
@@ -30,17 +34,15 @@ export function Topbar() {
         <button className="btn btn-underline centered w-[120px] rounded-none">
           {t('options')}
         </button>
-        <button className="btn btn-underline centered w-[120px] rounded-none">
-          {t('strategy')} <ChevronIcon />
+        <button className="btn btn-underline centered w-[120px]  rounded-none">
+          {t('strategy')} <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
         </button>
         <SearchInput />
       </div>
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
         <DashboardIcon className="fill-ocean-200 btn- h-5 w-5" />
-        <div className="h-9 w-9 rounded-full bg-sky-300 bg-opacity-70 p-[5px]">
-          <div className="h-full w-full rounded-full bg-sky-300" />
-        </div>
+
         <NotificationIcon className="fill-ocean-200 h-5 w-5" />
         <ConnectButton.Custom>
           {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {

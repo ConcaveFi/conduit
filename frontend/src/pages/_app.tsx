@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: any) {
     <WagmiProvider>
       <TranslationProvider>
         <QueryClientProvider client={client}>
-          <div className="flex h-screen overflow-y-auto overflow-x-hidden">
+          <div className="ocean:bg-ocean-900 bg-light-300 flex h-screen overflow-y-auto overflow-x-hidden">
             <Component {...pageProps} />
           </div>
         </QueryClientProvider>

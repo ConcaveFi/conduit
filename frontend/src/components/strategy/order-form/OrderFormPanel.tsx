@@ -56,16 +56,16 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         </button>
       </div>
       <div className={'flex flex-col gap-2'}>
-        <span className="text-low px-4">{t('amount')}</span>
+        <span className="text-light-400 ocean:text-ocean-300 px-4">{t('amount')}</span>
         <CurrencyInput currency={data} />
-        <div className="bg-ocean-600 flex min-h-[60px] w-full items-center rounded-xl px-6">
+        <div className="bg-light-300 ocean:bg-ocean-600 flex min-h-[60px] w-full items-center rounded-xl px-6">
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
         </div>
       </div>
 
       {/* Leverage handler ----------------------- */}
-      <div className=" flex items-center justify-between">
-        <span className="text-medium">{t('leverage')}</span>
+      <div className=" flex items-center justify-between px-4">
+        <span className="text-light-400 ocean:text-ocean-300">{t('leverage')}</span>
         {[10, 25, 50].map((value) => (
           <button
             key={value}
@@ -75,7 +75,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
             {value}x
           </button>
         ))}
-        <div className="bg-ocean-600 relative flex h-12 w-[40%] items-center justify-end gap-2 rounded-full px-5 ">
+        <div className="bg-light-300 ocean:bg-ocean-600 relative flex h-12 w-[40%] items-center justify-end gap-2 rounded-full px-5 ">
           <NumericInput
             className="w-[60%] text-end"
             max={50}

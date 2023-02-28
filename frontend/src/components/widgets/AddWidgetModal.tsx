@@ -18,12 +18,14 @@ export function AddWidgetModal(props: ModalProps) {
   }
 
   return (
-    <Modal {...props} overlay className="card card-primary-outlined h-[300px] w-[400px] gap-4 p-5 ">
-      <span className="text-heading mx-auto text-2xl">Add widget</span>
-      <span className="text-low -mt-4 px-12 text-center">
+    <Modal {...props} overlay className="card card-primary h-[300px] w-[400px] gap-4 p-5 ">
+      <span className="text-light-400 ocean:text-ocean-200 mx-auto text-2xl font-medium">
+        Add widget
+      </span>
+      <span className="text-light-500 ocean:bg-ocean-300 -mt-4 px-12 text-center">
         These are the widgets not included on your layout
       </span>
-      <div className="bg-ocean-900 flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
+      <div className="bg-light-300 ocean:bg-ocean-900 flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
         {Object.keys(GRID_WIDGETS)
           .filter((widget) => !widgets.includes(widget as GridWidgetKeys))
           .map((key) => (
@@ -39,7 +41,7 @@ export function AddWidgetModal(props: ModalProps) {
           ))}
       </div>
       <div className="flex justify-end gap-3">
-        <button className="bg-ocean-500 h-9 w-[80px] rounded-lg ">
+        <button className="btn btn-secondary centered h-9 w-[80px] rounded-lg ">
           <span className="text-heading">Cancel</span>
         </button>
         <button onClick={handleApply} className="bg-green-gradient h-9 w-[80px] rounded-lg">

@@ -21,8 +21,8 @@ export function DepositMarginModal(props: ModalProps) {
   const { write } = useMarketTransferMargin(config)
 
   return (
-    <Modal className="centered card card-primary-outlined h-fit w-[400px] gap-4 p-4" {...props}>
-      <span className="text-heading text-xl">Deposit Margin</span>
+    <Modal className="centered card card-primary h-fit w-[400px] gap-4 p-4" {...props}>
+      <span className="text-light-500 ocean:text-white text-xl">Deposit Margin</span>
       <CurrencyInput
         onValueChange={(v) => setValue(v.floatValue)}
         onClickBalance={(balance, decimals) => setValue(+formatUnits(balance, decimals))}

@@ -26,13 +26,13 @@ const MOCK_ROWS = [
 ] as const
 
 const STYLES = {
-  market: 'text-white',
+  market: '<text-light-6></text-light-6>00 ocean:text-white',
   'side.place': 'text-red-500',
-  size: 'text-white',
-  leverage: 'text-white',
+  size: '<text-light-6></text-light-6>00 ocean:text-white',
+  leverage: '<text-light-6></text-light-6>00 ocean:text-white',
   unrealized: 'text-green-400',
-  avg_entry_price: 'text-white',
-  liq_price: 'text-white',
+  avg_entry_price: '<text-light-6></text-light-6>00 ocean:text-white',
+  liq_price: '<text-light-6></text-light-6>00 ocean:text-white',
 }
 
 // COMPONENT ---------------------------------------------------------------------
@@ -55,7 +55,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
           <THead variant={'primary'}>
             <TableRow rows={HEADERS}>
               {(element, index) => (
-                <span key={index} className="text-low text-sm">
+                <span key={index} className="text-light-500 ocean:text-ocean-300 text-sm">
                   {t(element)}
                 </span>
               )}

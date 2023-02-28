@@ -22,7 +22,7 @@ export function GridLayout() {
   const { widgets, removeWidget } = useWidgets()
 
   return (
-    <div ref={ref} className="bg-ocean-900 flex h-full w-full">
+    <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full">
       <ReactGridLayout
         style={{ height: isMaximized ? '100%' : 'fit-content' }}
         rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}

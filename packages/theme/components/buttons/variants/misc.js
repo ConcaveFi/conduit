@@ -7,10 +7,15 @@ const down = {
 }
 
 const bottomGlow = {
-  backgroundImage: `linear-gradient(to bottom, #0000, #00D1FF50)`,
   borderBottom: '2px solid',
-  borderColor: colors.ocean[100],
-  color: colors.ocean[100],
+  backgroundImage: `linear-gradient(to bottom, #0000, #0001)`,
+  borderColor: colors.light[500],
+  color: colors.light[500],
+  '.ocean &': {
+    backgroundImage: `linear-gradient(to bottom, #0000, #00D1FF50)`,
+    color: colors.ocean[100],
+    borderColor: colors.ocean[100],
+  },
 }
 
 module.exports = {

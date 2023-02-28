@@ -1,5 +1,4 @@
-import { Panel } from '@tradex/interface'
-import { PrimitiveDivProps } from '@tradex/interface/types/primitives'
+import { DivProps, Panel } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { forwardRef, useEffect, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
@@ -13,7 +12,7 @@ const container_id = 'chart-container'
 const DEFAULT_MARKET = 'ETH'
 const SECOND_SYMBOL = 'USD'
 
-export const ChartPanel = forwardRef<HTMLDivElement, PrimitiveDivProps>((props, ref) => {
+export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
   const [widget, setWidget] = useState<TVWidget>()
   const [asset, setAsset] = useState('')
   const { t } = useTranslation()

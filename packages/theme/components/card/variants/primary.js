@@ -1,13 +1,20 @@
 const colors = require('../../../utils/colors')
 
 const primary = {
-  backgroundColor: colors.ocean[800],
+  backgroundColor: colors.light[100],
+  '.ocean &': {
+    backgroundColor: colors.ocean[800],
+  },
 }
 
 const primaryOutlined = {
-  ...primary,
+  backgroundColor: colors.light[100],
   border: '2px solid',
-  borderColor: colors.ocean[400],
+  borderColor: colors.light[300],
+  '.ocean &': {
+    backgroundColor: colors.ocean[800],
+    borderColor: colors.ocean[400],
+  },
 }
 
 module.exports = {

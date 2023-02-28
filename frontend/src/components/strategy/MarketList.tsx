@@ -66,7 +66,8 @@ interface MarketButton extends ButtonProps {
 // css-s6i0el-menu
 const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
   ({ asset, price, percent, ...props }, ref) => {
-    const styles = 'btn gap-6 h-fit justify-between even:bg-ocean-600 p-2 px-3 rounded-lg'
+    const styles =
+      'btn gap-6 h-fit justify-between even:bg-light-400 ocean:even:bg-ocean-600 p-2 px-3 rounded-lg'
     const icon = (
       <Image
         alt="bitcoin icon"

@@ -10,6 +10,14 @@ const colors = {
     200: '#6FA0E4',
     100: '#00D1FF',
   },
+  light: {
+    600: '#2B4057',
+    500: '#6D7B8F',
+    400: '#C3CBD9',
+    300: '#E1E7F0',
+    200: '#E4E4EC',
+    100: '#FFFFFF',
+  },
 }
 
 module.exports = colors

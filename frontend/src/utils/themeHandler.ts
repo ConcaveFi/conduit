@@ -15,7 +15,7 @@ export class Theme {
   }
 
   public static select(newTheme: Themes) {
-    document.documentElement.classList.add(newTheme)
+    if (newTheme !== Themes.LIGHT) document.documentElement.classList.add(newTheme)
     Theme.removeAll({ exception: newTheme })
     Theme.storeTheme(newTheme)
     return newTheme
@@ -35,8 +35,8 @@ export class Theme {
   }
 
   public static removeAll({ exception }: { exception: Themes }) {
-    for (let [_, theme] of Object.values(Themes)) {
-      if ((theme as Themes) === exception) continue
+    for (let [_, theme] of Object.entries(Themes)) {
+      if (theme === exception) continue
       document.documentElement.classList.remove(theme)
     }
   }
