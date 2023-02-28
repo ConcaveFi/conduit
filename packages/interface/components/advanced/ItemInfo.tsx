@@ -1,4 +1,3 @@
-import { EllipsisLoader } from '@tradex/icons'
 import { ReactNode } from 'react'
 import { Flex } from '../primitives/Flex'
 import { Text } from '../primitives/Text'
@@ -21,21 +20,27 @@ export function ItemInfo({
 }: ItemInfoProps) {
   return (
     <Flex className="items-center gap-4">
-      {Icon}
-      <Flex column align={align}>
-        <Text size="sm" variant="medium" weight="medium">
-          {info}
-        </Text>
+      {Icon && isLoading && (
+        <div className=" animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-500 h-9 w-9 rounded-full"></div>
+      )}
+      {!isLoading && Icon}
+      <Flex column align={align} className={`${isLoading && 'gap-2'}`}>
         {!isLoading && (
-          <Text className="-mt-1 " variant="heading" size="md" modifier={modifier}>
-            {value}
-          </Text>
+          <>
+            <Text size="sm" variant="medium" weight="medium">
+              {info}
+            </Text>
+
+            <Text className="-mt-1 " variant="heading" size="md" modifier={modifier}>
+              {value}
+            </Text>
+          </>
         )}
         {isLoading && (
-          <div className="flex items-center gap-2">
-            <span className="text-white">Loading</span>
-            <EllipsisLoader className="h-5 w-7 fill-white" />
-          </div>
+          <>
+            <div className="animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-500 h-3 w-14"></div>
+            <div className="animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-500 h-3 w-24"></div>
+          </>
         )}
       </Flex>
     </Flex>
