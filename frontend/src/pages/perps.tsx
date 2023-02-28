@@ -230,6 +230,61 @@ const getSizeDelta = (
   return sizeDelta
 }
 
+type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
+const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
+  const { value, type } = input || {}
+  if (!value || !type) return { usd: '', asset: '', size: '' }
+  const amount = FixedNumber.fromString(value)
+  if (!price || !leverage) return { usd: '', asset: '', size: '', [type]: value }
+  return {
+    usd: () => ({
+      usd: value,
+      asset: amount.divUnsafe(price),
+      size: amount.mulUnsafe(leverage),
+    }),
+    asset: () => ({
+      usd: amount.mulUnsafe(price),
+      asset: value,
+      size: amount.mulUnsafe(price).mulUnsafe(leverage),
+    }),
+    size: () => ({
+      // TODO: fix maths
+      usd: amount.divUnsafe(price.mulUnsafe(leverage)),
+      asset: amount.divUnsafe(leverage),
+      size: value,
+    }),
+  }[type]()
+}
+
+const AmountInput = ({
+  onChange,
+  inputs,
+}: {
+  onChange: (s: InputState) => void
+  inputs: ReturnType<typeof deriveInputs>
+}) => {
+  const [amountDenominator, toggleAmountDenominator] = useReducer(
+    (s) => (s === 'usd' ? 'asset' : 'usd'),
+    'usd',
+  )
+
+  return (
+    <div className="flex max-w-full">
+      <NumericInput
+        className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
+        placeholder="0.00"
+        value={inputs[amountDenominator].toString()}
+        onValueChange={({ value }, { source }) => {
+          if (source === 'event') onChange({ value, type: amountDenominator })
+        }}
+      />
+      <button onClick={toggleAmountDenominator} className="text-sm font-medium text-neutral-600">
+        {amountDenominator}
+      </button>
+    </div>
+  )
+}
+
 const OpenPosition = () => {
   const market = useRouteMarket()
 
@@ -242,38 +297,10 @@ const OpenPosition = () => {
   // })
   const price = market?.price
 
-  const [amountDenominator, toggleAmountDenominator] = useReducer(
-    (s) => (s === 'usd' ? 'asset' : 'usd'),
-    'usd',
-  )
-
   const [leverage, setLeverage] = useState(FixedNumber.from(25))
-  const [inputs, setInput] = useReducer(
-    (s, { value, type }) => {
-      if (!value) return { usd: '', asset: '', size: '' }
-      const amount = FixedNumber.fromString(value)
-      if (!price) return { usd: '', asset: '', size: '', [type]: value }
-      return {
-        usd: () => ({
-          usd: value,
-          asset: amount.divUnsafe(price),
-          size: amount.mulUnsafe(leverage),
-        }),
-        asset: () => ({
-          usd: amount.mulUnsafe(price),
-          asset: value,
-          size: amount.mulUnsafe(price).mulUnsafe(leverage),
-        }),
-        size: () => ({
-          // TODO: fix maths
-          usd: amount.divUnsafe(price.mulUnsafe(leverage)),
-          asset: amount.divUnsafe(leverage),
-          size: value,
-        }),
-      }[type]()
-    },
-    { usd: '', asset: '', size: '' },
-  )
+  const [input, setInput] = useState<InputState>()
+
+  const inputs = useMemo(() => deriveInputs(input, price, leverage), [price, leverage, input])
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
@@ -297,22 +324,7 @@ const OpenPosition = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-neutral-800/40 p-4">
       <div className="flex max-w-full flex-col">
-        <div className="flex max-w-full">
-          <NumericInput
-            className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
-            placeholder="0.00"
-            value={inputs[amountDenominator].toString()}
-            onValueChange={({ value }, { source }) => {
-              if (source === 'event') setInput({ value, type: amountDenominator })
-            }}
-          />
-          <button
-            onClick={toggleAmountDenominator}
-            className="text-sm font-medium text-neutral-600"
-          >
-            {amountDenominator}
-          </button>
-        </div>
+        <AmountInput inputs={inputs} onChange={setInput} />
         <NumericInput
           className="w-52 max-w-full bg-transparent text-2xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
@@ -454,13 +466,13 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
-        <Markets />
+        {/* <Markets /> */}
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
-          <OPPrice />
+          {/* <OPPrice /> */}
           <Orders />
           <Position />
-          <Margin />
+          {/* <Margin /> */}
           <OpenPosition />
         </div>
       </div>
