@@ -11,8 +11,7 @@ module.exports = plugin(function definePlugin({
   matchComponents,
 }) {
   addComponents([slider(theme), tooltip(theme), ...btn.components])
-  // matchComponents({ btn: (v) => ({ ...v }) }, { values: btn.variants })
-
+  matchComponents({ btn: (v) => ({ ...v }) }, { values: btn.variants })
   for (let { name, definition } of variants) addVariant(name, definition)
 },
 require('./tailwind.config'))

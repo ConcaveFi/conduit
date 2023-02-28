@@ -34,7 +34,7 @@ export function Topbar() {
       </Flex>
       <Flex align="center" className="w-fit gap-6">
         <LocationSelector />
-        <DashboardIcon className="fill-ocean-200 h-5 w-5" />
+        <DashboardIcon className="fill-ocean-200 btn- h-5 w-5" />
         <Flex className="h-9 w-9 rounded-full bg-sky-300 bg-opacity-70 p-[5px]">
           <Flex className="h-full w-full rounded-full bg-sky-300" />
         </Flex>

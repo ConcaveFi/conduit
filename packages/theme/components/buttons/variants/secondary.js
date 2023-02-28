@@ -1,7 +1,4 @@
 const colors = require('../../../utils/colors')
-//   secondary: 'bg-ocean-500 rounded-full hover:bg-ocean-400 text-ocean-200 fill-ocean-200',
-//   'secondary.underline':
-//     'border-2 border-ocean-300 rounded-full hover:bg-ocean-600 transition-all  text-ocean-200 fill-ocean-200',
 
 const secondary = {
   backgroundColor: colors.ocean[500],
@@ -21,5 +18,5 @@ const secondaryOutlined = {
 
 module.exports = {
   secondary,
-  'secondary.outlined': (secondaryOutlined = {}),
+  'secondary.outlined': secondaryOutlined,
 }

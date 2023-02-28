@@ -7,7 +7,7 @@ const gradients = require('./gradients')
 module.exports = {
   ...primary,
   ...secondary,
-  // ...misc,
-  // ...underline,
-  // ...gradients,
+  ...misc,
+  ...underline,
+  ...gradients,
 }
