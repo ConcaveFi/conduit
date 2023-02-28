@@ -26,7 +26,7 @@ export function LocationSelector() {
           height={15}
         />
       </Menu.Button>
-      <Menu.Items className="w-14 flex-col p-2" variant={'glass'}>
+      <Menu.Items className="card card-translucent-glass w-14 flex-col p-2">
         {locales.map((locale) => (
           <Menu.Item key={locale}>
             <button onClick={() => handleClick(locale)}>
