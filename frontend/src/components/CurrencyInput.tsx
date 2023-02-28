@@ -21,7 +21,7 @@ export function CurrencyInput({ currency, onClickBalance, ...props }: CurrencyIn
         <span className="text-light-500 ocean:text-ocean-300 text-lg">{currency?.symbol}</span>
 
         <button className="btn btn-underline" onClick={handleClickBalance}>
-          <span className="text-light-500 ocean:text-ocean:200 text-xs ">Balance</span>
+          <span className="text-light-500 ocean:text-ocean-200 text-xs font-medium ">Balance</span>
           <span className="text-light-600 ocean:text-white text-xs font-medium">
             {data && format(data?.formatted)}
             {!data && '$0.00'}

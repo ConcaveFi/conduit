@@ -4,6 +4,7 @@ import { ItemInfo, Menu } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { format } from 'src/utils/format'
 import { Theme, Themes } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
@@ -64,7 +65,11 @@ export function Topbar() {
                   <ChevronIcon className="fill-ocean-200 h-3 w-3" />
                 </button>
                 <button className="btn" onClick={openAccountModal}>
-                  <ItemInfo info={truncateAddress(account?.address)} value="$ 2,548.04" />
+                  <ItemInfo
+                    align="end"
+                    info={truncateAddress(account?.address)}
+                    value={format(data?.formatted || '0')}
+                  />
                 </button>
               </div>
             )
