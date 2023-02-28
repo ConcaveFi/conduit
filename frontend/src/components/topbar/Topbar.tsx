@@ -3,15 +3,17 @@ import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { Button, Flex, ItemInfo, Text } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
+import { format } from 'src/utils/format'
 import { truncateAddress } from 'src/utils/truncateAddress'
-import { useAccount } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import { SearchInput } from '../SearchInput'
 import { LocationSelector } from './LocationSelector'
 
 export function Topbar() {
   const { isConnected } = useAccount()
   const { t } = useTranslation()
-
+  const { address } = useAccount()
+  const { data } = useBalance({ address })
   return (
     <Flex align="center" justify="between">
       <Flex align="center" className="gap-2">
@@ -19,13 +21,13 @@ export function Topbar() {
         <Text variant="heading.light">
           TRADE <strong>X</strong>
         </Text>
-        <Button className="ml-8" variant="bottom-glow" size="lg">
+        <Button className="ml-8" variant="underline" size="lg">
           {t('futures')}
         </Button>
         <Button variant="underline" size="lg">
           {t('options')}
         </Button>
-        <Button variant="underline" size="lg">
+        <Button variant="bottom-glow" size="lg">
           {t('strategy')} <ChevronIcon />
         </Button>
         <SearchInput />
@@ -59,7 +61,10 @@ export function Topbar() {
                   <ChevronIcon className="fill-ocean-200 h-3 w-3" />
                 </Button>
                 <Button onClick={openAccountModal}>
-                  <ItemInfo info={truncateAddress(account?.address)} value="$ 2,548.04" />
+                  <ItemInfo
+                    info={truncateAddress(account?.address)}
+                    value={format(data?.formatted || '0')}
+                  />
                 </Button>
               </Flex>
             )
