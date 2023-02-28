@@ -72,14 +72,14 @@ export function Topbar() {
           <Menu.Button>
             <span className="testing">{theme}</span>
           </Menu.Button>
-          <Menu.Items column variant={'glass'} className="testing right-0 gap-2 p-3 dark:text-left">
+          <Menu.Items variant={'glass'} className="right-0 gap-2 p-3 dark:text-left">
             {Object.values(Themes)
               .filter((_theme) => _theme !== theme)
               .map((_theme) => (
                 <Menu.Button
                   key={_theme}
                   onClick={() => Theme.select(_theme)}
-                  variant="underline.secondary"
+                  className="btn btn-underline.secondary centered"
                 >
                   {_theme}
                 </Menu.Button>

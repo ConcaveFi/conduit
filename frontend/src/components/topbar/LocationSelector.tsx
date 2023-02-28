@@ -16,7 +16,7 @@ export function LocationSelector() {
   }
 
   return (
-    <Menu centered>
+    <Menu className="centered">
       <Menu.Button>
         <Image
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
@@ -26,7 +26,7 @@ export function LocationSelector() {
           height={15}
         />
       </Menu.Button>
-      <Menu.Items column className="w-14 p-2" variant={'glass'}>
+      <Menu.Items className="w-14 flex-col p-2" variant={'glass'}>
         {locales.map((locale) => (
           <Menu.Item key={locale}>
             <button onClick={() => handleClick(locale)}>

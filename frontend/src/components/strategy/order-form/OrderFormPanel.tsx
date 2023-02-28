@@ -60,7 +60,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           {t('amount')}
         </Text>
         <CurrencyInput currency={data} />
-        <div className="bg-ocean-600 min-h-[60px] w-full rounded-xl px-6">
+        <div className="bg-ocean-600 flex min-h-[60px] w-full items-center rounded-xl px-6">
           <NumericInput disabled variant={'simple'} placeholder="0.0" />
         </div>
       </div>

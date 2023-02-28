@@ -1,7 +1,6 @@
 import { Transition } from '@headlessui/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { PrimitiveInputProps } from '../../types/primitives'
-import { Flex } from './Flex'
 import { Text } from './Text'
 
 interface RawSliderProps extends PrimitiveInputProps {
@@ -32,9 +31,9 @@ function RawSlider(props: RawSliderProps) {
   }, [width, value, min, max])
 
   return (
-    <span ref={ref} className="flex items-center relative w-full h-6 cursor-pointer">
+    <span ref={ref} className="relative flex h-6 w-full cursor-pointer items-center">
       <div
-        className="bg-gradient-to-r max-w-[100%] from-[#34EDB380] to-[#00D1FF80] flex justify-end items-center z-20 pointer-events-none h-[5px] rounded-full absolute"
+        className="pointer-events-none absolute z-20 flex h-[5px] max-w-[100%] items-center justify-end rounded-full bg-gradient-to-r from-[#34EDB380] to-[#00D1FF80]"
         style={{ width: left }}
       />
       <Transition
@@ -47,18 +46,14 @@ function RawSlider(props: RawSliderProps) {
         leaveFrom="scale-100 opacity-100"
         leaveTo="scale-75 opacity-0"
       >
-        <Flex
-          justify="center"
-          className="bg-gradient-to-r from-[#34EDB340] to-[#00D1FF40] absolute pointer-events-none z-10 rounded-full "
+        <div
+          className="pointer-events-none absolute z-10 flex justify-center rounded-full bg-gradient-to-r from-[#34EDB340] to-[#00D1FF40] "
           style={{ width: 30, height: 30, left: left - 15 }}
         >
-          <Flex
-            centered
-            className="min-w-[40px] h-10 rounded-lg -mt-12 bg-ocean-600 border-ocean-400 border-2 shadow-xl"
-          >
+          <div className="centered bg-ocean-600 border-ocean-400 -mt-12 flex h-10 min-w-[40px] rounded-lg border-2 shadow-xl">
             <Text>{value}</Text>
-          </Flex>
-        </Flex>
+          </div>
+        </div>
       </Transition>
       <input
         max={max}
@@ -84,28 +79,28 @@ export function Slider({ track = false, ...props }: SliderProps) {
 
   if (track)
     return (
-      <Flex column className=" gap-1">
+      <div className="flex flex-col gap-1">
         <RawSlider max={max} min={min} {...props} />
-        <Flex justify="between" className="w-full pointer-events-none mx-auto relative px-[6px]">
+        <div className="pointer-events-none relative mx-auto flex w-full justify-between px-[6px]">
           {new Array(5).fill(0).map((_, i) => (
-            <Flex key={i}>
-              <Flex className="bg-ocean-300 w-[2px] h-[8px] justify-center" style={{}}>
+            <div key={i}>
+              <div className="bg-ocean-300 h-[8px] w-[2px] justify-center" style={{}}>
                 <Text className="absolute mt-2">{i * steps}</Text>
-              </Flex>
+              </div>
               {/* {i <= 3 && (
-                <Flex
+                <div
                   style={{
                     backgroundPosition: '12px 0px',
                     backgroundImage: 'url(assets/track.svg)',
                     backgroundSize: '100% 8px',
                   }}
                   className="w-[85px] "
-                ></Flex>
+                ></div>
               )} */}
-            </Flex>
+            </div>
           ))}
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     )
   return <RawSlider {...props} />
 }

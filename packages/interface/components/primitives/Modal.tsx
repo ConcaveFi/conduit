@@ -1,7 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { Card, CardProps } from '../advanced'
-import { Flex } from './Flex'
 export interface ModalProps extends CardProps {
   isOpen: boolean
   onClose: VoidFunction
@@ -14,7 +13,7 @@ export function Modal(props: ModalProps) {
       <Dialog as="div" className="relative z-10 " onClose={onClose}>
         {overlay && <Overlay />}
         {/* Container */}
-        <Flex centered className="fixed inset-0 overflow-y-auto ">
+        <div className="centered fixed inset-0 flex overflow-y-auto ">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -26,7 +25,7 @@ export function Modal(props: ModalProps) {
           >
             <Dialog.Panel as={Card} {...panelProps} />
           </Transition.Child>
-        </Flex>
+        </div>
       </Dialog>
     </Transition>
   )

@@ -1,5 +1,4 @@
 import '@rainbow-me/rainbowkit/styles.css'
-import { Flex } from '@tradex/interface'
 import { TranslationProvider } from '@tradex/languages'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { WagmiProvider } from 'src/context/WagmiProvider'
@@ -13,9 +12,9 @@ export default function App({ Component, pageProps }: any) {
     <WagmiProvider>
       <TranslationProvider>
         <QueryClientProvider client={client}>
-          <Flex className="h-screen overflow-y-auto overflow-x-hidden">
+          <div className="flex h-screen overflow-y-auto overflow-x-hidden">
             <Component {...pageProps} />
-          </Flex>
+          </div>
         </QueryClientProvider>
       </TranslationProvider>
     </WagmiProvider>

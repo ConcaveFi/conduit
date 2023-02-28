@@ -1,19 +1,18 @@
 import { Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { Flex, FlexProps, Text, TextProps } from '../primitives'
-
-export interface Tooltip extends FlexProps {
+import { DivProps } from '../../types/primitives'
+import { Text, TextProps } from '../primitives'
+export interface Tooltip extends DivProps {
   info?: string
   infoProps?: TextProps
 }
 export function Tooltip({ className, info, infoProps, ...props }: Tooltip) {
   const [hover, setHover] = useState(false)
   return (
-    <Flex
-      className={'relative z-[100]' + className}
+    <div
+      className={'centered relative z-[100]' + className}
       onMouseEnter={(_) => setHover(true)}
       onMouseLeave={(_) => setHover(false)}
-      centered
       {...props}
     >
       {props.children}
@@ -28,7 +27,7 @@ export function Tooltip({ className, info, infoProps, ...props }: Tooltip) {
         leaveFrom="opacity-100 scale-100"
         leaveTo="opacity-0 scale-75"
       >
-        <Flex className="tooltip-arrow absolute bg-ocean-300 rounded-[4px]  min-h-[20px] top-full mt-[10px]">
+        <div className="tooltip-arrow bg-ocean-300 absolute top-full  mt-[10px] min-h-[20px] rounded-[4px]">
           <Text
             {...infoProps}
             align={'center'}
@@ -38,8 +37,8 @@ export function Tooltip({ className, info, infoProps, ...props }: Tooltip) {
           >
             {info}
           </Text>
-        </Flex>
+        </div>
       </Transition>
-    </Flex>
+    </div>
   )
 }

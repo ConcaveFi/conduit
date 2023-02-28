@@ -1,6 +1,5 @@
 import React, { cloneElement, forwardRef, ReactComponentElement, useMemo, useState } from 'react'
 import { PrimitiveDivProps } from '../../../types/primitives'
-import { Flex } from '../../primitives'
 import { PanelEssentials } from './Panel'
 import { PanelBody } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
@@ -58,7 +57,7 @@ export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {
         onClose={onClose}
         variant={variant}
       >
-        <Flex className="gap-4">{tabs}</Flex>
+        <div className="flex gap-4">{tabs}</div>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>
         {screens}
