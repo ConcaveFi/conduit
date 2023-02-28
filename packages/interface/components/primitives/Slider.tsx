@@ -49,7 +49,7 @@ function RawSlider(props: RawSliderProps) {
           className="pointer-events-none absolute z-10 flex justify-center rounded-full bg-gradient-to-r from-[#34EDB340] to-[#00D1FF40] "
           style={{ width: 30, height: 30, left: left - 15 }}
         >
-          <div className="centered bg-ocean-600 border-ocean-400 -mt-12 flex h-10 min-w-[40px] rounded-lg border-2 shadow-xl">
+          <div className="centered bg-light-200 border-light-400 ocean:bg-ocean-600 ocean:border-ocean-400 -mt-12 flex h-10 min-w-[40px] rounded-lg border-2 shadow-xl">
             <span className="text-high">{value}</span>
           </div>
         </div>

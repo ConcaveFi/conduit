@@ -29,7 +29,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
               </td>
               <td className=" ">
                 <div className="relative flex h-6 items-center justify-end ">
-                  <span className="text-medium text-xs">30</span>
+                  <span className="text-light-500 ocean:text-ocean-300 text-xs">30</span>
                   <div
                     style={{ width: Math.random() * (60 - 40) + 40 }}
                     className={`px] absolute left-[110%] h-full bg-[#FF2E2E26]`}
@@ -37,7 +37,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
                 </div>
               </td>
               <td className="pr-2">
-                <span className="text-medium text-xs">213,900</span>
+                <span className="text-light-500 ocean:text-ocean-300 text-xs">213,900</span>
               </td>
             </tr>
           ))}
@@ -50,14 +50,14 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
             </td>
             <td className="">
               <div className="flex flex-col items-end justify-center">
-                <span className="text-sm text-white">30</span>
-                <span className="text-high text-xs">Mark</span>
+                <span className="text-light-500 ocean:text-white text-sm">30</span>
+                <span className="text-light-600 ocean:text-ocean-200 text-xs">Mark</span>
               </div>
             </td>
             <td className="pr-2">
               <div className="flex flex-col items-end justify-center">
-                <span className="text-sm text-white">30</span>
-                <span className="text-high text-xs">Mark</span>
+                <span className="text-light-500 ocean:text-white text-sm">30</span>
+                <span className="text-light-600 ocean:text-ocean-200 text-xs">Mark</span>
               </div>
             </td>
           </tr>
@@ -68,7 +68,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
               </td>
               <td className=" ">
                 <div className="relative flex h-6 items-center justify-end ">
-                  <span className="text-medium text-xs">30</span>
+                  <span className="text-light-500 ocean:text-ocean-300 text-xs">30</span>
                   <div
                     style={{ width: Math.random() * (60 - 40) + 40 }}
                     className={`px] absolute left-[110%] h-full bg-[#32FF2E26]`}
@@ -76,7 +76,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
                 </div>
               </td>
               <td className="pr-2">
-                <span className="text-medium text-xs">213,900</span>
+                <span className="text-light-500 ocean:text-ocean-300 text-xs">213,900</span>
               </td>
             </tr>
           ))}

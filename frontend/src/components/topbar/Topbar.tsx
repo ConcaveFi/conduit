@@ -80,7 +80,7 @@ export function Topbar() {
               .map((_theme) => (
                 <Menu.Button
                   key={_theme}
-                  onClick={() => Theme.select(_theme)}
+                  onClick={() => setTheme(Theme.select(_theme))}
                   className="btn btn-underline.secondary centered"
                 >
                   {_theme}

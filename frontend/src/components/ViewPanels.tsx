@@ -44,7 +44,11 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
       {TABS.map((tab) => (
         <TabPanel.Tab key={tab}>
           {(selected) => (
-            <button className={`${selected ? 'btn-secondary' : 'btn-underline.secondary'}`}>
+            <button
+              className={`${
+                selected ? 'btn-secondary' : 'btn-underline.secondary'
+              } btn px-4 py-[2px]`}
+            >
               {t(tab)}
             </button>
           )}

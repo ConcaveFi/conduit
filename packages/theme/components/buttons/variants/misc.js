@@ -2,8 +2,12 @@ const colors = require('../../../utils/colors')
 const tcssColors = require('tailwindcss/colors')
 
 const down = {
-  backgroundColor: colors.ocean[600],
-  color: tcssColors.gray[300],
+  backgroundColor: colors.light[500],
+  color: colors.light[100],
+  '.ocean &': {
+    backgroundColor: colors.ocean[600],
+    color: tcssColors.gray[300],
+  },
 }
 
 const bottomGlow = {
