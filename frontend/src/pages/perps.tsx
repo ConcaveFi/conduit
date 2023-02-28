@@ -6,7 +6,6 @@ import { useRouter } from 'next/router'
 import {
   useChainLinkLatestRoundData,
   useMarketAccessibleMargin,
-  useMarketAssetPrice,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDelayedOrders,
   useMarketPositions,
@@ -186,7 +185,7 @@ const Position = () => {
   )
 }
 
-const Fees = ({ positionSize }: { positionSize: FixedNumber }) => {
+const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
   const market = useRouteMarket()
 
   if (!market) return null
@@ -194,15 +193,17 @@ const Fees = ({ positionSize }: { positionSize: FixedNumber }) => {
   const { feeRates, marketSkew } = market
 
   const fee =
-    positionSize.isNegative() && marketSkew.isNegative()
+    sizeDelta.isNegative() && marketSkew.isNegative()
       ? feeRates.makerFeeOffchainDelayedOrder
       : feeRates.takerFeeOffchainDelayedOrder
 
-  const positionFee = positionSize.mulUnsafe(fee)
+  const positionFee = sizeDelta.mulUnsafe(fee)
 
   return (
     <div>
-      <span className="text-xs text-neutral-200">Fee: {format(positionFee)} sUsd</span>
+      <span className="text-xs text-neutral-200">
+        Fee: {format(positionFee, { signDisplay: 'never' })} sUsd
+      </span>
     </div>
   )
 }
@@ -232,36 +233,51 @@ const getSizeDelta = (
 const OpenPosition = () => {
   const market = useRouteMarket()
 
-  const { data: price } = useMarketAssetPrice({
-    address: market?.address,
-    select: ({ price }) => FixedNumber.fromValue(price || 0),
-    watch: true,
-    cacheOnBlock: true,
-    // initialData: { price: market?.price },
-  })
+  // const { data: price } = useMarketAssetPrice({
+  //   address: market?.address,
+  //   select: ({ price }) => FixedNumber.fromValue(price || 0),
+  //   watch: true,
+  //   cacheOnBlock: true,
+  //   // initialData: { price: market?.price },
+  // })
+  const price = market?.price
 
-  const [amountDenominatedIn, toggleAmountDenominatedIn] = useReducer(
+  const [amountDenominator, toggleAmountDenominator] = useReducer(
     (s) => (s === 'usd' ? 'asset' : 'usd'),
     'usd',
   )
 
-  const [amounts, setAmount] = useReducer(
-    (s, amount) => {
-      if (!price || !amount) return { asset: amount, usd: amount }
-      const fixedAmount = FixedNumber.fromString(amount)
-      const other = amountDenominatedIn === 'usd' ? 'asset' : 'usd'
+  const [leverage, setLeverage] = useState(FixedNumber.from(25))
+  const [inputs, setInput] = useReducer(
+    (s, { value, type }) => {
+      if (!value) return { usd: '', asset: '', size: '' }
+      const amount = FixedNumber.fromString(value)
+      if (!price) return { usd: '', asset: '', size: '', [type]: value }
       return {
-        [amountDenominatedIn]: amount,
-        [other]: other === 'usd' ? fixedAmount.mulUnsafe(price) : fixedAmount.divUnsafe(price),
-      } as Record<'usd' | 'asset', FixedNumber | string>
+        usd: () => ({
+          usd: value,
+          asset: amount.divUnsafe(price),
+          size: amount.mulUnsafe(leverage),
+        }),
+        asset: () => ({
+          usd: amount.mulUnsafe(price),
+          asset: value,
+          size: amount.mulUnsafe(price).mulUnsafe(leverage),
+        }),
+        size: () => ({
+          // TODO: fix maths
+          usd: amount.divUnsafe(price.mulUnsafe(leverage)),
+          asset: amount.divUnsafe(leverage),
+          size: value,
+        }),
+      }[type]()
     },
-    { usd: '', asset: '' },
+    { usd: '', asset: '', size: '' },
   )
 
   const [side, setSide] = useState<'long' | 'short'>('long')
-  const [leverage, setLeverage] = useState(FixedNumber.from(25))
 
-  const debouncedAmountUsd = useDebounce(amounts.usd, 200)
+  const debouncedAmountUsd = useDebounce(inputs.usd, 150)
   const sizeDelta = useMemo(
     () => getSizeDelta(debouncedAmountUsd, leverage, side),
     [debouncedAmountUsd, side, leverage],
@@ -280,23 +296,35 @@ const OpenPosition = () => {
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-neutral-800/40 p-4">
-      <div className="flex max-w-full">
+      <div className="flex max-w-full flex-col">
+        <div className="flex max-w-full">
+          <NumericInput
+            className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
+            placeholder="0.00"
+            value={inputs[amountDenominator].toString()}
+            onValueChange={({ value }, { source }) => {
+              if (source === 'event') setInput({ value, type: amountDenominator })
+            }}
+          />
+          <button
+            onClick={toggleAmountDenominator}
+            className="text-sm font-medium text-neutral-600"
+          >
+            {amountDenominator}
+          </button>
+        </div>
         <NumericInput
-          className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
+          className="w-52 max-w-full bg-transparent text-2xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
-          value={amounts[amountDenominatedIn].toString()}
-          onValueChange={({ value }) => setAmount(value)}
+          value={inputs.size.toString()}
+          onValueChange={({ value }, { source }) => {
+            if (source === 'event') setInput({ value, type: 'size' })
+          }}
         />
-        <button
-          onClick={toggleAmountDenominatedIn}
-          className="text-sm font-medium text-neutral-600"
-        >
-          {amountDenominatedIn}
-        </button>
       </div>
       {price && (
         <span className="text-xs text-neutral-200">
-          Position size {format(sizeDelta.mulUnsafe(price))} {market.asset}
+          Position size {format(inputs.size)} {market.asset}
         </span>
       )}
       <div className="flex items-center justify-center gap-3">
@@ -319,7 +347,7 @@ const OpenPosition = () => {
           <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
-      <Fees positionSize={sizeDelta} />
+      <Fees sizeDelta={sizeDelta} />
       <button
         className="w-full rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600 disabled:hover:opacity-100 disabled:active:scale-100"
         disabled={!submitOrder}
