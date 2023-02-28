@@ -10,7 +10,7 @@ const secondary = {
 const secondaryOutlined = {
   border: '2px solid',
   borderColor: colors.ocean[300],
-  color: colors.ocean - [200],
+  color: colors.ocean[200],
   '&:hover': {
     backgroundColor: colors.ocean[600],
   },

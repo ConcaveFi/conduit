@@ -26,15 +26,43 @@ module.exports = {
   },
   plugins: [
     require('@tradex/theme'),
-    plugin(function define(pl) {
-      pl.matchComponents(
+    plugin(function definePlugin({
+      addVariant,
+      addUtilities,
+      theme,
+      addComponents,
+      matchComponents,
+    }) {
+      addVariant('ocean', '.ocean &')
+      addUtilities([
+        {
+          '.all-start': {
+            justifyContent: 'start',
+            alignItems: 'start',
+          },
+          '.all-end': {
+            justifyContent: 'end',
+            alignItems: 'end',
+          },
+          '.centered': {
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        },
+      ])
+      matchComponents(
         { 'skeleton-from': (v) => ({ '--skeleton-from': v }) },
         { values: mapColors() },
       )
-      pl.matchComponents(
-        { 'skeleton-to': (v) => ({ '--skeleton-to': v }) },
-        { values: mapColors() },
-      )
+      matchComponents({ 'skeleton-to': (v) => ({ '--skeleton-to': v }) }, { values: mapColors() })
+      addComponents({
+        '.testing': {
+          color: 'blue',
+          '.dark &': {
+            color: theme('colors.gray.500'),
+          },
+        },
+      })
     }),
   ],
 }
