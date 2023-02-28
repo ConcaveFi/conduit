@@ -18,10 +18,11 @@ import {
 } from 'perps-hooks'
 import { parseMarketSummaries, parseOrder, parsePosition } from 'perps-hooks/parsers'
 import { useMemo, useReducer, useState } from 'react'
+
 import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
-import { format, formatUsd } from '../utils/format'
+import { format, formatUsd, safeFixedNumber } from '../utils/format'
 
 export const useRouteMarket = () => {
   const searchParams = useSearchParams()
@@ -212,38 +213,29 @@ const TrackingCode = formatBytes32String('conduit')
 
 const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
-// const getSizeDelta = (
-//   amount: string | FixedNumber,
-//   side: 'long' | 'short',
-// ) => {
-//   // const size = FixedNumber.isFixedNumber(amount) ? amount : FixedNumber.fromString(amount || '0')
-//   // return sizeDelta
-// }
-
-const safeToFixedNumber = (v: string | FixedNumber) =>
-  FixedNumber.isFixedNumber(v) ? v : FixedNumber.fromString(v || '0')
-
 type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
 const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
   const { value, type } = input || {}
   if (!value || !type) return { usd: '', asset: '', size: '' }
-  const amount = FixedNumber.fromString(value)
-  if (!price || !leverage) return { usd: '', asset: '', size: '', [type]: value }
+  if (!price || price.isZero() || !leverage) return { usd: '', asset: '', size: '', [type]: value }
+
+  const amount = safeFixedNumber(value)
+  const _leverage = leverage.isZero() ? FixedNumber.from(1) : leverage
   return {
     usd: () => ({
       usd: value,
       asset: amount.divUnsafe(price),
-      size: amount.divUnsafe(price).mulUnsafe(leverage),
+      size: amount.divUnsafe(price).mulUnsafe(_leverage),
     }),
     asset: () => ({
       usd: amount.mulUnsafe(price),
       asset: value,
-      size: amount.mulUnsafe(price).mulUnsafe(leverage),
+      size: amount.mulUnsafe(_leverage),
     }),
-    // size input is denominated in asset (asset * leverage)
+    // size input is denominated in asset (size = asset * leverage)
     size: () => ({
-      usd: amount.divUnsafe(leverage).mulUnsafe(price),
-      asset: amount.divUnsafe(leverage),
+      usd: amount.divUnsafe(_leverage).mulUnsafe(price),
+      asset: amount.divUnsafe(_leverage),
       size: value,
     }),
   }[type]()
@@ -283,10 +275,13 @@ const OpenPosition = () => {
 
   const price = market?.price
 
-  const [leverage, setLeverage] = useState(MAX_LEVERAGE)
+  const [leverage, setLeverage] = useState(MAX_LEVERAGE.toString())
   const [input, setInput] = useState<InputState>()
 
-  const inputs = useMemo(() => deriveInputs(input, price, leverage), [price, leverage, input])
+  const inputs = useMemo(
+    () => deriveInputs(input, price, safeFixedNumber(leverage)),
+    [price, leverage, input],
+  )
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
@@ -294,7 +289,7 @@ const OpenPosition = () => {
   // sizeDelta is submited to the contract, denominated in susd
   const sizeDelta = useMemo(() => {
     if (!price) return FixedNumber.from(0)
-    const sizeUsd = safeToFixedNumber(debouncedAmountUsd).mulUnsafe(price)
+    const sizeUsd = safeFixedNumber(debouncedAmountUsd).mulUnsafe(price)
     return side === 'long' ? sizeUsd : sizeUsd.mulUnsafe(FixedNumber.from(-1))
   }, [debouncedAmountUsd, side, price])
 
@@ -319,6 +314,15 @@ const OpenPosition = () => {
           value={inputs.size.toString()}
           onValueChange={({ value }, { source }) => {
             if (source === 'event') setInput({ value, type: 'size' })
+          }}
+        />
+        <NumericInput
+          className="w-52 max-w-full bg-transparent text-2xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
+          placeholder="0.00"
+          defaultValue={25}
+          prefix="x"
+          onValueChange={({ value }, { source }) => {
+            if (source === 'event') setLeverage(value)
           }}
         />
       </div>
