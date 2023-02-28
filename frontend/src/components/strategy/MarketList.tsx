@@ -41,11 +41,7 @@ export function MarketList() {
         />
         <ChevronIcon />
       </Menu.Button>
-      <Menu.Items
-        variant={'glass'}
-        className="left-10 flex h-[500px] w-[360px] flex-col overflow-y-auto rounded-tl-sm p-2"
-        origin={'top-left'}
-      >
+      <Menu.Items className="card card-translucent-glass left-10 h-[500px] w-[360px] origin-top-left overflow-y-auto rounded-tl-sm p-2">
         {markets.map(({ asset, price }, i) => (
           <Menu.Item key={i}>
             {({ close }) => (

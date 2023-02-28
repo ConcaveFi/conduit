@@ -1,5 +1,5 @@
 import React, { cloneElement, forwardRef, ReactComponentElement, useMemo, useState } from 'react'
-import { PrimitiveDivProps } from '../../../types/primitives'
+import { DivProps } from '../../../types/primitives'
 import { PanelEssentials } from './Panel'
 import { PanelBody } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
@@ -10,7 +10,7 @@ export enum TabPanelDisplayNames {
   PANEL_TAB = 'Panel.Tab',
   PANEL_ROOT = 'Panel.Root',
 }
-export interface TabPanelProps extends PrimitiveDivProps, PanelEssentials, PanelHeaderProps {
+export interface TabPanelProps extends DivProps, PanelEssentials, PanelHeaderProps {
   children: any
 }
 export const Root = forwardRef<HTMLDivElement, TabPanelProps>((props, ref) => {

@@ -2,9 +2,9 @@ import { CloseIcon, ExpandIcon } from '@tradex/icons'
 import { VariantProps } from 'class-variance-authority'
 import { forwardRef, ReactNode, useState } from 'react'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
-import { PrimitiveDivProps } from '../../../types/primitives'
+import { DivProps } from '../../../types/primitives'
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
-export interface PanelHeaderProps extends PanelHeaderAttributes, PrimitiveDivProps {
+export interface PanelHeaderProps extends PanelHeaderAttributes, DivProps {
   children?: ReactNode
   onMaximize?: VoidFunction
   onClose?: VoidFunction

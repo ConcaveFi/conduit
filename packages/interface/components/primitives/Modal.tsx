@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
-import { Card, CardProps } from '../advanced'
-export interface ModalProps extends CardProps {
+import { DivProps } from '../../types/primitives'
+export interface ModalProps extends DivProps {
   isOpen: boolean
   onClose: VoidFunction
   overlay?: boolean
@@ -23,7 +23,7 @@ export function Modal(props: ModalProps) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel as={Card} {...panelProps} />
+            <Dialog.Panel as={'div'} {...panelProps} />
           </Transition.Child>
         </div>
       </Dialog>

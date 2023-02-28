@@ -72,7 +72,7 @@ export function Topbar() {
           <Menu.Button>
             <span className="testing">{theme}</span>
           </Menu.Button>
-          <Menu.Items variant={'glass'} className="right-0 gap-2 p-3 dark:text-left">
+          <Menu.Items className="card card-translucent-glass right-0 gap-2 p-3 dark:text-left">
             {Object.values(Themes)
               .filter((_theme) => _theme !== theme)
               .map((_theme) => (

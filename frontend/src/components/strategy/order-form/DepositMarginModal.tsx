@@ -21,7 +21,7 @@ export function DepositMarginModal(props: ModalProps) {
   const { write } = useMarketTransferMargin(config)
 
   return (
-    <Modal className="centered flex h-fit w-[400px] flex-col gap-4 p-4" {...props}>
+    <Modal className="centered card card-primary-outlined h-fit w-[400px] gap-4 p-4" {...props}>
       <Text size={'xl'} variant={'heading'}>
         Deposit Margin
       </Text>
