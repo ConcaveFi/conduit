@@ -1,5 +1,4 @@
 import { PlusIcon } from '@tradex/icons'
-import { Container } from '@tradex/interface'
 import { createContext, useContext, useState } from 'react'
 import { AddWidgetModal } from 'src/components/widgets/AddWidgetModal'
 import { useDisclosure } from 'src/hooks/useDisclosure'
@@ -52,13 +51,7 @@ export function WidgetsProvider({ children }: any) {
   return (
     <WidgetsContext.Provider value={{ hasWidget, widgets, addWidgets, removeWidget }}>
       {children}
-      <Container
-        expand={'all'}
-        space="spacius"
-        justify={'end'}
-        align="end"
-        className="pointer-events-none fixed"
-      >
+      <div className="pointer-events-none fixed flex h-screen w-full items-end justify-end p-6">
         <button
           onClick={modal.onOpen}
           className="btn btn-green-gradient pointer-events-auto gap-3 rounded-full px-8 py-4 shadow-xl"
@@ -67,7 +60,7 @@ export function WidgetsProvider({ children }: any) {
           Add Widget
         </button>
         <AddWidgetModal isOpen={modal.isOpen} onClose={modal.onClose} />
-      </Container>
+      </div>
     </WidgetsContext.Provider>
   )
 }

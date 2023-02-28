@@ -1,5 +1,4 @@
 export * from './CheckBox'
-export * from './Container'
 export * from './Input'
 export * from './Modal'
 export * from './Slider'

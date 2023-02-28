@@ -1,4 +1,3 @@
-import { Container } from '@tradex/interface'
 import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
@@ -10,11 +9,11 @@ export default function Home() {
   if (!isClientRendered) return null
   return (
     <WidgetsProvider>
-      <Container space="medium.eq" column className="h-full w-full">
+      <div className="flex h-full w-full flex-col gap-4 p-4">
         <Topbar />
         <StrategyHeader />
         <GridLayout />
-      </Container>
+      </div>
     </WidgetsProvider>
   )
 }
