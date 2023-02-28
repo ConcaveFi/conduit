@@ -1,3 +1,4 @@
+export * from './animated/EllipsisLoader'
 export * from './Arrow'
 export * from './BalanceIcon'
 export * from './ChevronIcon'
