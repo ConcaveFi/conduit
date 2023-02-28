@@ -172,7 +172,7 @@ const Position = () => {
         <span className="px-1 text-xs text-neutral-500">No open position</span>
       ) : (
         <div className="flex items-center justify-between rounded-lg px-2  py-1 hover:bg-neutral-800">
-          <span className="text-sm text-neutral-200">{market.address}</span>
+          <span className="text-sm text-neutral-200">{market.asset}</span>
           <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
             {side}
           </span>
@@ -208,27 +208,20 @@ const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
   )
 }
 
-const TrackingCode = formatBytes32String('tradex')
+const TrackingCode = formatBytes32String('conduit')
 
 const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
-const minusOne = FixedNumber.from(-1)
+// const getSizeDelta = (
+//   amount: string | FixedNumber,
+//   side: 'long' | 'short',
+// ) => {
+//   // const size = FixedNumber.isFixedNumber(amount) ? amount : FixedNumber.fromString(amount || '0')
+//   // return sizeDelta
+// }
 
-const getSizeDelta = (
-  amount: string | FixedNumber,
-  leverage: FixedNumber,
-  side: 'long' | 'short',
-) => {
-  const fixedAmount = FixedNumber.isFixedNumber(amount)
-    ? amount
-    : FixedNumber.fromString(amount || '0')
-
-  const size = fixedAmount.mulUnsafe(leverage)
-
-  const sizeDelta = side === 'long' ? size : size.mulUnsafe(minusOne)
-
-  return sizeDelta
-}
+const safeToFixedNumber = (v: string | FixedNumber) =>
+  FixedNumber.isFixedNumber(v) ? v : FixedNumber.fromString(v || '0')
 
 type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
 const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
@@ -240,16 +233,16 @@ const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedN
     usd: () => ({
       usd: value,
       asset: amount.divUnsafe(price),
-      size: amount.mulUnsafe(leverage),
+      size: amount.divUnsafe(price).mulUnsafe(leverage),
     }),
     asset: () => ({
       usd: amount.mulUnsafe(price),
       asset: value,
       size: amount.mulUnsafe(price).mulUnsafe(leverage),
     }),
+    // size input is denominated in asset (asset * leverage)
     size: () => ({
-      // TODO: fix maths
-      usd: amount.divUnsafe(price.mulUnsafe(leverage)),
+      usd: amount.divUnsafe(leverage).mulUnsafe(price),
       asset: amount.divUnsafe(leverage),
       size: value,
     }),
@@ -290,18 +283,19 @@ const OpenPosition = () => {
 
   const price = market?.price
 
-  const [leverage, setLeverage] = useState(FixedNumber.from(25))
+  const [leverage, setLeverage] = useState(MAX_LEVERAGE)
   const [input, setInput] = useState<InputState>()
 
   const inputs = useMemo(() => deriveInputs(input, price, leverage), [price, leverage, input])
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const debouncedAmountUsd = useDebounce(inputs.usd, 150)
-  const sizeDelta = useMemo(
-    () => getSizeDelta(debouncedAmountUsd, leverage, side),
-    [debouncedAmountUsd, side, leverage],
-  )
+  const debouncedAmountUsd = useDebounce(inputs.size, 150)
+  const sizeDelta = useMemo(() => {
+    if (!price) return FixedNumber.from(0)
+    const sizeUsd = safeToFixedNumber(debouncedAmountUsd).mulUnsafe(price)
+    return side === 'long' ? sizeUsd : sizeUsd.mulUnsafe(FixedNumber.from(-1))
+  }, [debouncedAmountUsd, side, price])
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
 
@@ -384,6 +378,8 @@ const DepositMargin = () => {
   )
 }
 
+const MAX_LEVERAGE = FixedNumber.from(25)
+
 const Margin = () => {
   const { address } = useAccount()
 
@@ -404,19 +400,21 @@ const Margin = () => {
 
   if (!accessibleMargin || !remainingMargin || !market || !isClientRendered) return null
 
-  const buyingPower = remainingMargin.mulUnsafe(market.maxLeverage)
+  const buyingPower = remainingMargin.mulUnsafe(MAX_LEVERAGE)
 
   const marginUsed = accessibleMargin.subUnsafe(remainingMargin)
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 px-3 py-2">
       <h1 className="text-xs text-neutral-400">Margin</h1>
-      <span className="text-xs text-neutral-200">Available margin: {format(remainingMargin)}</span>
+      <span className="text-xs text-neutral-200">
+        Available margin: {formatUsd(accessibleMargin)}
+      </span>
       <div className="flex gap-1">
-        <span className="text-xs text-neutral-200">Buying power: {format(buyingPower)}</span>
-        <span className="text-xs text-neutral-400">x{format(market.maxLeverage)}</span>
+        <span className="text-xs text-neutral-200">Buying power: {formatUsd(buyingPower)}</span>
+        <span className="text-xs text-neutral-400">x{format(MAX_LEVERAGE)}</span>
       </div>
-      <span className="text-xs text-neutral-200">Margin used: {marginUsed.toString()}</span>
+      <span className="text-xs text-neutral-200">Margin used: {formatUsd(marginUsed)}</span>
       <DepositMargin />
     </div>
   )
