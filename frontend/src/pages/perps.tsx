@@ -1,5 +1,5 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { NumericInput } from '@tradex/interface'
+import { cx, NumericInput } from '@tradex/interface'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -134,7 +134,8 @@ const Orders = () => {
           )}
           <span className="text-xs text-neutral-400">
             <span
-              className={`mr-3 text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}
+              data-isShort={size.isNegative()}
+              className={`mr-3 text-xs data-[isShort=true]:text-red-400 data-[isShort=false]:text-green-400`}
             >
               {side}
             </span>
@@ -166,20 +167,30 @@ const Position = () => {
 
   const hasPosition = !size.isZero()
 
+  const priceChange = market.price.subUnsafe(position.lastPrice)
+  const profitLoss = size.mulUnsafe(priceChange)
+
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Position</h1>
       {!hasPosition ? (
         <span className="px-1 text-xs text-neutral-500">No open position</span>
       ) : (
-        <div className="flex items-center justify-between rounded-lg px-2  py-1 hover:bg-neutral-800">
-          <span className="text-sm text-neutral-200">{market.asset}</span>
-          <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
-            {side}
+        <div className="flex flex-col rounded-lg px-2 py-1 hover:bg-neutral-800">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-neutral-200">{market.asset}</span>
+            <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
+              {side}
+            </span>
+            <span className="text-xs text-neutral-400">{format(size)} ETH</span>
+            <span className="text-xs text-neutral-400">x{format(position.margin)}</span>
+          </div>
+          <span
+            className={cx('text-xs', profitLoss.isNegative() ? 'text-red-400' : 'text-green-500')}
+          >
+            P&L: {formatUsd(profitLoss)}
           </span>
-          <span className="text-xs text-neutral-400">{format(size)} ETH</span>
-          <span className="text-xs text-neutral-400">x{format(position.margin)}</span>
-          <span className="text-xs text-neutral-400">{format(position.lastPrice)}</span>
+          <span className="text-xs text-neutral-400">Entry: {formatUsd(position.lastPrice)}</span>
         </div>
       )}
     </div>
