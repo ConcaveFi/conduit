@@ -2,15 +2,16 @@ import { Popover as PrimitivePopover, Transition } from '@headlessui/react'
 import { VariantProps } from 'class-variance-authority'
 import { forwardRef, Fragment } from 'react'
 import { propoverPanelStyles } from '../../styles/advanced/popoverStyles'
-import { Button, ButtonProps, Flex, FlexProps } from '../primitives'
+import { ButtonProps } from '../../types/primitives'
+import { FlexProps } from '../primitives'
 import { Card, CardProps } from './Card'
 
 export function Popover({ className, ...props }: FlexProps) {
-  return <PrimitivePopover className={`z-[10] relative ${className}`} as={Flex} {...props} />
+  return <PrimitivePopover className={`relative z-[10] ${className}`} as={'div'} {...props} />
 }
 
 const PopButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <PrimitivePopover.Button as={Button} {...props} ref={ref} />
+  return <PrimitivePopover.Button as={'button'} {...props} ref={ref} />
 })
 
 const Panel = forwardRef<HTMLDivElement, CardProps & VariantProps<typeof propoverPanelStyles>>(

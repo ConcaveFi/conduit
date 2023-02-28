@@ -1,5 +1,5 @@
 import { ChevronIcon } from '@tradex/icons'
-import { Button, ButtonProps, ItemInfo, Menu } from '@tradex/interface'
+import { ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useMarketDataAllProxiedMarketSummaries } from 'perps-hooks'
@@ -25,7 +25,7 @@ export function MarketList() {
 
   return (
     <Menu className={'my-auto h-fit'}>
-      <Menu.Button className="gap-6 outline-none">
+      <Menu.Button className="btn centered gap-6 outline-none">
         <ItemInfo
           info={`${normalized_asset} Perpetual`}
           value={format(market.price)}
@@ -71,7 +71,7 @@ interface MarketButton extends ButtonProps {
 // css-s6i0el-menu
 const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
   ({ asset, price, percent, ...props }, ref) => {
-    const styles = 'gap-6 h-fit justify-between even:bg-ocean-600 p-2 px-3 rounded-lg'
+    const styles = 'btn gap-6 h-fit justify-between even:bg-ocean-600 p-2 px-3 rounded-lg'
     const icon = (
       <Image
         alt="bitcoin icon"
@@ -83,10 +83,10 @@ const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
     )
 
     return (
-      <Button ref={ref} className={styles} {...props}>
+      <button ref={ref} className={styles} {...props}>
         <ItemInfo info={asset + ' Perpetual '} value={`${asset}-PERP`} Icon={icon} />
         <ItemInfo align="end" info={percent || '0.00%'} value={price} />
-      </Button>
+      </button>
     )
   },
 )

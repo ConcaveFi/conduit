@@ -1,4 +1,4 @@
-import { Button, Menu } from '@tradex/interface'
+import { Menu } from '@tradex/interface'
 import { storeLocale } from '@tradex/languages'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -26,12 +26,12 @@ export function LocationSelector() {
           height={15}
         />
       </Menu.Button>
-      <Menu.Items column className="p-2 w-14" variant={'glass'}>
+      <Menu.Items column className="w-14 p-2" variant={'glass'}>
         {locales.map((locale) => (
           <Menu.Item key={locale}>
-            <Button onClick={() => handleClick(locale)}>
+            <button onClick={() => handleClick(locale)}>
               <Flag loc={locale} />
-            </Button>
+            </button>
           </Menu.Item>
         ))}
       </Menu.Items>

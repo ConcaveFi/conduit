@@ -1,4 +1,3 @@
-export * from './Button'
 export * from './CheckBox'
 export * from './Container'
 export * from './Flex'

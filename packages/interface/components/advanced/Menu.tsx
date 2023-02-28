@@ -2,7 +2,8 @@ import { Menu as PrimitiveMenu, Transition } from '@headlessui/react'
 import { VariantProps } from 'class-variance-authority'
 import React, { forwardRef, Fragment } from 'react'
 import { menuBodyStyles } from '../../styles/advanced/menuStyles'
-import { Button, ButtonProps, Flex, FlexProps } from '../primitives'
+import { ButtonProps } from '../../types/primitives'
+import { Flex, FlexProps } from '../primitives'
 import { Card, CardProps } from './Card'
 
 export function Menu({ ...props }: FlexProps) {
@@ -11,7 +12,7 @@ export function Menu({ ...props }: FlexProps) {
 }
 
 const MenuButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  return <PrimitiveMenu.Button as={Button} {...props} />
+  return <PrimitiveMenu.Button as={'button'} {...props} />
 })
 
 const MenuItems = forwardRef<HTMLDivElement, CardProps & VariantProps<typeof menuBodyStyles>>(

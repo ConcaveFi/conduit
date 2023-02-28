@@ -1,14 +1,4 @@
-import {
-  Button,
-  Flex,
-  PanelProps,
-  Table,
-  TableBody,
-  TableRow,
-  TabPanel,
-  Text,
-  THead,
-} from '@tradex/interface'
+import { PanelProps, Table, TableBody, TableRow, TabPanel, Text, THead } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 
@@ -54,35 +44,33 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
       {TABS.map((tab) => (
         <TabPanel.Tab key={tab}>
           {(selected) => (
-            <Button size="sm" variant={selected ? 'secondary' : 'underline.secondary'}>
+            <button className={`${selected ? 'btn-secondary' : 'btn-underline.secondary'}`}>
               {t(tab)}
-            </Button>
+            </button>
           )}
         </TabPanel.Tab>
       ))}
       <TabPanel.Screen>
-        <Flex>
-          <Table className="w-full" left>
-            <THead variant={'primary'}>
-              <TableRow rows={HEADERS}>
-                {(element, index) => (
-                  <Text key={index} size="sm" variant="low">
-                    {t(element)}
-                  </Text>
-                )}
-              </TableRow>
-            </THead>
-            <TableBody>
-              <TableRow rows={MOCK_ROWS}>
-                {(element, index) => (
-                  <Text key={index} size={'sm'} {...STYLES[HEADERS[index]]}>
-                    {element}
-                  </Text>
-                )}
-              </TableRow>
-            </TableBody>
-          </Table>
-        </Flex>
+        <Table className="w-full" left>
+          <THead variant={'primary'}>
+            <TableRow rows={HEADERS}>
+              {(element, index) => (
+                <Text key={index} size="sm" variant="low">
+                  {t(element)}
+                </Text>
+              )}
+            </TableRow>
+          </THead>
+          <TableBody>
+            <TableRow rows={MOCK_ROWS}>
+              {(element, index) => (
+                <Text key={index} size={'sm'} {...STYLES[HEADERS[index]]}>
+                  {element}
+                </Text>
+              )}
+            </TableRow>
+          </TableBody>
+        </Table>
       </TabPanel.Screen>
     </TabPanel.Root>
   )

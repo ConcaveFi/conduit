@@ -1,9 +1,10 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
-import { Button, Flex, ItemInfo, Menu, Text } from '@tradex/interface'
+import { ItemInfo, Menu, Text } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
-import { Themes } from 'src/utils/themeHandler'
+import { useState } from 'react'
+import { Theme, Themes } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { SearchInput } from '../SearchInput'
@@ -14,59 +15,56 @@ export function Topbar() {
   const { t } = useTranslation()
   const { address } = useAccount()
   const { data } = useBalance({ address })
+  const [theme, setTheme] = useState(Theme.getStoredTheme())
+
   return (
-    <Flex align="center" justify="between">
-      <Flex align="center" className="gap-2">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
         <Image src={'/assets/logo.png'} alt="logo" width={45} height={30} />
         <Text variant="heading.light">
           TRADE <strong>X</strong>
         </Text>
-        <Button className="ml-8" variant="underline" size="lg">
+        <button className="btn btn-bottom-glow centered w-[120px] rounded-none">
           {t('futures')}
-        </Button>
-        <Button variant="underline" size="lg">
+        </button>
+        <button className="btn btn-underline centered w-[120px] rounded-none">
           {t('options')}
-        </Button>
-        <Button variant="bottom-glow" size="lg">
+        </button>
+        <button className="btn btn-underline centered w-[120px] rounded-none">
           {t('strategy')} <ChevronIcon />
-        </Button>
+        </button>
         <SearchInput />
-      </Flex>
-      <Flex align="center" className="w-fit gap-6">
+      </div>
+      <div className="flex w-fit items-center gap-6">
         <LocationSelector />
         <DashboardIcon className="fill-ocean-200 btn- h-5 w-5" />
-        <Flex className="h-9 w-9 rounded-full bg-sky-300 bg-opacity-70 p-[5px]">
-          <Flex className="h-full w-full rounded-full bg-sky-300" />
-        </Flex>
+        <div className="h-9 w-9 rounded-full bg-sky-300 bg-opacity-70 p-[5px]">
+          <div className="h-full w-full rounded-full bg-sky-300" />
+        </div>
         <NotificationIcon className="fill-ocean-200 h-5 w-5" />
         <ConnectButton.Custom>
           {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
             if (!isConnected) {
               return (
-                <Button
+                <button
                   onClick={openConnectModal}
-                  variant={'green-gradient'}
-                  className="py-2"
-                  size={'lg'}
+                  className="btn btn-green-gradient py-22 px-6 py-2"
                 >
                   Connect wallet
-                </Button>
+                </button>
               )
             }
             return (
-              <Flex className="gap-4">
-                <Button variant={'primary'} size="lg" onClick={openChainModal} className="gap-2">
+              <div className="flex gap-4">
+                <button onClick={openChainModal} className="btn btn-primary centered gap-2 px-4">
                   <img src={chain?.iconUrl} className="w-6" alt="" />
                   {chain?.name}
                   <ChevronIcon className="fill-ocean-200 h-3 w-3" />
-                </Button>
-                <Button onClick={openAccountModal}>
-                  <ItemInfo
-                    info={truncateAddress(account?.address)}
-                    value={format(data?.formatted || '0')}
-                  />
-                </Button>
-              </Flex>
+                </button>
+                <button className="btn" onClick={openAccountModal}>
+                  <ItemInfo info={truncateAddress(account?.address)} value="$ 2,548.04" />
+                </button>
+              </div>
             )
           }}
         </ConnectButton.Custom>
@@ -80,7 +78,7 @@ export function Topbar() {
               .map((_theme) => (
                 <Menu.Button
                   key={_theme}
-                  onClick={handleTheme(_theme)}
+                  onClick={() => Theme.select(_theme)}
                   variant="underline.secondary"
                 >
                   {_theme}
@@ -88,7 +86,7 @@ export function Topbar() {
               ))}
           </Menu.Items>
         </Menu>
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   )
 }

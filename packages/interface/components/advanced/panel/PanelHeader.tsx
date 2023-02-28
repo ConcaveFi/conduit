@@ -3,8 +3,6 @@ import { VariantProps } from 'class-variance-authority'
 import { forwardRef, ReactNode, useState } from 'react'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { PrimitiveDivProps } from '../../../types/primitives'
-import { Button, Flex } from '../../primitives'
-
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
 export interface PanelHeaderProps extends PanelHeaderAttributes, PrimitiveDivProps {
   children?: ReactNode
@@ -25,7 +23,7 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
       }
     }
     return (
-      <Flex
+      <div
         ref={ref}
         className={`${panelHeaderStyles({ variant })} cursor-move`}
         onMouseDown={(e) => e.preventDefault()}
@@ -33,15 +31,15 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         {...props}
       >
         {children}
-        <Flex className="gap-3  right-3 z-10" align="center">
-          <Button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
-            <ExpandIcon className="w-4 h-4 fill-ocean-200" />
-          </Button>
-          <Button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
-            <CloseIcon className="w-3 h-3 fill-ocean-200" />
-          </Button>
-        </Flex>
-      </Flex>
+        <div className="right-3 z-10 flex items-center gap-3">
+          <button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
+            <ExpandIcon className="fill-ocean-200 h-4 w-4" />
+          </button>
+          <button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
+            <CloseIcon className="fill-ocean-200 h-3 w-3" />
+          </button>
+        </div>
+      </div>
     )
   },
 ) as React.FC<PanelHeaderProps>
