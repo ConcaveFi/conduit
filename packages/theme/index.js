@@ -1,6 +1,6 @@
 const plugin = require('tailwindcss/plugin')
-const slider = require('./plugin/components/slider')
-const tooltip = require('./plugin/components/tooltip')
+const slider = require('./components/slider')
+const tooltip = require('./components/tooltip')
 const variants = require('./utils/variants')
 
 module.exports = plugin(function definePlugin({ addComponents, theme, addVariant }) {
