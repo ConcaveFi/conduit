@@ -3,6 +3,7 @@ const slider = require('./components/slider')
 const tooltip = require('./components/tooltip')
 const variants = require('./utils/variants')
 const btn = require('./components/buttons')
+const card = require('./components/card')
 
 module.exports = plugin(function definePlugin({
   addComponents,
@@ -10,7 +11,8 @@ module.exports = plugin(function definePlugin({
   addVariant,
   matchComponents,
 }) {
-  addComponents([slider(theme), tooltip(theme), ...btn.components])
+  addComponents([slider(theme), tooltip(theme), ...btn.components, ...card.components])
+  matchComponents({ card: (v) => ({ ...v }) }, { values: card.variants })
   matchComponents({ btn: (v) => ({ ...v }) }, { values: btn.variants })
   for (let { name, definition } of variants) addVariant(name, definition)
 },
