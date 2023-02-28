@@ -1,5 +1,5 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { cx, NumericInput } from '@tradex/interface'
+import { NumericInput } from '@tradex/interface'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -291,6 +291,7 @@ const OpenPosition = () => {
   const [side, setSide] = useState<'long' | 'short'>('long')
 
   const debouncedAmountUsd = useDebounce(inputs.size, 150)
+  // sizeDelta is submited to the contract, denominated in susd
   const sizeDelta = useMemo(() => {
     if (!price) return FixedNumber.from(0)
     const sizeUsd = safeToFixedNumber(debouncedAmountUsd).mulUnsafe(price)
@@ -328,19 +329,15 @@ const OpenPosition = () => {
       )}
       <div className="flex items-center justify-center gap-3">
         <button
-          className={cx(
-            side === 'long' ? 'outline outline-green-700' : '',
-            'rounded-full bg-green-600/20 px-5 py-1 outline-1 outline-offset-2 hover:opacity-80 active:scale-[.98]',
-          )}
+          data-active={side === 'long'}
+          className="rounded-full bg-green-600/20 px-5 py-1 outline-1 outline-offset-2 outline-green-700 hover:opacity-80 active:scale-[.98] data-[active=true]:outline"
           onClick={() => setSide('long')}
         >
           <span className="font-bold text-neutral-200">Buy/Long</span>
         </button>
         <button
-          className={cx(
-            side === 'short' ? 'outline outline-red-700' : '',
-            'rounded-full bg-red-600/20 px-5 py-1 outline-1 outline-offset-2 hover:opacity-80 active:scale-[.98]',
-          )}
+          data-active={side === 'short'}
+          className="rounded-full bg-red-600/20 px-5 py-1 outline-1 outline-offset-2 outline-red-700 hover:opacity-80 active:scale-[.98] data-[active=true]:outline"
           onClick={() => setSide('short')}
         >
           <span className="font-bold text-neutral-200">Sell/Short</span>
