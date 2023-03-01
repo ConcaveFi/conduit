@@ -197,7 +197,7 @@ const Position = () => {
   )
 }
 
-const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
+export const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
   const market = useRouteMarket()
 
   if (!market) return null
@@ -213,19 +213,19 @@ const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
 
   return (
     <div>
-      <span className="text-xs text-neutral-200">
+      <span className="text-light-500 ocean:text-ocean-200 text-sm font-medium">
         Fee: {format(positionFee, { signDisplay: 'never' })} sUsd
       </span>
     </div>
   )
 }
 
-const TrackingCode = formatBytes32String('conduit')
+export const TrackingCode = formatBytes32String('conduit')
 
-const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
+export const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
 
-type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
-const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
+export type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
+export const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
   const { value, type } = input || {}
   if (!value || !type) return { usd: '', asset: '', size: '' }
   if (!price || price.isZero() || !leverage) return { usd: '', asset: '', size: '', [type]: value }
@@ -252,7 +252,7 @@ const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedN
   }[type]()
 }
 
-const AmountInput = ({
+export const AmountInput = ({
   onChange,
   inputs,
 }: {
@@ -265,16 +265,16 @@ const AmountInput = ({
   )
 
   return (
-    <div className="flex max-w-full">
+    <div className="text-light-500  bg-light-300 ocean:bg-ocean-600 flex h-[60px] w-full justify-between rounded-xl px-3">
       <NumericInput
-        className="w-52 max-w-full bg-transparent text-3xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
+        className="text-light-500 placeholder:text-light-400 w-52 max-w-full bg-transparent text-xl font-bold outline-none "
         placeholder="0.00"
         value={inputs[amountDenominator].toString()}
         onValueChange={({ value }, { source }) => {
           if (source === 'event') onChange({ value, type: amountDenominator })
         }}
       />
-      <button onClick={toggleAmountDenominator} className="text-sm font-medium text-neutral-600">
+      <button onClick={toggleAmountDenominator} className=" text-sm font-medium text-neutral-600">
         {amountDenominator}
       </button>
     </div>
@@ -390,7 +390,7 @@ const DepositMargin = () => {
   )
 }
 
-const MAX_LEVERAGE = FixedNumber.from(25)
+export const MAX_LEVERAGE = FixedNumber.from(25)
 
 const Margin = () => {
   const { address } = useAccount()
