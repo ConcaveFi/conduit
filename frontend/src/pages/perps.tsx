@@ -159,11 +159,8 @@ const Position = () => {
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market?.address,
-    args: [
-      BigNumber.from(position?.size.mulUnsafe(FixedNumber.from(-1)) || 0),
-      DEFAULT_PRICE_IMPACT_DELTA,
-      TrackingCode,
-    ],
+    enabled: !!position?.size,
+    args: [BigNumber.from(position?.size || 0).mul(-1), DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
   })
   const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
