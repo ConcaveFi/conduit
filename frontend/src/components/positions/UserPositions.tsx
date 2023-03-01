@@ -77,15 +77,6 @@ export function UserPositions() {
   const hasPosition = !size.isZero()
 
   const profitLoss = positionDetails.profitLoss
-  const row = [
-    market?.asset,
-    side,
-    format(size),
-    format(position?.margin),
-    formatUsd(profitLoss),
-    formatUsd(position?.lastPrice),
-    closePosition,
-  ]
   return (
     <Table className="w-full" left>
       <THead variant={'primary'}>
