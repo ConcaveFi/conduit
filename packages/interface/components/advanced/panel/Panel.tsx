@@ -12,6 +12,7 @@ export interface PanelEssentials {
 }
 export interface PanelProps extends DivProps, PanelHeaderProps, PanelEssentials {
   name?: string
+  headerChild: JSX.Element
 }
 export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const {
@@ -22,6 +23,7 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
     onMaximize,
     onMinimize,
     onClose,
+    headerChild,
     ...rest
   } = props
   return (
@@ -32,6 +34,7 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
         onClose={onClose}
         variant={variant}
       >
+        {headerChild}
         <span className="text-light-400 ocean:text-ocean-200 text-xs ">{name}</span>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>

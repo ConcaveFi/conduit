@@ -196,6 +196,7 @@ const Position = () => {
           >
             P&L: {formatUsd(profitLoss)}
           </span>
+          {/* Entry */}
           <span className="text-xs text-neutral-400">Entry: {formatUsd(position.lastPrice)}</span>
         </div>
       )}
