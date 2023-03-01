@@ -7,8 +7,8 @@ import {
   useChainLinkLatestRoundData,
   useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
+  useMarketDataPositionDetails,
   useMarketDelayedOrders,
-  useMarketPositions,
   useMarketRemainingMargin,
   useMarketSettingsOffchainDelayedOrderMaxAge,
   useMarketSubmitOffchainDelayedOrderWithTracking,
@@ -16,7 +16,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketTransferMargin,
 } from 'perps-hooks'
-import { parseMarketSummaries, parseOrder, parsePosition } from 'perps-hooks/parsers'
+import { parseMarketSummaries, parseOrder, parsePositionDetails } from 'perps-hooks/parsers'
 import { useMemo, useReducer, useState } from 'react'
 
 import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
@@ -151,11 +151,11 @@ const Position = () => {
   const { address } = useAccount()
   const market = useRouteMarket()
 
-  const { data: position } = useMarketPositions({
-    args: address && [address],
-    address: market && market.address,
-    select: parsePosition,
+  const { data: positionDetails } = useMarketDataPositionDetails({
+    args: market && address && [market?.key, address],
+    select: parsePositionDetails,
   })
+  const position = positionDetails?.position
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market?.address,
@@ -173,8 +173,8 @@ const Position = () => {
 
   const hasPosition = !size.isZero()
 
-  const priceChange = market.price.subUnsafe(position.lastPrice)
-  const profitLoss = size.mulUnsafe(priceChange)
+  // const priceChange = market.price.subUnsafe(position.lastPrice)
+  const profitLoss = positionDetails.profitLoss
 
   return (
     <div onClick={closePosition} className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">

@@ -17,7 +17,7 @@ export const parseMarketSummaries = (summaries: MarketSummariesResult) =>
   summaries.map(({ market, key, asset, feeRates, ...summary }) => ({
     market,
     address: market,
-    key: parseBytes32String(key),
+    key,
     asset: parseBytes32String(asset),
     feeRates: valuesToFixedNumber(feeRates),
     ...valuesToFixedNumber(summary),
@@ -51,3 +51,16 @@ export const parsePosition = ({ id, lastFundingIndex, ...p }: PositionResult) =>
   ...valuesToFixedNumber(p),
 })
 export type Position = ReturnType<typeof parsePosition>
+
+type PositionDetailsResult = ReadContractResult<typeof marketDataABI, 'positionDetails'>
+
+export const parsePositionDetails = ({
+  position,
+  canLiquidatePosition,
+  ...p
+}: PositionDetailsResult) => ({
+  position: parsePosition(position),
+  canLiquidatePosition,
+  ...valuesToFixedNumber(p),
+})
+export type PositionDetails = ReturnType<typeof parsePositionDetails>
