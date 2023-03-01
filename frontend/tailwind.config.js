@@ -32,6 +32,7 @@ module.exports = {
       theme,
       addComponents,
       matchComponents,
+      matchUtilities,
     }) {
       addVariant('ocean', '.ocean &')
       addUtilities([
@@ -50,6 +51,15 @@ module.exports = {
           },
         },
       ])
+      matchUtilities(
+        {
+          box: (v) => ({
+            width: v,
+            height: v,
+          }),
+        },
+        { values: theme('width') },
+      )
       matchComponents(
         { 'skeleton-from': (v) => ({ '--skeleton-from': v }) },
         { values: mapColors() },
