@@ -3,12 +3,12 @@ import { CloseIcon } from '@tradex/icons'
 import { NumericInput, Panel, PanelProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
+import Link from 'next/link'
 import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { ChangeEvent, forwardRef, useMemo, useState } from 'react'
-import { useDisclosure } from 'src/hooks/useDisclosure'
 import {
   AmountInput,
   DEFAULT_PRICE_IMPACT_DELTA,
@@ -21,7 +21,7 @@ import {
 } from 'src/pages/perps'
 import { format, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
-import { DepositMarginModal } from './DepositMarginModal'
+import { DepositMarginModal } from './DepositMargin'
 
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const [leverage, setLeverage] = useState(MAX_LEVERAGE.toString())
@@ -59,16 +59,18 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
-  const { isOpen, onClose, onOpen } = useDisclosure()
-
   if (!market) return null
+
   return (
     <>
-      {isOpen && <DepositMarginModal isOpen={isOpen} onClose={onClose} />}
+      <DepositMarginModal />
       <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
-        <button onClick={onOpen} className="btn btn-secondary.outlined centered h-16 rounded-lg">
+        <Link
+          href="?modal=deposit-margin"
+          className="btn btn-secondary.outlined centered h-16 rounded-lg"
+        >
           Deposit Margin
-        </button>
+        </Link>
 
         {/* Place oder section ----------------------------------- */}
         <div className="flex gap-4">

@@ -16,12 +16,12 @@ export function Modal(props: ModalProps) {
         <div className="centered fixed inset-0 flex overflow-y-auto ">
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
+            // enter="ease-out duration-300"
+            // enterFrom="opacity-0 scale-95"
+            // enterTo="opacity-100 scale-100"
+            // leave="ease-in duration-200"
+            // leaveFrom="opacity-100 scale-100"
+            // leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel as={'div'} {...panelProps} />
           </Transition.Child>

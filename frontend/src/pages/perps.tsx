@@ -126,7 +126,7 @@ const Orders = () => {
       </div>
       {hasOpenOrder && (
         <div className="flex items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800">
-          <span className="text-sm text-neutral-200">{market.address}</span>
+          <span className="text-sm text-neutral-200">{market.asset}</span>
           {isExpired && (
             <button className="rounded-lg bg-red-400/10 px-2 py-0.5 text-xs text-red-400">
               expired
@@ -152,7 +152,8 @@ const Position = () => {
   const market = useRouteMarket()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: market && address && [market?.key, address],
+    enabled: !!market && !!address,
+    args: market && address && [market?.address, address],
     select: parsePositionDetails,
   })
   const position = positionDetails?.position
@@ -160,9 +161,19 @@ const Position = () => {
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market?.address,
     enabled: !!position?.size,
-    args: [BigNumber.from(position?.size || 0).mul(-1), DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
+    args: position && [
+      BigNumber.from(position?.size).mul(-1),
+      DEFAULT_PRICE_IMPACT_DELTA,
+      TrackingCode,
+    ],
   })
   const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
+
+  // const { config } = usePrepareMarketClosePositionWithTracking({
+  //   address: market?.address,
+  //   args: [DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
+  // })
+  // const { write: closePosition } = useMarketClosePositionWithTracking(config)
 
   const isClientRendered = useIsClientRendered()
 
@@ -177,12 +188,15 @@ const Position = () => {
   const profitLoss = positionDetails.profitLoss
 
   return (
-    <div onClick={closePosition} className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
+    <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Position</h1>
       {!hasPosition ? (
         <span className="px-1 text-xs text-neutral-500">No open position</span>
       ) : (
-        <div className="flex flex-col rounded-lg px-2 py-1 hover:bg-neutral-800">
+        <div
+          onClick={closePosition}
+          className="flex flex-col rounded-lg px-2 py-1 hover:bg-neutral-800 active:scale-95"
+        >
           <div className="flex items-center justify-between">
             <span className="text-sm text-neutral-200">{market.asset}</span>
             <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
@@ -479,10 +493,10 @@ export default function Home() {
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
           {/* <OPPrice /> */}
-          {/* <Orders /> */}
+          <Orders />
           <Position />
           <Margin />
-          <OpenPosition />
+          {/* <OpenPosition /> */}
         </div>
       </div>
     </div>
