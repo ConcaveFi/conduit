@@ -154,9 +154,18 @@ const Position = () => {
   const { data: position } = useMarketPositions({
     args: address && [address],
     address: market && market.address,
-    enabled: !!market?.address,
     select: parsePosition,
   })
+
+  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+    address: market?.address,
+    args: [
+      BigNumber.from(position?.size.mulUnsafe(FixedNumber.from(-1)) || 0),
+      DEFAULT_PRICE_IMPACT_DELTA,
+      TrackingCode,
+    ],
+  })
+  const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
   const isClientRendered = useIsClientRendered()
 
@@ -171,7 +180,7 @@ const Position = () => {
   const profitLoss = size.mulUnsafe(priceChange)
 
   return (
-    <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
+    <div onClick={closePosition} className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Position</h1>
       {!hasPosition ? (
         <span className="px-1 text-xs text-neutral-500">No open position</span>
@@ -222,7 +231,7 @@ export const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
 
 export const TrackingCode = formatBytes32String('conduit')
 
-export const DEFAULT_PRICE_IMPACT_DELTA = FixedNumber.from(5n * 10n ** 17n, 18) // 0.5%
+export const DEFAULT_PRICE_IMPACT_DELTA = BigNumber.from('500000000000000000')
 
 export type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
 export const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
@@ -299,17 +308,16 @@ const OpenPosition = () => {
   const debouncedAmountUsd = useDebounce(inputs.size, 150)
   // sizeDelta is submited to the contract, denominated in susd
   const sizeDelta = useMemo(() => {
-    if (!price) return FixedNumber.from(0)
-    const sizeUsd = safeFixedNumber(debouncedAmountUsd).mulUnsafe(price)
+    const sizeUsd = safeFixedNumber(debouncedAmountUsd)
     return side === 'long' ? sizeUsd : sizeUsd.mulUnsafe(FixedNumber.from(-1))
-  }, [debouncedAmountUsd, side, price])
+  }, [debouncedAmountUsd, side])
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
     enabled: !sizeDelta.isZero(),
-    args: [BigNumber.from(sizeDelta), BigNumber.from(priceImpact), TrackingCode],
+    args: [BigNumber.from(sizeDelta), priceImpact, TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
@@ -472,8 +480,8 @@ export default function Home() {
         <Markets />
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
-          <OPPrice />
-          <Orders />
+          {/* <OPPrice /> */}
+          {/* <Orders /> */}
           <Position />
           <Margin />
           <OpenPosition />
