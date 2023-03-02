@@ -32,5 +32,15 @@
   "funding_8h": "Funding/8h",
   "24h_change": "24h Change",
   "24h_volume": "24h Volume",
-  "price": "Price"
+  "price": "Price",
+  "deposit margin": "Deposit margin",
+  "long": "Long",
+  "short": "Short",
+  "position size": "Position size",
+  "fee": "Fee",
+  "place order": "Place order",
+  "you have no positions yet": "You have no positions yet",
+  "add widget": "Add widget",
+  "cancel": "Cancel",
+  "apply": "Apply"
 }

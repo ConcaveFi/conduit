@@ -38,8 +38,7 @@ const Tabs = () => {
                 className={`btn px-4 py-[2px] outline-none ring-0
                 ${selected ? 'btn-secondary' : 'btn-underline.secondary'} `}
               >
-                {/* {t(tab)} */}
-                {tab}
+                {t(tab)}
               </span>
             )}
           </Tab>

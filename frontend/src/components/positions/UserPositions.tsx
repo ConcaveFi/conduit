@@ -68,7 +68,7 @@ export function UserPositions() {
     return (
       <div className="centered flex h-full ">
         <span className="text-light-400 ocean:text-ocean-300 font-medium">
-          You have no positions yet.
+          {t('you have no positions yet')}
         </span>
       </div>
     )

@@ -1,5 +1,6 @@
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -228,6 +229,7 @@ const Position = () => {
   fee        = 10 * price * makerFee + 5 * price * takerFee
 */
 export const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
+  const { t } = useTranslation()
   const market = useRouteMarket()
 
   if (!market) return null
@@ -244,7 +246,7 @@ export const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
   return (
     <div>
       <span className="text-light-500 ocean:text-ocean-200 text-sm font-medium">
-        Fee: {format(positionFee, { signDisplay: 'never' })} sUsd
+        {t('fee')}: {format(positionFee, { signDisplay: 'never' })} sUsd
       </span>
     </div>
   )

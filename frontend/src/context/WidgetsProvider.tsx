@@ -1,4 +1,5 @@
 import { PlusIcon } from '@tradex/icons'
+import { useTranslation } from '@tradex/languages'
 import { createContext, useContext, useState } from 'react'
 import { AddWidgetModal } from 'src/components/widgets/AddWidgetModal'
 import { useDisclosure } from 'src/hooks/useDisclosure'
@@ -24,6 +25,7 @@ const WidgetsContext = createContext<WidgetsContext>({
 
 export const useWidgets = () => useContext(WidgetsContext)
 export function WidgetsProvider({ children }: any) {
+  const { t } = useTranslation()
   const modal = useDisclosure()
   const [widgets, setWidgets] = useState(getStoredWidgets() || DEFAULT_GRID_WIDGETS)
 
@@ -56,8 +58,8 @@ export function WidgetsProvider({ children }: any) {
           onClick={modal.onOpen}
           className="btn btn-green-gradient pointer-events-auto gap-3 rounded-full px-8 py-4 shadow-xl"
         >
+          {t('add widget')}
           <PlusIcon className="fill-ocean-900" />
-          Add Widget
         </button>
         <AddWidgetModal isOpen={modal.isOpen} onClose={modal.onClose} />
       </div>

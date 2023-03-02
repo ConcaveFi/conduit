@@ -155,7 +155,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           disabled={!submitOrder}
           className="btn btn-green-gradient centered h-16 rounded-lg text-xl opacity-50"
         >
-          Place Order
+          {t('place order')}
         </button>
       </Panel>
     </>
