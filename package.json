@@ -11,7 +11,7 @@
     "dev": "turbo run dev frontend",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "gen:examples": "ts-node -O '{\"module\": \"commonjs\"}' packages/languages/src/scripts/generateExamples"
+    "gen:lng-keys": "cd packages/languages && yarn gen:keys "
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^13.0.2",

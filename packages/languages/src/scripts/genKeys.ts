@@ -1,6 +1,6 @@
 import { readdirSync, writeFile } from 'fs'
 import { join } from 'path'
-import { example } from '..'
+import keys from '../keys.json'
 import { readJsonFile } from '../utils/readJsonFile'
 
 const DEFAULT_LANG_JSON = 'example.json'
@@ -22,7 +22,7 @@ async function incrementMissing() {
     const content = readJsonFile(path)
 
     // Loop through all keys and add if not exists.
-    for (const key in example) {
+    for (const key of keys) {
       if (content[key] !== undefined) continue
       content[key] = ''
       increments.push(key)
