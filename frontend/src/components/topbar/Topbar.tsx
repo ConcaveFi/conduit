@@ -2,7 +2,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { format } from 'src/utils/format'
 import { Theme } from 'src/utils/themeHandler'
@@ -26,11 +25,9 @@ export function Topbar() {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <Image src={'/assets/logo.png'} alt="logo" width={45} height={30} />
-        <span className="text-white">
-          TRADE <strong>X</strong>
-        </span>
-        <button className="btn btn-bottom-glow centered w-[120px] rounded-none">
+        <img src={'/assets/conduit.svg'} alt="logo" width={300} height={250} />
+
+        <button className="btn btn-bottom-glow centered ml-6 w-[120px] rounded-none">
           {t('futures')}
         </button>
         <button className="btn btn-underline centered w-[120px] rounded-none">
