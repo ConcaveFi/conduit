@@ -2,9 +2,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { useEffect, useState } from 'react'
 import { format } from 'src/utils/format'
-import { Theme } from 'src/utils/themeHandler'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { SearchInput } from '../SearchInput'
@@ -16,12 +14,6 @@ export function Topbar() {
   const { t } = useTranslation()
   const { address } = useAccount()
   const { data } = useBalance({ address })
-  const [theme, setTheme] = useState(Theme.getStoredTheme())
-
-  useEffect(() => {
-    console.log(document.documentElement.classList)
-  }, [theme])
-
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
