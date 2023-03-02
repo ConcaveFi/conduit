@@ -12,7 +12,7 @@ export interface PanelEssentials {
 }
 export interface PanelProps extends DivProps, PanelHeaderProps, PanelEssentials {
   name?: string
-  headerChild: JSX.Element
+  headerChild?: JSX.Element
 }
 export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const {
