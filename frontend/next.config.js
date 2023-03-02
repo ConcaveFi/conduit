@@ -10,10 +10,10 @@ const nextConfig = {
     '@tradex/languages',
   ],
   i18n: {
-    locales: ['br', 'us'],
+    locales: ['br', 'us', 'ja', 'ch', 'ru', 'ko', 'es', 'pt', 'ar'],
     defaultLocale: 'us',
     localeDetection: true,
-  }
+  },
 }
 
 module.exports = nextConfig

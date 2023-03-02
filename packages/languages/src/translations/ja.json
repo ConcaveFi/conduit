@@ -34,5 +34,13 @@
   "you have no positions yet": "まだポジションがありません",
   "add widget": "ウィジェットを追加",
   "cancel": "キャンセル",
-  "apply": "申し込み"
+  "apply": "申し込み",
+  "cross": "",
+  "market": "",
+  "isolated": "",
+  "reduce": "",
+  "post": "",
+  "hidden": "",
+  "position": "",
+  "buy": ""
 }

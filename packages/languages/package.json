@@ -12,8 +12,7 @@
   },
   "dependencies": {},
   "scripts": {
-    "gen:keys": "cd src/scripts/ && ts-node genKeys.ts && prettier ../../types/index.d.ts -w ",
+    "gen:keys": "cd src/scripts/ && ts-node genKeys.ts && prettier ../../types/languageKeys.ts -w ",
     "teste": "prettier src/scripts/genKeys.ts -w"
-  },
-  "types": "types/index.d.ts"
+  }
 }

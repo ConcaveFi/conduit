@@ -59,8 +59,8 @@ function genTypes() {
     index++
   }
 
-  const text = 'type LanguageKeys = ' + types
-  const path = join(__dirname, '..', '..', 'types', 'index.d.ts')
+  const text = 'export type LanguageKeys = ' + types
+  const path = join(__dirname, '..', '..', 'types', 'languageKeys.ts')
   writeFileSync(path, text)
 }
 

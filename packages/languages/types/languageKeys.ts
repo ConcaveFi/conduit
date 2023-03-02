@@ -1,4 +1,4 @@
-type LanguageKeys =
+export type LanguageKeys =
   | 'cross'
   | 'market'
   | 'isolated'

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import { useQuery } from 'react-query'
-import { LanguageKeys } from '../../types/languages'
+import { LanguageKeys } from '../../types/languageKeys'
 import { getLanguageByLocale } from '../utils/handleLocale'
 
 export function useTranslation() {

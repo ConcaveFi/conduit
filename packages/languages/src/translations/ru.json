@@ -34,5 +34,13 @@
   "you have no positions yet": "у вас еще нет позиций",
   "add widget": "добавить виджет",
   "cancel": "отмена",
-  "apply": "применять"
+  "apply": "применять",
+  "cross": "",
+  "market": "",
+  "isolated": "",
+  "reduce": "",
+  "post": "",
+  "hidden": "",
+  "position": "",
+  "buy": ""
 }
