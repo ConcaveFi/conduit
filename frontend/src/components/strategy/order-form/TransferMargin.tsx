@@ -1,5 +1,6 @@
 import { Modal, NumericInput } from '@tradex/interface'
-import { BigNumber, FixedNumber } from 'ethers'
+import { BigNumber } from 'ethers'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   useMarketTransferMargin,
@@ -8,7 +9,7 @@ import {
 } from 'perps-hooks'
 import { useState } from 'react'
 import { useRouteMarket } from 'src/pages/perps'
-import { formatUsd, safeFixedNumber } from 'src/utils/format'
+import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
 
@@ -34,7 +35,7 @@ function SusdBalance({
   )
 }
 
-function DepositInput({
+function TransferInput({
   onChange,
   value,
   balance,
@@ -55,50 +56,44 @@ function DepositInput({
         }}
       />
       <div className="flex flex-col items-end">
-        <span className="text-light-500 ocean:text-ocean-300 text-lg">sUsd</span>
+        <span className="text-light-500 ocean:text-ocean-300 text-lg">sUSD</span>
         <SusdBalance balance={balance} onClick={onChange} />
       </div>
     </div>
   )
 }
 
-const getDepositButtonLabel = (input: string, balance?: FixedNumber) => {
+const getDepositButtonLabel = (input: string, balance?: BigNumber) => {
   if (!balance) return 'Loading...'
-  if (balance.isZero()) return 'Insufficent balance' // TODO: labels
+  if (balance.isZero()) return 'Not enough sUSD'
   if (!input) return 'Enter an amount'
-  const fixedInput = safeFixedNumber(input)
-  if (balance.toString() === fixedInput.toString()) return 'Deposit'
-  if (balance.subUnsafe(fixedInput).isNegative()) return 'Not enough balance'
+  if (balance.lt(BigNumber.from(input))) return 'Not enough sUSD'
   return 'Deposit'
 }
 
-function DepositMargin() {
+function TransferMargin() {
   const [value, setValue] = useState('')
-
-  const debouncedValue = useDebounce(value, 150)
 
   const market = useRouteMarket()
 
   const { address } = useAccount()
-  const { data: balance } = useSusdBalanceOf({
-    args: address && [address],
-    select: (v) => FixedNumber.fromValue(v),
-  })
+  const { data: balance } = useSusdBalanceOf({ args: address && [address] })
 
+  const debouncedValue = useDebounce(value, 150)
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
     enabled: !!debouncedValue,
     args: [BigNumber.from(debouncedValue || 0)],
   })
-  const { write } = useMarketTransferMargin(config)
+  const { write: depositMargin } = useMarketTransferMargin(config)
 
   return (
     <div className="centered card card-primary h-fit w-[400px] gap-4 p-4">
       <span className="text-light-500 ocean:text-white text-xl">Deposit Margin</span>
-      <DepositInput value={value} onChange={setValue} balance={balance?.toString()} />
+      <TransferInput value={value} onChange={setValue} balance={balance?.toString()} />
       <button
-        disabled={!write}
-        onClick={write}
+        disabled={!depositMargin}
+        onClick={depositMargin}
         className="btn btn-primary.outlined centered h-14 w-full rounded-lg py-6"
       >
         {getDepositButtonLabel(value, balance)}
@@ -107,13 +102,21 @@ function DepositMargin() {
   )
 }
 
-export function DepositMarginModal() {
+export function TransferMarginButton() {
   const query = useSearchParams()
   const router = useRouter()
 
   return (
-    <Modal isOpen={query.get('modal') === 'deposit-margin'} onClose={() => router.back()}>
-      <DepositMargin />
-    </Modal>
+    <>
+      <Link
+        href="?modal=transfer-margin"
+        className="btn btn-secondary.outlined centered h-16 rounded-lg"
+      >
+        Deposit Margin
+      </Link>
+      <Modal isOpen={query.get('modal') === 'transfer-margin'} onClose={() => router.back()}>
+        <TransferMargin />
+      </Modal>
+    </>
   )
 }

@@ -9,6 +9,7 @@ import {
   useMarketDataAllProxiedMarketSummaries,
   useMarketDataPositionDetails,
   useMarketDelayedOrders,
+  useMarketPostTradeDetails,
   useMarketRemainingMargin,
   useMarketSettingsOffchainDelayedOrderMaxAge,
   useMarketSubmitOffchainDelayedOrderWithTracking,
@@ -202,8 +203,9 @@ const Position = () => {
             <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
               {side}
             </span>
-            <span className="text-xs text-neutral-400">{format(size)} ETH</span>
-            <span className="text-xs text-neutral-400">x{format(position.margin)}</span>
+            <span className="text-xs text-neutral-400">
+              {format(size)} ETH ({formatUsd(positionDetails.notionalValue)})
+            </span>
           </div>
           <span
             className={cx('text-xs', profitLoss.isNegative() ? 'text-red-400' : 'text-green-500')}
@@ -218,6 +220,13 @@ const Position = () => {
   )
 }
 
+/*
+  # Increasing and decreasing the skew
+  skew       = 10
+  size       = -15
+  skewResult = -5
+  fee        = 10 * price * makerFee + 5 * price * takerFee
+*/
 export const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
   const market = useRouteMarket()
 
@@ -320,11 +329,25 @@ const OpenPosition = () => {
   const debouncedAmountUsd = useDebounce(inputs.size, 150)
   // sizeDelta is submited to the contract, denominated in susd
   const sizeDelta = useMemo(() => {
-    const sizeUsd = safeFixedNumber(debouncedAmountUsd)
-    return side === 'long' ? sizeUsd : sizeUsd.mulUnsafe(FixedNumber.from(-1))
+    const sizeUsd = BigNumber.from(safeFixedNumber(debouncedAmountUsd))
+    return side === 'long' ? sizeUsd : sizeUsd.mul(-1)
   }, [debouncedAmountUsd, side])
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
+
+  const { address } = useAccount()
+  const { data } = useMarketPostTradeDetails({
+    address: market && market.address,
+    enabled: !sizeDelta.isZero() && !!address,
+    args: [sizeDelta, BigNumber.from(0), 2, address!],
+    onSuccess: (d) =>
+      console.log({
+        margin: FixedNumber.fromValue(d.margin, 18).toString(),
+        liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18).toString(),
+        fee: FixedNumber.fromValue(d.fee, 18).toString(),
+        price: FixedNumber.fromValue(d.price, 18).toString(),
+      }),
+  })
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
@@ -338,7 +361,7 @@ const OpenPosition = () => {
   return (
     <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-neutral-800/40 p-4">
       <div className="flex max-w-full flex-col">
-        <AmountInput inputs={inputs} onChange={setInput} />
+        {/* <AmountInput inputs={inputs} onChange={setInput} /> */}
         <NumericInput
           className="w-52 max-w-full bg-transparent text-2xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
           placeholder="0.00"
@@ -378,7 +401,7 @@ const OpenPosition = () => {
           <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
-      <Fees sizeDelta={sizeDelta} />
+      {/* <Fees sizeDelta={sizeDelta} /> */}
       <button
         className="w-full rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600 disabled:hover:opacity-100 disabled:active:scale-100"
         disabled={!submitOrder}
@@ -496,7 +519,7 @@ export default function Home() {
           <Orders />
           <Position />
           <Margin />
-          {/* <OpenPosition /> */}
+          <OpenPosition />
         </div>
       </div>
     </div>

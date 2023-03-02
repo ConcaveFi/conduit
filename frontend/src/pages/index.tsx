@@ -3,6 +3,7 @@ import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
 import { WidgetsProvider } from 'src/context/WidgetsProvider'
+import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 import { formatUsd } from 'src/utils/format'
 import { useRouteMarket } from './perps'
 
@@ -12,16 +13,16 @@ function Title() {
   return (
     <Head>
       <title>
-        Conduit | {formatUsd(market?.price)} {market?.asset}
+        Conduit | {market?.asset} - {formatUsd(market?.price)}
       </title>
     </Head>
   )
 }
 
 export default function Home() {
-  // const isClientRendered = useIsClientRendered()
+  const isClientRendered = useIsClientRendered()
 
-  // if (!isClientRendered) return null
+  if (!isClientRendered) return null
   return (
     <WidgetsProvider>
       <Title />
