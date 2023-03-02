@@ -1,24 +1,22 @@
 export enum Themes {
   LIGHT = 'light',
-  DARK = 'dark',
+  // DARK = 'dark',
   OCEAN = 'ocean',
 }
 export const THEME_ITEM = 'theme'
-export const DEFAULT_THEME = Themes.LIGHT
+export const DEFAULT_THEME = Themes.OCEAN
 
 export class Theme {
   private constructor() {}
-
   public static getStoredTheme(): Themes {
     const theme = localStorage.getItem(THEME_ITEM) || DEFAULT_THEME
-    document.documentElement.classList.add(theme)
     return theme as Themes
   }
 
-  public static select(newTheme: Themes) {
-    if (newTheme !== Themes.LIGHT) document.documentElement.classList.add(newTheme)
-    Theme.removeAll({ exception: newTheme })
-    Theme.storeTheme(newTheme)
+  public static switch(newTheme: Themes, prevTheme: Themes) {
+    document.documentElement.classList.remove(prevTheme)
+    this.storeTheme(newTheme)
+    this.toDOM(newTheme)
     return newTheme
   }
 
@@ -26,7 +24,7 @@ export class Theme {
     switch (theme) {
       case Themes.LIGHT: {
         localStorage.setItem(THEME_ITEM, '')
-        return
+        break
       }
       default: {
         localStorage.setItem(THEME_ITEM, theme)
@@ -34,11 +32,7 @@ export class Theme {
       }
     }
   }
-
-  public static removeAll({ exception }: { exception: Themes }) {
-    for (let [_, theme] of Object.entries(Themes)) {
-      if (theme === exception) continue
-      document.documentElement.classList.remove(theme)
-    }
+  public static toDOM(theme: Themes) {
+    if (theme !== Themes.LIGHT) document.documentElement.classList.add(theme)
   }
 }

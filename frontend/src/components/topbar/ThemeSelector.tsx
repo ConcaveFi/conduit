@@ -1,8 +1,10 @@
 import { Menu } from '@tradex/interface'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Theme, Themes } from 'src/utils/themeHandler'
 export function ThemeSelector() {
   const [theme, setTheme] = useState(Theme.getStoredTheme())
+
+  useEffect(() => Theme.toDOM(theme), [theme])
 
   return (
     <Menu className="flex justify-center">
@@ -15,7 +17,7 @@ export function ThemeSelector() {
           .map((_theme) => (
             <Menu.Button
               key={_theme}
-              onClick={() => setTheme(Theme.select(_theme))}
+              onClick={() => setTheme((prev) => Theme.switch(_theme, prev))}
               className="btn btn-underline.secondary centered"
             >
               <img src={`/assets/theme/${_theme}.png`} alt="" />
