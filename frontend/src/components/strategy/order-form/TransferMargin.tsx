@@ -1,4 +1,5 @@
 import { Modal, NumericInput } from '@tradex/interface'
+import { useTranslation } from '@tradex/languages'
 import { BigNumber } from 'ethers'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -73,7 +74,7 @@ const getDepositButtonLabel = (input: string, balance?: BigNumber) => {
 
 function TransferMargin() {
   const [value, setValue] = useState('')
-
+  const { t } = useTranslation()
   const market = useRouteMarket()
 
   const { address } = useAccount()
@@ -89,7 +90,7 @@ function TransferMargin() {
 
   return (
     <div className="centered card card-primary h-fit w-[400px] gap-4 p-4">
-      <span className="text-light-500 ocean:text-white text-xl">Deposit Margin</span>
+      <span className="text-light-500 ocean:text-white text-xl">{t('deposit margin')}</span>
       <TransferInput value={value} onChange={setValue} balance={balance?.toString()} />
       <button
         disabled={!depositMargin}
@@ -103,6 +104,7 @@ function TransferMargin() {
 }
 
 export function TransferMarginButton() {
+  const { t } = useTranslation()
   const query = useSearchParams()
   const router = useRouter()
 
@@ -112,7 +114,7 @@ export function TransferMarginButton() {
         href="?modal=transfer-margin"
         className="btn btn-secondary.outlined centered h-16 rounded-lg"
       >
-        Deposit Margin
+        {t('deposit margin')}
       </Link>
       <Modal isOpen={query.get('modal') === 'transfer-margin'} onClose={() => router.back()}>
         <TransferMargin />

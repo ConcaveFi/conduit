@@ -28,6 +28,7 @@ function SideSelector({
   side: 'long' | 'short'
   onChange: (side: 'long' | 'short') => void
 }) {
+  const { t } = useTranslation()
   return (
     <div className="flex gap-4">
       <button
@@ -36,7 +37,7 @@ function SideSelector({
           side === 'long' ? 'btn-green-gradient' : 'btn-down'
         }`}
       >
-        Long
+        {t('long')}
       </button>
       <button
         onClick={() => onChange('short')}
@@ -44,7 +45,7 @@ function SideSelector({
           side === 'short' ? 'btn-red-gradient' : 'btn-down'
         }`}
       >
-        Short
+        {t('short')}
       </button>
     </div>
   )
