@@ -1,6 +1,6 @@
-import { readdirSync, writeFile } from 'fs'
+import { readdirSync, writeFile, writeFileSync } from 'fs'
 import { join } from 'path'
-import keys from '../keys.json'
+import { keys } from '..'
 import { readJsonFile } from '../utils/readJsonFile'
 
 const DEFAULT_LANG_JSON = 'example.json'
@@ -50,6 +50,19 @@ function getTranslationFiles(files: string[]) {
     return matchJsonRegex.test(file)
   })
 }
+// This function will create the type LanguageKeys
+function genTypes() {
+  let [types, index] = ['', 0]
+  for (const key of keys) {
+    types += `"${key}"`
+    if (index < keys.length - 1) types += ' | ' // This will add | to make a multi string type
+    index++
+  }
+
+  const text = 'type LanguageKeys = ' + types
+  const path = join(__dirname, '..', '..', 'types', 'index.d.ts')
+  writeFileSync(path, text)
+}
 
 // Running ---------------------------------------------------
 
@@ -58,6 +71,7 @@ console.log('-----------------------------\n')
 console.log('Analyzing translations files.')
 
 incrementMissing()
+genTypes()
 
 console.log('Finished generation off missing attributes.')
 console.log(`${totalIcrements} increments in total.`)

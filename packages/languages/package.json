@@ -5,11 +5,15 @@
   "license": "MIT",
   "devDependencies": {
     "next": "^13.1.6",
+    "prettier": "^2.8.4",
     "react": "^18.2.0",
-    "react-query": "^3.39.3"
+    "react-query": "^3.39.3",
+    "typescript": "^4.9.5"
   },
   "dependencies": {},
   "scripts": {
-    "gen:keys": "ts-node src/scripts/genKeys.ts"
-  }
+    "gen:keys": "cd src/scripts/ && ts-node genKeys.ts && prettier ../../types/index.d.ts -w ",
+    "teste": "prettier src/scripts/genKeys.ts -w"
+  },
+  "types": "types/index.d.ts"
 }

@@ -1,4 +1,3 @@
-import { example } from '../src'
+import keys from '../src/keys.json'
 
-export type LanguagesExample = typeof example
-export type LanguageKeys = keyof LanguagesExample
+
