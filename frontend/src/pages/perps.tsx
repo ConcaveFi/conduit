@@ -1,12 +1,11 @@
+import * as Slider from '@radix-ui/react-slider'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
-import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   useChainLinkLatestRoundData,
-  useMarketAccessibleMargin,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDataPositionDetails,
   useMarketDelayedOrders,
@@ -18,13 +17,19 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketTransferMargin,
 } from 'perps-hooks'
-import { parseMarketSummaries, parseOrder, parsePositionDetails } from 'perps-hooks/parsers'
-import { useMemo, useReducer, useState } from 'react'
+import {
+  MarketSummaries,
+  parseMarketSummaries,
+  parseOrder,
+  parsePositionDetails,
+  PositionDetails,
+} from 'perps-hooks/parsers'
+import { useCallback, useMemo, useReducer, useState } from 'react'
 
 import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
-import { format, formatUsd, safeFixedNumber } from '../utils/format'
+import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
 
 export const useRouteMarket = () => {
   const searchParams = useSearchParams()
@@ -36,7 +41,7 @@ export const useRouteMarket = () => {
       return markets.find((m) => m.asset === asset)
     },
     // cacheOnBlock: true,
-    // watch: true,
+    watch: true,
   })
 
   return market
@@ -63,7 +68,7 @@ const Markets = () => {
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Markets</h1>
-      <div className="overflow-y-auto overflow-x-hidden">
+      <div className="overflow-x-hidden overflow-y-hidden">
         {markets.map(({ address, asset, price }, i) => (
           <a
             key={address}
@@ -149,6 +154,53 @@ const Orders = () => {
   )
 }
 
+const PositionInfo = ({
+  positionDetails,
+  market,
+}: {
+  positionDetails: PositionDetails
+  market: MarketSummaries[number]
+}) => {
+  const position = positionDetails.position
+  const size = position.size
+  const side = size.isNegative() ? 'Short' : 'Long'
+
+  const priceChange = market.price.subUnsafe(position.lastPrice).divUnsafe(position.lastPrice)
+  const profitLoss = positionDetails.profitLoss
+
+  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+    address: market?.address,
+    args: position && [BigNumber.from(size).mul(-1), DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
+  })
+  const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
+
+  return (
+    <div
+      onClick={closePosition}
+      className="flex flex-col rounded-lg px-2 py-1 hover:bg-neutral-800 active:scale-95"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-neutral-200">{market.asset}</span>
+        <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
+          {side}
+        </span>
+        <span className="text-xs text-neutral-400">
+          {format(size)} ETH ({formatUsd(positionDetails.notionalValue)})
+        </span>
+      </div>
+      <span className={cx('text-xs', profitLoss.isNegative() ? 'text-red-400' : 'text-green-500')}>
+        P&L: {formatUsd(profitLoss)} ({formatPercent(priceChange)})
+      </span>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-neutral-400">Entry: {formatUsd(position.lastPrice)}</span>
+        <span className="text-xs text-neutral-400">
+          Liquidation at: {formatUsd(positionDetails.liquidationPrice)}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 const Position = () => {
   const { address } = useAccount()
   const market = useRouteMarket()
@@ -158,36 +210,12 @@ const Position = () => {
     args: market && address && [market?.address, address],
     select: parsePositionDetails,
   })
-  const position = positionDetails?.position
-
-  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    address: market?.address,
-    enabled: !!position?.size,
-    args: position && [
-      BigNumber.from(position?.size).mul(-1),
-      DEFAULT_PRICE_IMPACT_DELTA,
-      TrackingCode,
-    ],
-  })
-  const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
-
-  // const { config } = usePrepareMarketClosePositionWithTracking({
-  //   address: market?.address,
-  //   args: [DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
-  // })
-  // const { write: closePosition } = useMarketClosePositionWithTracking(config)
 
   const isClientRendered = useIsClientRendered()
 
-  if (!market || !position || !isClientRendered) return null
+  if (!market || !positionDetails || !isClientRendered) return null
 
-  const size = position.size
-  const side = size.isNegative() ? 'Short' : 'Long'
-
-  const hasPosition = !size.isZero()
-
-  // const priceChange = market.price.subUnsafe(position.lastPrice)
-  const profitLoss = positionDetails.profitLoss
+  const hasPosition = !positionDetails.position.size.isZero()
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
@@ -195,120 +223,105 @@ const Position = () => {
       {!hasPosition ? (
         <span className="px-1 text-xs text-neutral-500">No open position</span>
       ) : (
-        <div
-          onClick={closePosition}
-          className="flex flex-col rounded-lg px-2 py-1 hover:bg-neutral-800 active:scale-95"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-neutral-200">{market.asset}</span>
-            <span className={`text-xs ${size.isNegative() ? 'text-red-400' : 'text-green-400'}`}>
-              {side}
-            </span>
-            <span className="text-xs text-neutral-400">
-              {format(size)} ETH ({formatUsd(positionDetails.notionalValue)})
-            </span>
-          </div>
-          <span
-            className={cx('text-xs', profitLoss.isNegative() ? 'text-red-400' : 'text-green-500')}
-          >
-            P&L: {formatUsd(profitLoss)}
-          </span>
-          {/* Entry */}
-          <span className="text-xs text-neutral-400">Entry: {formatUsd(position.lastPrice)}</span>
-        </div>
+        <PositionInfo positionDetails={positionDetails} market={market} />
       )}
-    </div>
-  )
-}
-
-/*
-  # Increasing and decreasing the skew
-  skew       = 10
-  size       = -15
-  skewResult = -5
-  fee        = 10 * price * makerFee + 5 * price * takerFee
-*/
-export const Fees = ({ sizeDelta }: { sizeDelta: FixedNumber }) => {
-  const { t } = useTranslation()
-  const market = useRouteMarket()
-
-  if (!market) return null
-
-  const { feeRates, marketSkew } = market
-
-  const fee =
-    sizeDelta.isNegative() && marketSkew.isNegative()
-      ? feeRates.makerFeeOffchainDelayedOrder
-      : feeRates.takerFeeOffchainDelayedOrder
-
-  const positionFee = sizeDelta.mulUnsafe(fee)
-
-  return (
-    <div>
-      <span className="text-light-500 ocean:text-ocean-200 text-sm font-medium">
-        {t('fee')}: {format(positionFee, { signDisplay: 'never' })} sUsd
-      </span>
     </div>
   )
 }
 
 export const TrackingCode = formatBytes32String('conduit')
 
-export const DEFAULT_PRICE_IMPACT_DELTA = BigNumber.from('500000000000000000')
+export const DEFAULT_PRICE_IMPACT_DELTA = BigNumber.from('500000000000000000') // 0.5%
 
-export type InputState = { value: string; type: 'usd' | 'size' | 'asset' }
-export const deriveInputs = (input?: InputState, price?: FixedNumber, leverage?: FixedNumber) => {
+export type InputState = { value: string; type: 'usd' | 'asset' }
+export const deriveInputs = (input?: InputState, price?: FixedNumber) => {
   const { value, type } = input || {}
-  if (!value || !type) return { usd: '', asset: '', size: '' }
-  if (!price || price.isZero() || !leverage) return { usd: '', asset: '', size: '', [type]: value }
-
+  if (!value || !type) return { usd: '', asset: '' }
+  if (!price || price.isZero()) return { usd: '', asset: '', [type]: value }
   const amount = safeFixedNumber(value)
-  const _leverage = leverage.isZero() ? FixedNumber.from(1) : leverage
   return {
-    usd: () => ({
-      usd: value,
-      asset: amount.divUnsafe(price),
-      size: amount.divUnsafe(price).mulUnsafe(_leverage),
-    }),
-    asset: () => ({
-      usd: amount.mulUnsafe(price),
-      asset: value,
-      size: amount.mulUnsafe(_leverage),
-    }),
-    // size input is denominated in asset (size = asset * leverage)
-    size: () => ({
-      usd: amount.divUnsafe(_leverage).mulUnsafe(price),
-      asset: amount.divUnsafe(_leverage),
-      size: value,
-    }),
+    usd: () => ({ usd: value, asset: amount.divUnsafe(price) }),
+    asset: () => ({ usd: amount.mulUnsafe(price), asset: value }),
   }[type]()
 }
 
-export const AmountInput = ({
+export const OrderSizeInput = ({
   onChange,
   inputs,
+  assetSymbol,
+  max,
 }: {
   onChange: (s: InputState) => void
   inputs: ReturnType<typeof deriveInputs>
+  assetSymbol: string
+  max: string | undefined
 }) => {
   const [amountDenominator, toggleAmountDenominator] = useReducer(
     (s) => (s === 'usd' ? 'asset' : 'usd'),
     'usd',
   )
+  const other = amountDenominator === 'usd' ? 'asset' : 'usd'
+  const symbols = { usd: 'sUSD', asset: assetSymbol }
+
+  const handleSizeSlider = useCallback(
+    (v: number) => {
+      if (!max) return
+      if (v === 0) return onChange({ value: '', type: amountDenominator })
+      const sliderValue = safeFixedNumber(v.toString())
+      const maxValue = safeFixedNumber(max)
+      onChange({
+        value: sliderValue.mulUnsafe(maxValue).toString(),
+        type: 'usd',
+      })
+    },
+    [amountDenominator, max],
+  )
 
   return (
-    <div className="text-light-500  bg-light-300 ocean:bg-ocean-600 flex h-[60px] w-full justify-between rounded-xl px-3">
-      <NumericInput
-        className="text-light-500 placeholder:text-light-400 w-52 max-w-full bg-transparent text-xl font-bold outline-none "
-        placeholder="0.00"
-        value={inputs[amountDenominator].toString()}
-        onValueChange={({ value }, { source }) => {
-          if (source === 'event') onChange({ value, type: amountDenominator })
-        }}
-      />
-      <button onClick={toggleAmountDenominator} className=" text-sm font-medium text-neutral-600">
-        {amountDenominator}
-      </button>
+    <div className="flex w-full max-w-full flex-col gap-1">
+      <span className="text-xs text-neutral-400">Order Size</span>
+      <div className="flex h-[60px] w-full max-w-full justify-between">
+        <div className="flex min-w-0 flex-col">
+          <NumericInput
+            className="min-w-0 text-ellipsis bg-transparent text-xl font-bold text-neutral-200 outline-none placeholder:text-neutral-500"
+            placeholder="0.00"
+            value={inputs[amountDenominator].toString()}
+            onValueChange={({ value }, { source }) => {
+              if (source === 'event') onChange({ value, type: amountDenominator })
+            }}
+          />
+          <div className="h-4">
+            <NumericInput
+              className="w-min min-w-0 text-ellipsis bg-transparent text-sm font-medium text-neutral-400 outline-none"
+              value={inputs[other].toString()}
+              onValueChange={({ value }, { source }) => {
+                if (source === 'event') onChange({ value, type: other })
+              }}
+            />
+            <span className="ml-0.5 text-sm text-neutral-500">
+              {inputs[other] && symbols[other]}
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={toggleAmountDenominator}
+          className="mb-auto rounded-xl px-3 py-1 text-sm font-medium text-neutral-500 hover:bg-neutral-800"
+        >
+          {symbols[amountDenominator]}
+        </button>
+      </div>
+      {max && (
+        <Slider.Root
+          value={[+inputs.usd / +max]}
+          step={0.01}
+          max={1}
+          onValueChange={(v) => handleSizeSlider(v[0])}
+          className="relative flex h-[20px] w-full touch-none select-none items-center"
+        >
+          <Slider.Track className="relative h-[3px] flex-1 rounded-full bg-neutral-800" />
+          <Slider.Thumb className="box-[15px] block rounded-full bg-neutral-600 transition-all duration-300 ease-out hover:scale-125" />
+        </Slider.Root>
+      )}
     </div>
   )
 }
@@ -318,37 +331,33 @@ const OpenPosition = () => {
 
   const price = market?.price
 
-  const [leverage, setLeverage] = useState(MAX_LEVERAGE.toString())
   const [input, setInput] = useState<InputState>()
 
-  const inputs = useMemo(
-    () => deriveInputs(input, price, safeFixedNumber(leverage)),
-    [price, leverage, input],
-  )
+  const inputs = useMemo(() => deriveInputs(input, price), [price, input])
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const debouncedAmountUsd = useDebounce(inputs.size, 150)
+  const debouncedSize = useDebounce(inputs.asset, 150)
   // sizeDelta is submited to the contract, denominated in susd
   const sizeDelta = useMemo(() => {
-    const sizeUsd = BigNumber.from(safeFixedNumber(debouncedAmountUsd))
-    return side === 'long' ? sizeUsd : sizeUsd.mul(-1)
-  }, [debouncedAmountUsd, side])
+    const size = BigNumber.from(safeFixedNumber(debouncedSize))
+    return side === 'long' ? size : size.mul(-1)
+  }, [debouncedSize, side])
 
   const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
 
   const { address } = useAccount()
-  const { data } = useMarketPostTradeDetails({
+  const { data: postTradeDetails } = useMarketPostTradeDetails({
     address: market && market.address,
     enabled: !sizeDelta.isZero() && !!address,
     args: [sizeDelta, BigNumber.from(0), 2, address!],
-    onSuccess: (d) =>
-      console.log({
-        margin: FixedNumber.fromValue(d.margin, 18).toString(),
-        liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18).toString(),
-        fee: FixedNumber.fromValue(d.fee, 18).toString(),
-        price: FixedNumber.fromValue(d.price, 18).toString(),
-      }),
+    select: (d) => ({
+      margin: FixedNumber.fromValue(d.margin, 18).toString(),
+      liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18).toString(),
+      fee: FixedNumber.fromValue(d.fee, 18).toString(),
+      price: FixedNumber.fromValue(d.price, 18).toString(),
+    }),
+    keepPreviousData: true,
   })
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
@@ -358,35 +367,66 @@ const OpenPosition = () => {
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
+  const { data: remainingMargin } = useMarketRemainingMargin({
+    address: market && market.market,
+    args: address && [address],
+    select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
+  })
+
   if (!market) return null
 
+  const feeRate =
+    sizeDelta.isNegative() && market.marketSkew.isNegative()
+      ? market.feeRates.makerFeeOffchainDelayedOrder
+      : market.feeRates.takerFeeOffchainDelayedOrder
+
+  const size = safeFixedNumber(inputs.usd)
+
+  const leveragedIn =
+    remainingMargin && !remainingMargin.isZero() && size.divUnsafe(remainingMargin)
+
+  const buyingPower =
+    remainingMargin && !remainingMargin.isZero()
+      ? remainingMargin.mulUnsafe(MAX_LEVERAGE)
+      : undefined
+
+  const sizePercentOfBuyingPower =
+    buyingPower && (size.isZero() ? FixedNumber.from(1) : size).divUnsafe(buyingPower)
+
   return (
-    <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-neutral-800/40 p-4">
-      <div className="flex max-w-full flex-col">
-        {/* <AmountInput inputs={inputs} onChange={setInput} /> */}
-        <NumericInput
-          className="w-52 max-w-full bg-transparent text-2xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
-          placeholder="0.00"
-          value={inputs.size.toString()}
-          onValueChange={({ value }, { source }) => {
-            if (source === 'event') setInput({ value, type: 'size' })
-          }}
-        />
-        <NumericInput
-          className="w-52 max-w-full bg-transparent text-2xl font-bold text-neutral-200 outline-none placeholder:text-neutral-400 "
-          placeholder="0.00"
-          defaultValue={25}
-          prefix="x"
-          onValueChange={({ value }, { source }) => {
-            if (source === 'event') setLeverage(value)
-          }}
-        />
-      </div>
-      {price && (
-        <span className="text-xs text-neutral-200">
-          Position size {format(inputs.size)} {market.asset}
-        </span>
+    <div className="flex flex-col justify-center gap-4 rounded-xl bg-neutral-800/40 p-4">
+      <OrderSizeInput
+        inputs={inputs}
+        onChange={setInput}
+        assetSymbol={market.asset}
+        max={buyingPower?.toString()}
+      />
+
+      {postTradeDetails && (
+        <div className="flex flex-col gap-1">
+          {leveragedIn && (
+            <span className="text-xs text-neutral-500">
+              Leveraged in:{' '}
+              {leveragedIn.toUnsafeFloat() < 1 ? 'Not leveraged' : `x${format(leveragedIn)}`}
+            </span>
+          )}
+          {sizePercentOfBuyingPower && (
+            <span className="text-xs text-neutral-500">
+              Position size is {formatPercent(sizePercentOfBuyingPower)} of your buying power
+            </span>
+          )}
+          <span className="text-xs text-neutral-500">
+            Entry price: {formatUsd(postTradeDetails.price)}
+          </span>
+          <span className="text-xs text-neutral-500">
+            Liquidation price: {formatUsd(postTradeDetails.liquidationPrice)}
+          </span>
+          <span className="text-xs text-neutral-500">
+            Funding fee: {formatUsd(postTradeDetails.fee)} {formatPercent(feeRate)}
+          </span>
+        </div>
       )}
+
       <div className="flex items-center justify-center gap-3">
         <button
           data-active={side === 'long'}
@@ -403,7 +443,7 @@ const OpenPosition = () => {
           <span className="font-bold text-neutral-200">Sell/Short</span>
         </button>
       </div>
-      {/* <Fees sizeDelta={sizeDelta} /> */}
+
       <button
         className="w-full rounded-full bg-neutral-800 px-4 py-1.5 text-sm font-bold text-white hover:opacity-75 active:scale-[.98] disabled:text-neutral-600 disabled:hover:opacity-100 disabled:active:scale-100"
         disabled={!submitOrder}
@@ -442,11 +482,6 @@ const Margin = () => {
 
   const market = useRouteMarket()
 
-  const { data: accessibleMargin } = useMarketAccessibleMargin({
-    address: market && market.market,
-    args: address && [address],
-    select: (d) => FixedNumber.fromValue(d.marginAccessible, 18),
-  })
   const { data: remainingMargin } = useMarketRemainingMargin({
     address: market && market.market,
     args: address && [address],
@@ -455,23 +490,20 @@ const Margin = () => {
 
   const isClientRendered = useIsClientRendered()
 
-  if (!accessibleMargin || !remainingMargin || !market || !isClientRendered) return null
+  if (!remainingMargin || !market || !isClientRendered) return null
 
   const buyingPower = remainingMargin.mulUnsafe(MAX_LEVERAGE)
-
-  const marginUsed = accessibleMargin.subUnsafe(remainingMargin)
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 px-3 py-2">
       <h1 className="text-xs text-neutral-400">Margin</h1>
       <span className="text-xs text-neutral-200">
-        Available margin: {formatUsd(accessibleMargin)}
+        Available margin: {formatUsd(remainingMargin)}
       </span>
       <div className="flex gap-1">
         <span className="text-xs text-neutral-200">Buying power: {formatUsd(buyingPower)}</span>
         <span className="text-xs text-neutral-400">x{format(MAX_LEVERAGE)}</span>
       </div>
-      <span className="text-xs text-neutral-200">Margin used: {formatUsd(marginUsed)}</span>
       <DepositMargin />
     </div>
   )

@@ -21,6 +21,7 @@ export const NumericInput = (props: NumericInputProps) => {
       inputMode="decimal"
       allowedDecimalSeparators={['.', ',']}
       thousandsGroupStyle="thousand"
+      valueIsNumericString
       thousandSeparator
       allowLeadingZeros
       allowNegative={false}

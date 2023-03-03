@@ -5936,6 +5936,13 @@ react-resizable@^3.0.4:
     prop-types "15.x"
     react-draggable "^4.0.3"
 
+react-slider@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/react-slider/-/react-slider-2.0.4.tgz#21c656ffabc3bb4481cf6b49e6d647baeda83572"
+  integrity sha512-sWwQD01n6v+MbeLCYthJGZPc0kzOyhQHyd0bSo0edg+IAxTVQmj3Oy4SBK65eX6gNwS9meUn6Z5sIBUVmwAd9g==
+  dependencies:
+    prop-types "^15.8.1"
+
 react-style-singleton@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-style-singleton/-/react-style-singleton-2.2.1.tgz#f99e420492b2d8f34d38308ff660b60d0b1205b4"
