@@ -12,7 +12,9 @@ module.exports = plugin(function definePlugin({ theme, ...twd }) {
   twd.matchComponents({ card: (v) => ({ ...v }) }, { values: card.variants })
   twd.matchComponents({ btn: (v) => ({ ...v }) }, { values: btn.variants })
   twd.matchUtilities(box.utility, box.options(theme))
-  for (let { options, utility } of skeletons) twd.matchUtilities(utility, options)
 
+  for (let { options, utility } of skeletons) twd.matchUtilities(utility, options)
   for (let { name, definition } of variants) twd.addVariant(name, definition)
+
+  twd.addUtilities({ '.centered': { justifyContent: 'center', alignItems: 'center' } })
 }, require('./tailwind.config'))
