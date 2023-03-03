@@ -3,7 +3,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   useChainLinkLatestRoundData,
   useMarketDataAllProxiedMarketSummaries,
@@ -25,20 +25,20 @@ import {
   PositionDetails,
 } from 'perps-hooks/parsers'
 import { useCallback, useMemo, useReducer, useState } from 'react'
+import { useIsHydrated } from 'src/context/IsHydratedProvider'
 
-import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
 import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
 
 export const useRouteMarket = () => {
-  const searchParams = useSearchParams()
-  const asset = searchParams?.get('asset')
+  // const searchParams = useSearchParams()
+  // const asset = searchParams?.get('asset')
 
   const { data: market } = useMarketDataAllProxiedMarketSummaries({
     select: (summaries) => {
       const markets = parseMarketSummaries(summaries)
-      return markets.find((m) => m.asset === asset)
+      return markets.find((m) => m.asset === 'sETH')
     },
     // cacheOnBlock: true,
     watch: true,
@@ -52,18 +52,12 @@ const Markets = () => {
     select: parseMarketSummaries,
   })
 
-  const blocksAgo = -7100
-  const { data: markets24hrsAgo } = useMarketDataAllProxiedMarketSummaries({
-    overrides: { blockTag: blocksAgo },
-    select: parseMarketSummaries,
-  })
-
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
   const router = useRouter()
   const routeMarket = useRouteMarket()
 
-  if (!markets || !isClientRendered) return null
+  if (!markets || !isHydrated) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
@@ -79,9 +73,9 @@ const Markets = () => {
             <span className="text-sm font-semibold text-neutral-200">{asset}</span>
             <div className="flex flex-col items-end">
               <span className="text-xs text-neutral-400">{format(price)}</span>
-              {markets24hrsAgo && (
+              {/* {markets24hrsAgo && (
                 <span className="text-xs text-neutral-600">{format(markets24hrsAgo[i].price)}</span>
-              )}
+              )} */}
             </div>
           </a>
         ))}
@@ -107,9 +101,9 @@ const Orders = () => {
     select: parseOrder,
   })
 
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
-  if (!market || !order || !isClientRendered) return null
+  if (!market || !order || !isHydrated) return null
 
   const size = order.sizeDelta
   const side = size.isNegative() ? 'Short' : 'Long'
@@ -211,9 +205,9 @@ const Position = () => {
     select: parsePositionDetails,
   })
 
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
-  if (!market || !positionDetails || !isClientRendered) return null
+  if (!market || !positionDetails || !isHydrated) return null
 
   const hasPosition = !positionDetails.position.size.isZero()
 
@@ -488,9 +482,9 @@ const Margin = () => {
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
 
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
-  if (!remainingMargin || !market || !isClientRendered) return null
+  if (!remainingMargin || !market || !isHydrated) return null
 
   const buyingPower = remainingMargin.mulUnsafe(MAX_LEVERAGE)
 
@@ -512,8 +506,8 @@ const Margin = () => {
 const ConnectWallet = () => {
   const { openConnectModal } = useConnectModal()
   const { isConnected } = useAccount()
-  const isClientRendered = useIsClientRendered()
-  if (isConnected || !isClientRendered) return null
+  const isHydrated = useIsHydrated()
+  if (isConnected || !isHydrated) return null
   return (
     <button
       className="mt-3 rounded-full bg-neutral-100 px-4 py-1.5 text-sm font-bold text-neutral-900 hover:opacity-75"
@@ -531,9 +525,9 @@ const OPPrice = () => {
     chainId: 10,
     select: (v) => FixedNumber.fromValue(v.answer, 8),
   })
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
-  if (!isClientRendered || !opPrice) return null
+  if (!isHydrated || !opPrice) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 px-3 py-2">
@@ -542,19 +536,36 @@ const OPPrice = () => {
   )
 }
 
+const Price = () => {
+  const { data: market } = useMarketDataAllProxiedMarketSummaries({
+    select: (summaries) => {
+      const markets = parseMarketSummaries(summaries)
+      return markets.find((m) => m.asset === 'sETH')
+    },
+    // cacheOnBlock: true,
+    // watch: true,
+    suspense: true,
+  })
+  const isHydrated = useIsHydrated()
+  if (isHydrated && market)
+    return <span className="text-neutral-200">{formatUsd(market.price)}</span>
+  return null
+}
+
 export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
-        <Markets />
+        <Price />
+        {/* <Markets />
         <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
-          {/* <OPPrice /> */}
+          <OPPrice />
           <Orders />
           <Position />
           <Margin />
           <OpenPosition />
-        </div>
+        </div> */}
       </div>
     </div>
   )

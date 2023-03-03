@@ -2,13 +2,15 @@ import Head from 'next/head'
 import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
+import { useIsHydrated } from 'src/context/IsHydratedProvider'
 import { WidgetsProvider } from 'src/context/WidgetsProvider'
-import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
+
 import { formatUsd } from 'src/utils/format'
 import { useRouteMarket } from './perps'
 
 function Title() {
   const market = useRouteMarket()
+  if (market) console.log(formatUsd(market.price))
   if (!market) return <title>Conduit</title>
   return (
     <Head>
@@ -20,9 +22,9 @@ function Title() {
 }
 
 export default function Home() {
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
-  if (!isClientRendered) return null
+  if (!isHydrated) return null
   return (
     <WidgetsProvider>
       <Title />

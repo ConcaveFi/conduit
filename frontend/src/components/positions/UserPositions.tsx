@@ -7,7 +7,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { parsePositionDetails } from 'perps-hooks/parsers'
-import { useIsClientRendered } from 'src/hooks/useIsClientRendered'
+import { useIsHydrated } from 'src/context/IsHydratedProvider'
 import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode, useRouteMarket } from 'src/pages/perps'
 import { format, formatUsd } from 'src/utils/format'
 import { useAccount } from 'wagmi'
@@ -62,9 +62,9 @@ export function UserPositions() {
     ],
   })
   const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
-  const isClientRendered = useIsClientRendered()
+  const isHydrated = useIsHydrated()
 
-  if (!market || !position || !isClientRendered)
+  if (!market || !position || !isHydrated)
     return (
       <div className="centered flex h-full ">
         <span className="text-light-400 ocean:text-ocean-300 font-medium">
