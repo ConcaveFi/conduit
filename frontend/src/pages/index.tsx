@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <WidgetsProvider>
       <Title />
-      <div className="flex h-full w-full flex-col gap-4 p-4">
+      <div className="skeleton flex h-full w-full flex-col gap-4 p-4">
         <Topbar />
         <StrategyHeader />
         <GridLayout />

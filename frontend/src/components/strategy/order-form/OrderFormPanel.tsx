@@ -249,7 +249,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
       <button
         onClick={submitOrder}
         disabled={!submitOrder}
-        className="btn btn-green-gradient centered h-16 rounded-lg text-xl"
+        className="btn btn-green-gradient skeleton centered h-16 rounded-lg text-xl "
       >
         {t('place order')}
       </button>
