@@ -211,7 +211,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
       <TransferMarginButton />
 
-      {/* {remai && <span>Margin Available: {formatUsd(remainingMargin)}</span>} */}
       <div className="flex max-w-full flex-col">
         <OrderSizeInput
           inputs={inputs}

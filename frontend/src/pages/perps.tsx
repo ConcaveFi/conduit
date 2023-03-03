@@ -559,19 +559,3 @@ export default function Home() {
     </div>
   )
 }
-
-/*
-https://subgraph.satsuma-prod.com/05943208e921/kwenta/optimism-perps/api
-https://api.thegraph.com/subgraphs/name/kwenta/optimism-goerli-main
-query {
-  futuresTrades (where: { account: "0xbE230D92AD2b2Dc9D75ff16B550533b5D418C4E0" }) {
-    asset
-    orderType
-    positionSize
-    positionClosed
-    size
-    timestamp
-  }
-}
-
-*/
