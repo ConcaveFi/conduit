@@ -1,9 +1,11 @@
 import { Modal, NumericInput } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { BigNumber } from 'ethers'
+import { BigNumber, FixedNumber } from 'ethers'
+import { formatUnits } from 'ethers/lib/utils.js'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
+  useMarketRemainingMargin,
   useMarketTransferMargin,
   usePrepareMarketTransferMargin,
   useSusdBalanceOf,
@@ -30,7 +32,7 @@ function SusdBalance({
     <button className="btn btn-underline" onClick={() => onClick(balance)}>
       <span className="text-light-500 ocean:text-ocean-200 text-xs font-medium ">Balance: </span>
       <span className="text-light-600 ocean:text-white text-xs font-medium">
-        {formatUsd(balance)}
+        {formatUsd(formatUnits(balance, 18))}
       </span>
     </button>
   )
@@ -68,7 +70,7 @@ const getDepositButtonLabel = (input: string, balance?: BigNumber) => {
   if (!balance) return 'Loading...'
   if (balance.isZero()) return 'Not enough sUSD'
   if (!input) return 'Enter an amount'
-  if (balance.lt(BigNumber.from(input))) return 'Not enough sUSD'
+  if (balance.lt(input)) return 'Not enough sUSD'
   return 'Deposit'
 }
 
@@ -108,13 +110,19 @@ export function TransferMarginButton() {
   const query = useSearchParams()
   const router = useRouter()
 
+  const { address } = useAccount()
+  const market = useRouteMarket()
+  const { data: remainingMargin } = useMarketRemainingMargin({
+    address: market && market.market,
+    args: address && [address],
+    select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
+  })
+
   return (
     <>
-      <Link
-        href="?modal=transfer-margin"
-        className="btn btn-secondary.outlined centered h-16 rounded-lg"
-      >
-        {t('deposit margin')}
+      <Link href="?modal=transfer-margin" className="text-light-400 rounded-lg text-sm">
+        Available Margin: {remainingMargin && formatUsd(remainingMargin)}{' '}
+        <span className="text-ocean-200">Manage</span>
       </Link>
       <Modal isOpen={query.get('modal') === 'transfer-margin'} onClose={() => router.back()}>
         <TransferMargin />
