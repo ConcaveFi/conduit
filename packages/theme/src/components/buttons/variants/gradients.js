@@ -1,5 +1,5 @@
-const backgroundImage = require('../../../utils/backgroundImage')
-const colors = require('../../../utils/colors')
+const backgroundImage = require('../../../backgroundImage')
+const colors = require('../../../colors')
 
 const defaultAttributes = {
   color: colors.ocean[800],

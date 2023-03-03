@@ -1,9 +1,9 @@
 const plugin = require('tailwindcss/plugin')
-const slider = require('./components/slider')
-const tooltip = require('./components/tooltip')
-const variants = require('./utils/variants')
-const btn = require('./components/buttons')
-const card = require('./components/card')
+const slider = require('./src/components/slider')
+const tooltip = require('./src/components/tooltip')
+const variants = require('./src/variants')
+const btn = require('./src/components/buttons')
+const card = require('./src/components/card')
 
 module.exports = plugin(function definePlugin({ theme, ...twd }) {
   twd.addComponents([slider(theme), tooltip(theme), ...btn.components, ...card.components])

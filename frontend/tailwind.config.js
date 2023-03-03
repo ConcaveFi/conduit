@@ -1,6 +1,6 @@
 const plugin = require('tailwindcss/plugin')
 const colors = require('tailwindcss/colors')
-const customColors = require('@tradex/theme/utils/colors')
+const customColors = require('@tradex/theme/src/colors')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',

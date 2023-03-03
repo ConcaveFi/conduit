@@ -1,7 +1,7 @@
-const colors = require('./utils/colors')
-const backgroundImage = require('./utils/backgroundImage')
-const keyframes = require('./utils/keyframes')
-const animation = require('./utils/animation')
+const colors = require('./src/colors')
+const backgroundImage = require('./src/backgroundImage')
+const keyframes = require('./src/keyframes')
+const animation = require('./src/animation')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

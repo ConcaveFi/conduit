@@ -1,4 +1,4 @@
-const colors = require('../../../utils/colors')
+const colors = require('../../../colors')
 
 const defaultProps = {
   '&:hover': {
