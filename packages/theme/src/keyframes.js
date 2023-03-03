@@ -13,6 +13,8 @@ const expand = {
 }
 
 // color-transition will be mostly responsible to make skeleton objects
+// If you are looking for more info about skeletons
+// go to ./utilities/skeleton.js
 const colorTransition = {
   '0%': { backgroundColor: 'var(--skeleton-from)' },
   '50%': { backgroundColor: 'var(--skeleton-to)' },
