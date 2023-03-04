@@ -4,9 +4,7 @@ const baseStyles = cva('flex px-3 justify-between items-center w-full min-h-[2.2
 export const panelHeaderStyles = cva(baseStyles(), {
   variants: {
     variant: {
-      primary: [
-        'bg-light-100 border-light-300 ocean:bg-ocean-500 border-b-2 ocean:border-opacity-40 ocean:border-ocean-300',
-      ],
+      primary: ['bg-light-100 border-light-300 ocean:bg-ocean-500 '],
       secondary: [
         'bg-light-100 border-light-300 ocean:bg-ocean-600 border-b-2 ocean:border-ocean-400',
       ],
