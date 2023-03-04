@@ -31,7 +31,7 @@ import { SupportedChainId } from 'src/context/WagmiProvider'
 
 import { useDebounce } from 'usehooks-ts'
 import { useAccount, useNetwork } from 'wagmi'
-import { optimism } from 'wagmi/dist/chains'
+import { optimism } from 'wagmi/chains'
 import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
 
 export const useRouteMarket = () => {
