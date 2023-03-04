@@ -49,8 +49,9 @@ export function UserPositions() {
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: market && address && [market?.key, address],
+    args: [market?.market, address || '0x'],
     select: parsePositionDetails,
+    enabled: !!market && !!address,
   })
   const position = positionDetails?.position
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
@@ -63,6 +64,7 @@ export function UserPositions() {
   })
   const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
   const isHydrated = useIsHydrated()
+  const {} = {}
 
   if (!market || !position || !isHydrated)
     return (
