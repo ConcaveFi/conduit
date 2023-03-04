@@ -45,7 +45,7 @@ export const useRouteMarket = () => {
   return market!
 }
 
-function useMarkets<TSelectData = MarketSummaries>(config: {
+function useMarkets<TSelectData = MarketSummaries>(config?: {
   select?: (s: MarketSummaries) => TSelectData
 }) {
   const { chain } = useNetwork()
