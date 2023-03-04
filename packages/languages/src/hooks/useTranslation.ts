@@ -1,5 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { useQuery } from 'react-query'
 import { LanguageKeys } from '../../types/languageKeys'
 import { getLanguageByLocale } from '../utils/handleLocale'
 
