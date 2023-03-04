@@ -64,9 +64,22 @@ export function UserPositions() {
   })
   const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
   const isHydrated = useIsHydrated()
-  const {} = {}
 
   if (!market || !position || !isHydrated)
+    return (
+      <div className="centered flex h-6 w-full gap-4">
+        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
+        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
+        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
+        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
+      </div>
+    )
+  const size = position.size
+  const side = size.isNegative() ? 'Short' : 'Long'
+  const hasPosition = !size.isZero()
+  const profitLoss = positionDetails.profitLoss
+
+  if (!hasPosition) {
     return (
       <div className="centered flex h-full ">
         <span className="text-light-400 ocean:text-ocean-300 font-medium">
@@ -74,11 +87,8 @@ export function UserPositions() {
         </span>
       </div>
     )
-  const size = position.size
-  const side = size.isNegative() ? 'Short' : 'Long'
-  const hasPosition = !size.isZero()
+  }
 
-  const profitLoss = positionDetails.profitLoss
   return (
     <Table className="w-full" left>
       <THead variant={'primary'}>

@@ -22,11 +22,9 @@ export function Topbar() {
         <button className="btn btn-bottom-glow centered ml-6 w-[120px] rounded-none">
           {t('futures')}
         </button>
-        <button className="btn btn-underline centered w-[120px] rounded-none">
-          {t('options')}
-        </button>
+        <button className="btn btn-underline centered w-[120px] rounded-none">Swap</button>
         <button className="btn btn-underline centered w-[120px]  rounded-none">
-          {t('strategy')} <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
+          Leaderboard <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
         </button>
         <SearchInput />
       </div>
