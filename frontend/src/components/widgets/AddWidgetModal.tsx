@@ -1,4 +1,4 @@
-import { Modal, ModalProps } from '@tradex/interface'
+import { cx, Modal, ModalProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useReducer } from 'react'
 import { useWidgets } from 'src/context/WidgetsProvider'
@@ -25,16 +25,17 @@ export function AddWidgetModal(props: ModalProps) {
         {t('add widget')}
       </span>
 
-      <div className="bg-light-300 ocean:bg-ocean-900 flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
+      <div className="bg-light-300 centered ocean:bg-ocean-900 flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
         {Object.keys(GRID_WIDGETS)
           .filter((widget) => !widgets.includes(widget as GridWidgetKeys))
           .map((key) => (
             <button
               key={key}
               onClick={() => dispatch(key)}
-              className={`btn py-2 ${
-                selecteds.includes(key) ? 'btn-primary' : 'btn-underline.secondary'
-              }`}
+              className={cx(
+                'btn w-fit py-2 px-5',
+                selecteds.includes(key) ? 'btn-primary' : 'btn-underline.secondary',
+              )}
             >
               {key.replace('-', ' ')}
             </button>
