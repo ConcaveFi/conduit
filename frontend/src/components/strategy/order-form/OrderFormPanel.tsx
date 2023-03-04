@@ -125,7 +125,7 @@ export const OrderSizeInput = ({
   )
 }
 
-export const TrackingCode = formatBytes32String('conduit')
+export const TrackingCode = formatBytes32String('Conduit')
 export const DEFAULT_PRICE_IMPACT_DELTA = BigNumber.from('500000000000000000') // 0.5%
 export const MAX_LEVERAGE = FixedNumber.from(25)
 

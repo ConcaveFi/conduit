@@ -3,7 +3,8 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { cx, NumericInput } from '@tradex/interface'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import {
   useChainLinkLatestRoundData,
   useMarketDataAllProxiedMarketSummaries,
@@ -24,60 +25,69 @@ import {
   parsePositionDetails,
   PositionDetails,
 } from 'perps-hooks/parsers'
-import { useCallback, useMemo, useReducer, useState } from 'react'
+import { Suspense, useCallback, useMemo, useReducer, useState } from 'react'
 import { useIsHydrated } from 'src/context/IsHydratedProvider'
+import { SupportedChainId } from 'src/context/WagmiProvider'
 
 import { useDebounce } from 'usehooks-ts'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
+import { optimism } from 'wagmi/dist/chains'
 import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
 
 export const useRouteMarket = () => {
-  // const searchParams = useSearchParams()
-  // const asset = searchParams?.get('asset')
+  const searchParams = useSearchParams()
+  const asset = searchParams?.get('asset')
 
-  const { data: market } = useMarketDataAllProxiedMarketSummaries({
-    select: (summaries) => {
-      const markets = parseMarketSummaries(summaries)
-      return markets.find((m) => m.asset === 'sETH')
-    },
-    // cacheOnBlock: true,
-    watch: true,
+  const { data: market } = useMarkets({
+    select: useCallback((markets) => markets.find((m) => m.asset === asset), [asset]),
   })
 
-  return market
+  return market!
+}
+
+function useMarkets<TSelectData = MarketSummaries>(config: {
+  select?: (s: MarketSummaries) => TSelectData
+}) {
+  const { chain } = useNetwork()
+  const chainId = chain?.unsupported ? optimism.id : (chain?.id as SupportedChainId)
+  return useMarketDataAllProxiedMarketSummaries({
+    chainId,
+    keepPreviousData: true,
+    // watch: true,
+    suspense: true,
+    select: (d) => {
+      if (config?.select) return config.select(parseMarketSummaries(d))
+      return parseMarketSummaries(d)
+    },
+  })
 }
 
 const Markets = () => {
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries({
-    select: parseMarketSummaries,
-  })
+  const { data: markets } = useMarkets()
 
-  const isHydrated = useIsHydrated()
+  const searchParams = useSearchParams()
+  const routeAsset = searchParams?.get('asset')
 
-  const router = useRouter()
-  const routeMarket = useRouteMarket()
+  const isMounted = useIsHydrated()
 
-  if (!markets || !isHydrated) return null
+  if (!markets || !isMounted) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Markets</h1>
       <div className="overflow-x-hidden overflow-y-hidden">
-        {markets.map(({ address, asset, price }, i) => (
-          <a
-            key={address}
-            onClick={() => router.replace(`?asset=${asset}`)}
-            data-selected={routeMarket?.address === address}
+        {markets.map(({ market, asset, price }, i) => (
+          <Link
+            key={market}
+            href={`?asset=${asset}`}
+            data-selected={routeAsset === asset}
             className="flex w-40 items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800 data-[selected=true]:bg-neutral-800"
           >
             <span className="text-sm font-semibold text-neutral-200">{asset}</span>
             <div className="flex flex-col items-end">
-              <span className="text-xs text-neutral-400">{format(price)}</span>
-              {/* {markets24hrsAgo && (
-                <span className="text-xs text-neutral-600">{format(markets24hrsAgo[i].price)}</span>
-              )} */}
+              <span className="text-xs text-neutral-400">{formatUsd(price)}</span>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </div>
@@ -367,12 +377,12 @@ const OpenPosition = () => {
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
 
-  if (!market) return null
+  const isHydrated = useIsHydrated()
 
-  const feeRate =
-    sizeDelta.isNegative() && market.marketSkew.isNegative()
-      ? market.feeRates.makerFeeOffchainDelayedOrder
-      : market.feeRates.takerFeeOffchainDelayedOrder
+  if (!market || !isHydrated) return null
+
+  const feeType = sizeDelta.isNegative() && market.marketSkew.isNegative() ? 'maker' : 'taker'
+  const feeRate = market.feeRates[`${feeType}FeeOffchainDelayedOrder`]
 
   const size = safeFixedNumber(inputs.usd)
 
@@ -396,30 +406,29 @@ const OpenPosition = () => {
         max={buyingPower?.toString()}
       />
 
-      {postTradeDetails && (
-        <div className="flex flex-col gap-1">
-          {leveragedIn && (
-            <span className="text-xs text-neutral-500">
-              Leveraged in:{' '}
-              {leveragedIn.toUnsafeFloat() < 1 ? 'Not leveraged' : `x${format(leveragedIn)}`}
-            </span>
-          )}
-          {sizePercentOfBuyingPower && (
-            <span className="text-xs text-neutral-500">
-              Position size is {formatPercent(sizePercentOfBuyingPower)} of your buying power
-            </span>
-          )}
-          <span className="text-xs text-neutral-500">
-            Entry price: {formatUsd(postTradeDetails.price)}
+      <div className="flex flex-col gap-1 text-xs text-neutral-500">
+        {leveragedIn && (
+          <span>
+            Leveraged in:{' '}
+            {leveragedIn.toUnsafeFloat() < 1
+              ? 'Not leveraged'
+              : `x${format(leveragedIn)} (max: x${MAX_LEVERAGE.toUnsafeFloat()})`}
           </span>
-          <span className="text-xs text-neutral-500">
-            Liquidation price: {formatUsd(postTradeDetails.liquidationPrice)}
+        )}
+        {sizePercentOfBuyingPower && (
+          <span>
+            Position size is {formatPercent(sizePercentOfBuyingPower)} of your buying power
           </span>
-          <span className="text-xs text-neutral-500">
-            Funding fee: {formatUsd(postTradeDetails.fee)} {formatPercent(feeRate)}
-          </span>
-        </div>
-      )}
+        )}
+        <span>Entry price: {postTradeDetails && formatUsd(postTradeDetails.price)}</span>
+        <span>
+          Liquidation price: {postTradeDetails && formatUsd(postTradeDetails.liquidationPrice)}
+        </span>
+        <span>
+          Trade fee: {postTradeDetails && formatUsd(postTradeDetails.fee)} ({feeType}{' '}
+          {formatPercent(feeRate)})
+        </span>
+      </div>
 
       <div className="flex items-center justify-center gap-3">
         <button
@@ -537,18 +546,13 @@ const OPPrice = () => {
 }
 
 const Price = () => {
-  const { data: market } = useMarketDataAllProxiedMarketSummaries({
-    select: (summaries) => {
-      const markets = parseMarketSummaries(summaries)
-      return markets.find((m) => m.asset === 'sETH')
-    },
-    // cacheOnBlock: true,
-    // watch: true,
-    suspense: true,
-  })
+  const market = useRouteMarket()
+
   const isHydrated = useIsHydrated()
+
   if (isHydrated && market)
     return <span className="text-neutral-200">{formatUsd(market.price)}</span>
+
   return null
 }
 
@@ -556,9 +560,10 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
-        <Price />
-        {/* <Markets />
-        <div className="flex h-[500px] w-[300px] flex-col gap-2">
+        <Suspense fallback={<span className="text-neutral-200">loading</span>}>
+          {/* <Price /> */}
+          <Markets />
+          {/* <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
           <OPPrice />
           <Orders />
@@ -566,6 +571,7 @@ export default function Home() {
           <Margin />
           <OpenPosition />
         </div> */}
+        </Suspense>
       </div>
     </div>
   )
