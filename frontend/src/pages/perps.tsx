@@ -1,11 +1,16 @@
 import * as Slider from '@radix-ui/react-slider'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { cx, NumericInput } from '@tradex/interface'
+import { getContract } from '@wagmi/core'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
+  marketDataABI,
+  marketDataAddress,
   useChainLinkLatestRoundData,
   useMarketDataAllProxiedMarketSummaries,
   useMarketDataPositionDetails,
@@ -25,13 +30,14 @@ import {
   parsePositionDetails,
   PositionDetails,
 } from 'perps-hooks/parsers'
-import { Suspense, useCallback, useMemo, useReducer, useState } from 'react'
-import { useIsHydrated } from 'src/context/IsHydratedProvider'
-import { SupportedChainId } from 'src/context/WagmiProvider'
+import { useCallback, useMemo, useReducer, useState } from 'react'
+import { useIsHydrated } from 'src/providers/IsHydratedProvider'
+import { provider, SupportedChainId } from 'src/providers/wagmi-config'
+import SuperJSON from 'superjson'
 
 import { useDebounce } from 'usehooks-ts'
 import { useAccount, useNetwork } from 'wagmi'
-import { optimism } from 'wagmi/dist/chains'
+import { optimism } from 'wagmi/chains'
 import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
 
 export const useRouteMarket = () => {
@@ -62,24 +68,19 @@ function useMarkets<TSelectData = MarketSummaries>(config: {
   })
 }
 
-const Markets = () => {
-  const { data: markets } = useMarkets()
-
+const Markets = ({ markets }: { markets: MarketSummaries }) => {
   const searchParams = useSearchParams()
   const routeAsset = searchParams?.get('asset')
-
-  const isMounted = useIsHydrated()
-
-  if (!markets || !isMounted) return null
 
   return (
     <div className="flex flex-col gap-1 rounded-xl bg-neutral-800/40 p-2">
       <h1 className="px-1 text-xs text-neutral-400">Markets</h1>
       <div className="overflow-x-hidden overflow-y-hidden">
-        {markets.map(({ market, asset, price }, i) => (
+        {markets.map(({ address, asset, price }, i) => (
           <Link
-            key={market}
+            key={address}
             href={`?asset=${asset}`}
+            shallow
             data-selected={routeAsset === asset}
             className="flex w-40 items-center justify-between rounded-lg px-2 py-1 hover:bg-neutral-800 data-[selected=true]:bg-neutral-800"
           >
@@ -93,6 +94,30 @@ const Markets = () => {
     </div>
   )
 }
+
+/*
+
+position leverage
+
+skewScale
+
+maxMarketValue
+marketLimit: wei(marketParameters[i].maxMarketValue).mul(wei(price)),
+
+minInitialMargin: wei(globals.minInitialMargin),
+keeperDeposit: wei(globals.minKeeperFee),
+
+isSuspended: suspensions[i],
+
+openInterest
+
+currentRoundId
+
+currentFundingRate: wei(currentFundingRate).div(24),
+
+marketClosureReason: getReasonFromCode(reasons[i]) as MarketClosureReason,
+
+*/
 
 const Orders = () => {
   const market = useRouteMarket()
@@ -556,14 +581,42 @@ const Price = () => {
   return null
 }
 
-export default function Home() {
+SuperJSON.registerCustom<FixedNumber, string>(
+  {
+    isApplicable: (v): v is FixedNumber => FixedNumber.isFixedNumber(v),
+    serialize: (v) => v.toString(),
+    deserialize: (v) => FixedNumber.from(v),
+  },
+  'FixedNumber',
+)
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const queryClient = new QueryClient()
+
+  // await queryClient.prefetchQuery(['posts'], getPosts)
+
+  const marketData = getContract({
+    address: marketDataAddress[10],
+    abi: marketDataABI,
+    signerOrProvider: provider({ chainId: 10 }),
+  })
+  const markets = await marketData.allProxiedMarketSummaries().then(parseMarketSummaries)
+  ctx.res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600')
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  }
+}
+
+export default function Home({ markets }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
-        <Suspense fallback={<span className="text-neutral-200">loading</span>}>
-          {/* <Price /> */}
-          <Markets />
-          {/* <div className="flex h-[500px] w-[300px] flex-col gap-2">
+        {/* <Suspense fallback={<span className="text-neutral-200">loading</span>}> */}
+        {/* <Price /> */}
+        <Markets markets={markets} />
+        {/* <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
           <OPPrice />
           <Orders />
@@ -571,7 +624,7 @@ export default function Home() {
           <Margin />
           <OpenPosition />
         </div> */}
-        </Suspense>
+        {/* </Suspense> */}
       </div>
     </div>
   )

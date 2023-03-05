@@ -1,7 +1,7 @@
 import { Modal, ModalProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useReducer } from 'react'
-import { useWidgets } from 'src/context/WidgetsProvider'
+import { useWidgets } from 'src/providers/WidgetsProvider'
 import { GridWidgetKeys, GRID_WIDGETS } from 'src/utils/gridWidgets'
 
 function reducer(state: string[], action: string) {

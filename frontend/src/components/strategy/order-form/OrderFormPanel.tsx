@@ -10,7 +10,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
-import { useRouteMarket } from 'src/pages/perps'
+import { useRouteMarket } from 'src/app/perps/perps'
 import { format, formatPercent, formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
