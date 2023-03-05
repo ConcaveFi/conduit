@@ -10,7 +10,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
-import { useRouteMarket } from 'src/pages/perps'
+import { useRouteMarket } from 'src/hooks/perps'
 import { format, formatPercent, formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
@@ -199,13 +199,13 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   const feeType = sizeDelta.isNegative() && market.marketSkew.isNegative() ? 'maker' : 'taker'
   const feeRate = market.feeRates[`${feeType}FeeOffchainDelayedOrder`]
 
-  const size = safeFixedNumber(inputs.usd)
+  const sizeUsd = safeFixedNumber(inputs.usd)
 
   const leveragedIn =
-    remainingMargin && !remainingMargin.isZero() && size.divUnsafe(remainingMargin)
+    remainingMargin && !remainingMargin.isZero() && sizeUsd.divUnsafe(remainingMargin)
 
   const sizePercentOfBuyingPower =
-    buyingPower && (size.isZero() ? FixedNumber.from(1) : size).divUnsafe(buyingPower)
+    buyingPower && (sizeUsd.isZero() ? FixedNumber.from(1) : sizeUsd).divUnsafe(buyingPower)
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>

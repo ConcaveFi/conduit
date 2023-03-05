@@ -1,4 +1,4 @@
-import { BigNumber, FixedNumber } from 'ethers'
+import { FixedNumber } from 'ethers'
 
 export const safeFixedNumber = (value: string | FixedNumber) => {
   if (FixedNumber.isFixedNumber(value)) return value

@@ -5,7 +5,8 @@ import { useRouter } from 'next/router'
 import { useMarketDataAllProxiedMarketSummaries } from 'perps-hooks'
 import { parseMarketSummaries } from 'perps-hooks/parsers'
 import { forwardRef, useMemo } from 'react'
-import { useRouteMarket } from 'src/pages/perps'
+import { useRouteMarket } from 'src/hooks/perps'
+
 import { format } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
 

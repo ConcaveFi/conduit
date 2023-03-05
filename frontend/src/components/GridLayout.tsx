@@ -1,7 +1,7 @@
 import ReactGridLayout from 'react-grid-layout'
-import { useWidgets } from 'src/context/WidgetsProvider'
 import { useGridLayout } from 'src/hooks/useGridLayout'
 import { useResizeObserver } from 'src/hooks/useResizeObserver'
+import { useWidgets } from 'src/providers/WidgetsProvider'
 import { WIDGET_PRESETS } from 'src/utils/gridLayout'
 import { GRID_WIDGETS } from 'src/utils/gridWidgets'
 

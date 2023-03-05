@@ -14,9 +14,11 @@ const nextConfig = {
     defaultLocale: 'us',
     localeDetection: true,
   },
-  // experimental: {
-  //   appDir: true,
-  // },
+  experimental: {
+    appDir: true,
+    typedRoutes: true,
+    swcPlugins: [['next-superjson-plugin', {}]],
+  },
 }
 
 module.exports = nextConfig

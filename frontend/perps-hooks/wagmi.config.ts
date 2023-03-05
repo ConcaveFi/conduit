@@ -3,7 +3,13 @@ import { react } from '@wagmi/cli/plugins'
 import { erc20ABI } from 'wagmi'
 
 import { optimism, optimismGoerli } from 'wagmi/chains'
-import { chainLinkFeedAbi, marketAbi, marketDataAbi, marketSettingsAbi } from './abis'
+import {
+  chainLinkFeedAbi,
+  marketAbi,
+  marketDataAbi,
+  marketSettingsAbi,
+  systemStatusAbi,
+} from './abis'
 
 const tokens = [
   {
@@ -42,7 +48,14 @@ const contracts = [
       [optimism.id]: '0x09793Aad1518B8d8CC72FDd356479E3CBa7B4Ad1',
     },
   },
-
+  {
+    name: 'SystemStatus',
+    abi: systemStatusAbi,
+    address: {
+      [optimism.id]: '0xE8c41bE1A167314ABAF2423b72Bf8da826943FFD',
+      [optimismGoerli.id]: '0x9D89fF8C6f3CC22F4BbB859D0F85FB3a4e1FA916',
+    },
+  },
   { name: 'ChainLink', abi: chainLinkFeedAbi },
   { name: 'Market', abi: marketAbi },
 ] satisfies ContractConfig[]
@@ -50,5 +63,10 @@ const contracts = [
 export default defineConfig({
   out: 'perps-hooks/generated.ts',
   contracts,
-  plugins: [react()],
+  plugins: [
+    react(),
+    // actions({
+    //   readContract: true,
+    // }),
+  ],
 })
