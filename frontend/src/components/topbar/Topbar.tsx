@@ -25,7 +25,9 @@ export function Topbar() {
           {t('futures')}
         </button>
         <button className="btn btn-underline centered w-[120px] rounded-none">Swap</button>
-        <button className="btn btn-underline centered w-[120px]  rounded-none">Leaderboard</button>
+        <button className="btn btn-underline centered w-[120px]  rounded-none">
+          Leaderboard <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
+        </button>
       </div>
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
