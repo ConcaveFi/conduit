@@ -5,7 +5,6 @@ import { useTranslation } from '@tradex/languages'
 import { format } from 'src/utils/format'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
-import { SearchInput } from '../SearchInput'
 import { LocationSelector } from './LocationSelector'
 import { ThemeSelector } from './ThemeSelector'
 
@@ -26,7 +25,6 @@ export function Topbar() {
         <button className="btn btn-underline centered w-[120px]  rounded-none">
           Leaderboard <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
         </button>
-        <SearchInput />
       </div>
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
