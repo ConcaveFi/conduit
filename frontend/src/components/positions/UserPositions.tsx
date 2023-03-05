@@ -1,6 +1,6 @@
 import { Table, TableBody, TableRow, THead } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
-import { BigNumber, FixedNumber } from 'ethers'
+import { BigNumber } from 'ethers'
 import {
   useMarketDataPositionDetails,
   useMarketSubmitOffchainDelayedOrderWithTracking,
@@ -42,22 +42,22 @@ const STYLES = {
   avg_entry_price: 'text-light-600 ocean:text-white',
   liq_price: 'text-light-600 ocean:text-white',
 }
-
+// 0x886148a6bd2c71db59ab3aad230af9f3254173ee
 export function UserPositions() {
   const { address } = useAccount()
   const market = useRouteMarket()
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: [market?.market, address || '0x'],
+    args: [market?.market, '0x886148a6bd2c71db59ab3aad230af9f3254173ee'],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })
   const position = positionDetails?.position
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market?.address,
-    args: [
-      BigNumber.from(position?.size.mulUnsafe(FixedNumber.from(-1)) || 0),
+    args: position && [
+      BigNumber.from(position.size).mul(-1),
       DEFAULT_PRICE_IMPACT_DELTA,
       TrackingCode,
     ],
