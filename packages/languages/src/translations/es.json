@@ -42,5 +42,9 @@
   "you have no positions yet": "Aún no tienes posiciones",
   "add widget": "Añadir widget",
   "cancel": "Cancelar",
-  "apply": "Aplicar"
+  "apply": "Aplicar",
+  "orders": "",
+  "transfers": "",
+  "dashboard": "",
+  "connect wallet": ""
 }

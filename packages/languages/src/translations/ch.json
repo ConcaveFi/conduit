@@ -42,5 +42,9 @@
   "you have no positions yet": "你还没有职位",
   "add widget": "添加小部件",
   "cancel": "取消",
-  "apply": "申请"
+  "apply": "申请",
+  "orders": "",
+  "transfers": "",
+  "dashboard": "",
+  "connect wallet": ""
 }

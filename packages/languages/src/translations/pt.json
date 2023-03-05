@@ -42,5 +42,9 @@
   "post": "",
   "hidden": "",
   "position": "",
-  "buy": ""
+  "buy": "",
+  "orders": "",
+  "transfers": "",
+  "dashboard": "",
+  "connect wallet": ""
 }
