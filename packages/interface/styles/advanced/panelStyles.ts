@@ -6,7 +6,7 @@ export const panelHeaderStyles = cva(baseStyles(), {
     variant: {
       primary: ['bg-light-100 border-light-300 ocean:bg-ocean-500 '],
       secondary: [
-        'bg-light-100 border-light-300 ocean:bg-ocean-600 border-b-2 ocean:border-ocean-400',
+        'bg-light-100 border-light-300 ocean:bg-ocean-500 border-b-2 ocean:border-ocean-400',
       ],
     },
   },

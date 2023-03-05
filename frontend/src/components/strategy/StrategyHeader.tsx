@@ -22,8 +22,8 @@ export function StrategyHeader() {
   const { data: GasPrice } = useFeeData()
 
   return (
-    <div className="flex gap-3">
-      <div className="bg-light-100 ocean:bg-ocean-600 flex min-h-[80px] w-full justify-between rounded-2xl px-6 ">
+    <div className="my-8 flex gap-3">
+      <div className="bg-ocean-700 flex min-h-[80px] w-full justify-between rounded-2xl px-6 ">
         <MarketList />
         <div className="flex gap-20">
           <ItemInfo info={t('24h_volume')} value="$ 370,526,580" Icon={<BalanceIcon />} />
@@ -42,7 +42,7 @@ export function StrategyHeader() {
           />
         </div>
       </div>
-      <div className="bg-light-100 ocean:bg-ocean-600 flex min-h-[80px] w-[44%] justify-around rounded-2xl ">
+      <div className="bg-light-100 ocean:bg-ocean-700 flex min-h-[80px] w-[44%] justify-around rounded-2xl ">
         <ItemInfo
           info={'sUSD'}
           value={`$ ${format(FixedNumber.from(sUSD_Balance?.formatted || '0'))}`}

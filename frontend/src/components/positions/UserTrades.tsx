@@ -23,15 +23,14 @@ interface TradesProps {
   amount: number
 }
 
-// Colors will be changed soon
 function Trades(props: TradesProps) {
   return (
     <tr className="">
       <td className="text-ocean-300">2d ago</td>
-      <td className="text-red-500">SHORT</td>
+      <td className="text-negative">SHORT</td>
       <td className="text-ocean-300">$71,043.90</td>
       <td className="text-ocean-300">3.45</td>
-      <td className="text-green-300">$3.45</td>
+      <td className="text-positive">$3.45</td>
       <td className="text-ocean-300">Delayed Offchain</td>
     </tr>
   )

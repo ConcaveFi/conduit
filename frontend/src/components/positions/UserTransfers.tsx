@@ -25,12 +25,11 @@ interface TransferRowProps {
   amount: number
 }
 
-// Colors will be changed soon
 function TransferRow(props: TransferRowProps) {
   return (
     <tr>
       <td className=" text-ocean-300 capitalize">{props.action}</td>
-      <td className={cx(props.action === 'withdraw' ? 'text-red-500' : 'text-green-500')}>
+      <td className={cx(props.action === 'withdraw' ? 'text-negative' : 'text-positive')}>
         ${props.amount}
       </td>
       <td className="text-ocean-300">1d ago</td>

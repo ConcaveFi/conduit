@@ -18,7 +18,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
 
             return (
               <tr className="odd:bg-ocean-900  odd:bg-opacity-40">
-                <td className={cx(rand > 0.5 ? 'text-green-400' : 'text-red-400')}> 0.914</td>
+                <td className={cx(rand > 0.5 ? 'text-positive' : 'text-negative')}> 0.914</td>
                 <td className="text-ocean-200 py-[6px]"> $1,644.56</td>
                 <td className="text-ocean-200">30s ago</td>
               </tr>

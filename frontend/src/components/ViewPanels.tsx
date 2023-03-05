@@ -49,7 +49,7 @@ const Tabs = () => {
             {({ selected }) => (
               <span
                 className={`btn h-full  px-4 py-[9px] outline-none ring-0
-                ${selected ? 'bg-ocean-400 text-ocean-300' : 'btn-underline.secondary'} `}
+                ${selected ? 'bg-ocean-600 text-ocean-300' : 'btn-underline.secondary'} `}
               >
                 {t(tab)}
               </span>
