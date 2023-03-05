@@ -1,16 +1,7 @@
 [
-  "cross",
-  "market",
-  "isolated",
   "amount",
-  "limit price",
   "order form",
-  "reduce",
-  "post",
-  "hidden",
   "leverage",
-  "position",
-  "buy",
   "recent_trades",
   "side.place",
   "size",
@@ -20,7 +11,6 @@
   "trade",
   "charts",
   "trading_history",
-  "activity_log",
   "total",
   "news",
   "chart",
@@ -42,5 +32,11 @@
   "you have no positions yet",
   "add widget",
   "cancel",
-  "apply"
+  "apply",
+  "orders",
+  "transfers",
+  "orders",
+  "transfers",
+  "dashboard",
+  "connect wallet"
 ]

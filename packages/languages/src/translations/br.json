@@ -42,5 +42,9 @@
   "you have no positions yet": "Você ainda não possui posições",
   "add widget": "Adicionar ferramenta",
   "cancel": "Cancelar",
-  "apply": "Aplicar"
+  "apply": "Aplicar",
+  "orders": "Pedidos",
+  "transfers": "Transferênci",
+  "dashboard": "Painel",
+  "connect wallet": "Conectar carteira"
 }

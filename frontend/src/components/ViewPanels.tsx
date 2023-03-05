@@ -6,7 +6,7 @@ import { UserPositions } from './positions/UserPositions'
 
 // CONSTANTS -------------------------------------------------------------------
 
-const TABS = ['trade', 'charts', 'trading_history', 'activity_log'] as LanguageKeys[]
+const TABS = ['trade', 'orders', 'trading_history', 'transfers'] as LanguageKeys[]
 
 // COMPONENT ---------------------------------------------------------------------
 

@@ -43,5 +43,8 @@
   "add widget": "Add widget",
   "cancel": "Cancel",
   "apply": "Apply",
-  "Testing": ""
+  "orders": "Orders",
+  "transfers": "Transfers",
+  "dashboard": "Dashboard",
+  "connect wallet": ""
 }

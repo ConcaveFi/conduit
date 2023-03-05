@@ -42,5 +42,9 @@
   "you have no positions yet": "ليس لديك وظائف بعد",
   "add widget": "إضافة القطعة",
   "cancel": "يلغي",
-  "apply": "يتقدم"
+  "apply": "يتقدم",
+  "orders": "",
+  "transfers": "",
+  "dashboard": "",
+  "connect wallet": ""
 }

@@ -1,5 +1,5 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { ChevronIcon, DashboardIcon, NotificationIcon } from '@tradex/icons'
+import { ChevronIcon, NotificationIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { format } from 'src/utils/format'
@@ -19,7 +19,7 @@ export function Topbar() {
         <img src={'/assets/conduit.svg'} alt="logo" width={300} height={250} />
 
         <button className="btn btn-underline centered ml-6 w-[120px] rounded-none">
-          Dashboard
+          {t('dashboard')}
         </button>
         <button className="btn btn-bottom-glow centered  w-[120px] rounded-none">
           {t('futures')}
@@ -30,7 +30,6 @@ export function Topbar() {
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
         <ThemeSelector />
-        <DashboardIcon className="fill-ocean-200 btn- h-5 w-5" />
 
         <NotificationIcon className="fill-ocean-200 h-5 w-5" />
         <ConnectButton.Custom>
