@@ -42,14 +42,13 @@ const STYLES = {
   avg_entry_price: 'text-light-600 ocean:text-white',
   liq_price: 'text-light-600 ocean:text-white',
 }
-// 0x886148a6bd2c71db59ab3aad230af9f3254173ee
 export function UserPositions() {
   const { address } = useAccount()
   const market = useRouteMarket()
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: [market?.market, '0x886148a6bd2c71db59ab3aad230af9f3254173ee'],
+    args: [market?.market, address || '0x'],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })
@@ -78,6 +77,10 @@ export function UserPositions() {
   const side = size.isNegative() ? 'Short' : 'Long'
   const hasPosition = !size.isZero()
   const profitLoss = positionDetails.profitLoss
+
+  const remainingMargin = positionDetails?.remainingMargin
+  const sizeUSD = size?.mulUnsafe(market?.price)
+  const leverage = !remainingMargin.isZero() ? sizeUSD?.divUnsafe(remainingMargin) : undefined
 
   if (!hasPosition) {
     return (
@@ -111,11 +114,13 @@ export function UserPositions() {
             </span>
           </td>
           <td>
-            <span className={`text-light-600 ocean:text-white text-sm`}>{format(size)}</span>
+            <span className={`text-light-600 ocean:text-white text-sm`}>
+              {format(size, { signDisplay: 'never' })}
+            </span>
           </td>
           <td>
             <span className={`text-light-600 ocean:text-white text-sm`}>
-              {format(position?.margin)}
+              {!!leverage && format(leverage, { signDisplay: 'never' })}
             </span>
           </td>
           <td>
@@ -128,6 +133,11 @@ export function UserPositions() {
           <td>
             <span className={`text-light-600 ocean:text-white text-sm`}>
               {formatUsd(position?.lastPrice)}
+            </span>
+          </td>
+          <td>
+            <span className={`text-light-600 ocean:text-white text-sm`}>
+              {formatUsd(positionDetails.liquidationPrice)}
             </span>
           </td>
           <td>
