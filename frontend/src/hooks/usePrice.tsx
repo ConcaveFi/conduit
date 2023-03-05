@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { EvmPriceServiceConnection, PriceFeed } from '@pythnetwork/pyth-evm-js'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MarketKey, Markets } from 'perps-hooks/markets'
-import { queryClient } from '../providers/WagmiProvider'
 
 import { BigNumber, FixedNumber } from 'ethers'
 import { useNetwork } from 'wagmi'
@@ -40,20 +39,19 @@ const allMarketsPythIds = {
 }
 const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainnet')
 
-export const prefetchPrices = () => queryClient.prefetchQuery(allMarketsPricesQuery)
+// export const prefetchPrices = () => global_queryClient.prefetchQuery(allMarketsPricesQuery)
 
 export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: boolean }) => {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
+  const marketPythId = Markets[marketKey].pythIds[pythNetwork]
 
-  const marketPythId = useMemo(
-    () => Markets[marketKey].pythIds[pythNetwork],
-    [marketKey, pythNetwork],
-  )
   const marketPriceQuery = useMemo(
     () => createPriceQuery([marketPythId], pythNetwork),
     [marketPythId, pythNetwork],
   )
+
+  const queryClient = useQueryClient()
 
   useWatchPrice({
     pythId: marketPythId,
@@ -71,16 +69,11 @@ export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: b
       const feed = allFeeds?.find((m) => m.id === marketPythId)
       return feed ? [feed] : undefined
     },
-    initialDataUpdatedAt: () =>
-      queryClient.getQueryState(allMarketsPricesQuery.queryKey)?.dataUpdatedAt,
-    select: useCallback(
-      (priceFeeds: ParsedPriceFeed[]) => {
-        const feed = priceFeeds?.find((f) => f.id === marketPythId)
-        if (!feed) return { id: marketPythId, price: FixedNumber.from(0) }
-        return { id: feed.id, price: FixedNumber.from(feed.price._value) }
-      },
-      [marketPythId],
-    ),
+    select: (priceFeeds) => {
+      const feed = priceFeeds?.find((f) => f.id === marketPythId)
+      if (!feed) return { id: marketPythId, price: FixedNumber.from(0) }
+      return { id: feed.id, price: FixedNumber.from(feed.price._value) }
+    },
   })
 }
 

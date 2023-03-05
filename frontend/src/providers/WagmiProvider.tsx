@@ -1,5 +1,4 @@
 import { darkTheme, getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
-import { QueryClient } from '@tanstack/react-query'
 import { PropsWithChildren } from 'react'
 import { createClient, WagmiConfig } from 'wagmi'
 import { chains, provider, webSocketProvider } from './wagmi-config'
@@ -9,18 +8,8 @@ const { connectors } = getDefaultWallets({
   chains,
 })
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      keepPreviousData: true,
-      staleTime: 300,
-    },
-  },
-})
-
 const client = createClient({
   autoConnect: true,
-  queryClient,
   connectors,
   provider,
   webSocketProvider,
