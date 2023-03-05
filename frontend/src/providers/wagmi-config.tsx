@@ -1,5 +1,5 @@
 import { configureChains } from '@wagmi/core'
-import { optimism, optimismGoerli } from '@wagmi/core/chains'
+import { optimism } from '@wagmi/core/chains'
 import { alchemyProvider } from '@wagmi/core/providers/alchemy'
 import { multicallProvider } from 'multicall-provider/wagmi'
 
@@ -7,10 +7,7 @@ const {
   chains,
   provider: _provider,
   webSocketProvider,
-} = configureChains(
-  [optimismGoerli, optimism],
-  [alchemyProvider({ apiKey: 'dduxooAO1ELKTf_kXyJHvqIcDniRVvXn' })],
-)
+} = configureChains([optimism], [alchemyProvider({ apiKey: 'Kng1p_dEJaldM51_qK6aqP9YvBY0cVxf' })])
 
 const provider = multicallProvider(_provider)
 

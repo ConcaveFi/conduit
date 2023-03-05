@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useContractRead, UseContractReadConfig } from 'ngmi/useContractRead'
 import { marketDataABI, marketDataAddress } from 'perps-hooks'
 import { MarketSummaries, parseMarketSummaries } from 'perps-hooks/parsers'
+import { useCallback } from 'react'
 import { SupportedChainId } from 'src/providers/wagmi-config'
 
 import { useNetwork } from 'wagmi'
@@ -19,7 +20,7 @@ export function useMarkets<TSelectData = MarketSummaries>(
   } = {},
 ) {
   const { chain } = useNetwork()
-  const chainId = chain?.unsupported ? optimism.id : (chain?.id as SupportedChainId)
+  const chainId = chain?.unsupported ? optimism.id : (chain?.id as SupportedChainId) || optimism.id
   return useContractRead({
     abi: marketDataABI,
     address: marketDataAddress[config.chainId || chainId],
@@ -27,10 +28,13 @@ export function useMarkets<TSelectData = MarketSummaries>(
     refetchInterval: 2000,
     refetchIntervalInBackground: true,
     ...config,
-    select: (summariesResult) => {
-      const summaries = parseMarketSummaries(summariesResult)
-      return config.select ? config.select(summaries) : (summaries as TSelectData)
-    },
+    select: useCallback(
+      (summariesResult) => {
+        const summaries = parseMarketSummaries(summariesResult)
+        return config.select ? config.select(summaries) : (summaries as TSelectData)
+      },
+      [config.select],
+    ),
   })
 }
 
@@ -39,8 +43,11 @@ export const useRouteMarket = () => {
   const asset = searchParams?.get('asset')
 
   const { data: market } = useMarkets({
-    select: (markets) => markets.find((m) => m.asset === asset),
+    select: useCallback(
+      (markets: MarketSummaries) => markets.find((m) => m.asset === asset),
+      [asset],
+    ),
   })
 
-  return market!
+  return market
 }

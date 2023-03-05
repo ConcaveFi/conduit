@@ -23,11 +23,12 @@ const parsePriceFeed = (feed: PriceFeed) => {
 }
 type ParsedPriceFeed = ReturnType<typeof parsePriceFeed>
 
-const createPriceQuery = (ids: PythId[], network: PythNetwork) => ({
+const createPriceQuery = (ids?: PythId[], network: PythNetwork = 'mainnet') => ({
   queryKey: ['pyth', { ids }],
+  enabled: !!ids,
   queryFn: async () => {
-    const feeds = await pyth[network].getLatestPriceFeeds(ids)
-    if (!feeds) return ids.map((id) => ({ id, price: FixedNumber.from(0) }))
+    const feeds = await pyth[network].getLatestPriceFeeds(ids!)
+    if (!feeds) return ids!.map((id) => ({ id, price: FixedNumber.from(0) }))
     return feeds.map(parsePriceFeed)
   },
 })
@@ -41,13 +42,13 @@ const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainn
 
 // export const prefetchPrices = () => global_queryClient.prefetchQuery(allMarketsPricesQuery)
 
-export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: boolean }) => {
+export const usePrice = ({ marketKey, watch }: { marketKey?: MarketKey; watch?: boolean }) => {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
-  const marketPythId = Markets[marketKey].pythIds[pythNetwork]
+  const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
 
   const marketPriceQuery = useMemo(
-    () => createPriceQuery([marketPythId], pythNetwork),
+    () => createPriceQuery(marketPythId && [marketPythId], pythNetwork),
     [marketPythId, pythNetwork],
   )
 
@@ -58,7 +59,7 @@ export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: b
     network: pythNetwork,
     enabled: !!watch,
     onPriceChange: (priceFeed) => {
-      queryClient.setQueryData(marketPriceQuery.queryKey, [parsePriceFeed(priceFeed)])
+      queryClient.setQueryData(marketPriceQuery.queryKey, [priceFeed])
     },
   })
 
@@ -77,24 +78,26 @@ export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: b
   })
 }
 
-const useWatchPrice = ({
+export const useWatchPrice = ({
   pythId,
-  network,
+  network = 'mainnet',
   enabled = true,
   onPriceChange,
 }: {
-  pythId: PythId
-  network: PythNetwork
+  pythId?: PythId
+  network?: PythNetwork
   enabled?: boolean
-  onPriceChange: (priceFeed: PriceFeed) => void
+  onPriceChange: (priceFeed: ParsedPriceFeed) => void
 }) => {
   const _onPriceChange = useRef(onPriceChange)
   _onPriceChange.current = onPriceChange
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled || !pythId || !_onPriceChange.current) return
 
-    pyth[network].subscribePriceFeedUpdates([pythId], _onPriceChange.current)
+    pyth[network].subscribePriceFeedUpdates([pythId], (priceFeed) => {
+      _onPriceChange.current(parsePriceFeed(priceFeed))
+    })
     // pyth.onWsError() TODO: handle this somehow
 
     return () => {

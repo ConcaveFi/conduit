@@ -3,6 +3,7 @@ import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
 import { useRouteMarket } from 'src/hooks/perps'
+import { usePrice } from 'src/hooks/usePrice'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 
@@ -10,12 +11,13 @@ import { formatUsd } from 'src/utils/format'
 
 function Title() {
   const market = useRouteMarket()
-  if (market) console.log(formatUsd(market.price))
-  if (!market) return <title>Conduit</title>
+  const { data: priceFeed } = usePrice({ marketKey: market?.key, watch: true })
+
+  if (!market || !priceFeed) return <title>Conduit</title>
   return (
     <Head>
       <title>
-        Conduit | {market?.asset} - {formatUsd(market?.price)}
+        Conduit | {market.asset} - {formatUsd(priceFeed.price)}
       </title>
     </Head>
   )

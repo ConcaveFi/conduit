@@ -57,7 +57,7 @@ export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <Price />
-      {/* <Markets /> */}
+      <Markets />
     </div>
   )
 }

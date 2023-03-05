@@ -2,6 +2,7 @@ import { ReadContractResult } from '@wagmi/core'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseBytes32String } from 'ethers/lib/utils.js'
 import { marketABI, marketDataABI } from 'perps-hooks'
+import { MarketAsset, MarketKey } from './markets'
 
 const valuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
   Object.entries(obj).reduce(
@@ -17,8 +18,8 @@ export const parseMarketSummaries = (summaries: MarketSummariesResult) =>
   summaries.map(({ market, key, asset, feeRates, ...summary }) => ({
     market,
     address: market,
-    key,
-    asset: parseBytes32String(asset),
+    key: parseBytes32String(key) as MarketKey,
+    asset: parseBytes32String(asset) as MarketAsset,
     feeRates: valuesToFixedNumber(feeRates),
     ...valuesToFixedNumber(summary),
   }))
