@@ -18,13 +18,14 @@ export function Topbar() {
       <div className="flex items-center gap-2">
         <img src={'/assets/conduit.svg'} alt="logo" width={300} height={250} />
 
-        <button className="btn btn-bottom-glow centered ml-6 w-[120px] rounded-none">
+        <button className="btn btn-underline centered ml-6 w-[120px] rounded-none">
+          Dashboard
+        </button>
+        <button className="btn btn-bottom-glow centered  w-[120px] rounded-none">
           {t('futures')}
         </button>
         <button className="btn btn-underline centered w-[120px] rounded-none">Swap</button>
-        <button className="btn btn-underline centered w-[120px]  rounded-none">
-          Leaderboard <ChevronIcon className="fill-light-500 ocean:fill-ocean-100 h-3 w-3" />
-        </button>
+        <button className="btn btn-underline centered w-[120px]  rounded-none">Leaderboard</button>
       </div>
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
