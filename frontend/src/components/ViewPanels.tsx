@@ -15,7 +15,13 @@ const TABS = ['trade', 'orders', 'trading_history', 'transfers'] as LanguageKeys
 export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
     <Tab.Group>
-      <Panel {...props} variant="secondary" ref={ref} headerChild={<Tabs />}>
+      <Panel
+        {...props}
+        variant="secondary"
+        ref={ref}
+        headerProps={{ className: 'min-h-[60px]' }}
+        headerChild={<Tabs />}
+      >
         <Tab.Panels>
           <Tab.Panel>
             <UserPositions />
@@ -36,14 +42,14 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
 const Tabs = () => {
   const { t } = useTranslation()
   return (
-    <Tab.List>
+    <Tab.List className={'centered flex h-full gap-2 py-2'}>
       {TABS.map((tab) => {
         return (
           <Tab key={tab} className="outline-none">
             {({ selected }) => (
               <span
-                className={`btn px-4 py-[2px] outline-none ring-0
-                ${selected ? 'btn-secondary' : 'btn-underline.secondary'} `}
+                className={`btn h-full  px-4 py-[9px] outline-none ring-0
+                ${selected ? 'bg-ocean-400 text-ocean-300' : 'btn-underline.secondary'} `}
               >
                 {t(tab)}
               </span>

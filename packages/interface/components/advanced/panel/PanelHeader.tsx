@@ -11,7 +11,7 @@ export interface PanelHeaderProps extends PanelHeaderAttributes, DivProps {
   onMinimize?: VoidFunction
 }
 export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
-  ({ children, variant, onMaximize, onClose, onMinimize, ...props }, ref) => {
+  ({ children, variant, onMaximize, onClose, onMinimize, className, ...props }, ref) => {
     const [isFull, setIsFull] = useState(false)
     function handleToggle() {
       if (isFull && onMinimize) {
@@ -22,10 +22,11 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         onMaximize()
       }
     }
+
     return (
       <div
         ref={ref}
-        className={`${panelHeaderStyles({ variant })} cursor-move`}
+        className={`${panelHeaderStyles({ variant, className })} cursor-move`}
         onMouseDown={(e) => e.preventDefault()}
         data-draggable="true"
         {...props}
