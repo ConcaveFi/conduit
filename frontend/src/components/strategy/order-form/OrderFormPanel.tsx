@@ -209,6 +209,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
+      <DepositWithdrawSelector>
+        {(type) => {
+          if (type === 'deposit') return <div>Stuffs pro deposit</div>
+          return <div>stuffs pro withdraw</div>
+        }}
+      </DepositWithdrawSelector>
       <TransferMarginButton />
 
       <div className="flex max-w-full flex-col">
