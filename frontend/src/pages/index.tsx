@@ -2,11 +2,11 @@ import Head from 'next/head'
 import { GridLayout } from 'src/components/GridLayout'
 import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
+import { useRouteMarket } from 'src/hooks/perps'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 
 import { formatUsd } from 'src/utils/format'
-import { useRouteMarket } from './perps'
 
 function Title() {
   const market = useRouteMarket()
