@@ -48,7 +48,7 @@ export function UserPositions() {
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: [market?.market, address || '0x'],
+    args: [market?.market, '0x886148A6Bd2c71Db59Ab3aAD230af9F3254173Ee'],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })

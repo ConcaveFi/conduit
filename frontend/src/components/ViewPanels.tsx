@@ -3,6 +3,7 @@ import { Panel, PanelProps } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 import { UserPositions } from './positions/UserPositions'
+import { UserTransfers } from './positions/UserTransfers'
 
 // CONSTANTS -------------------------------------------------------------------
 
@@ -20,6 +21,9 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
           </Tab.Panel>
           <Tab.Panel>Content 2</Tab.Panel>
           <Tab.Panel>Content 3</Tab.Panel>
+          <Tab.Panel>
+            <UserTransfers />
+          </Tab.Panel>
         </Tab.Panels>
       </Panel>
     </Tab.Group>
