@@ -12,7 +12,6 @@ import {
   marketDataABI,
   marketDataAddress,
   useChainLinkLatestRoundData,
-  useMarketDataAllProxiedMarketSummaries,
   useMarketDataPositionDetails,
   useMarketDelayedOrders,
   useMarketPostTradeDetails,
@@ -31,42 +30,14 @@ import {
   PositionDetails,
 } from 'perps-hooks/parsers'
 import { useCallback, useMemo, useReducer, useState } from 'react'
+import { useRouteMarket } from 'src/hooks/perps'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
-import { provider, SupportedChainId } from 'src/providers/wagmi-config'
+import { provider } from 'src/providers/wagmi-config'
 import SuperJSON from 'superjson'
 
 import { useDebounce } from 'usehooks-ts'
-import { useAccount, useNetwork } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { useAccount } from 'wagmi'
 import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
-
-export const useRouteMarket = () => {
-  const searchParams = useSearchParams()
-  const asset = searchParams?.get('asset')
-
-  const { data: market } = useMarkets({
-    select: useCallback((markets) => markets.find((m) => m.asset === asset), [asset]),
-  })
-
-  return market!
-}
-
-function useMarkets<TSelectData = MarketSummaries>(config?: {
-  select?: (s: MarketSummaries) => TSelectData
-}) {
-  const { chain } = useNetwork()
-  const chainId = chain?.unsupported ? optimism.id : (chain?.id as SupportedChainId)
-  return useMarketDataAllProxiedMarketSummaries({
-    chainId,
-    keepPreviousData: true,
-    // watch: true,
-    suspense: true,
-    select: (d) => {
-      if (config?.select) return config.select(parseMarketSummaries(d))
-      return parseMarketSummaries(d)
-    },
-  })
-}
 
 const Markets = ({ markets }: { markets: MarketSummaries }) => {
   const searchParams = useSearchParams()

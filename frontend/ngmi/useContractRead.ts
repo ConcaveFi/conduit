@@ -16,29 +16,9 @@ import { useMemo } from 'react'
 import { useChainId } from 'wagmi'
 
 type QueryKeyArgs = Omit<ReadContractConfig, 'abi'>
-type QueryKeyConfig = Pick<UseContractReadConfig, 'scopeKey'> & { blockNumber?: number }
 
-function queryKey({
-  address,
-  args,
-  blockNumber,
-  chainId,
-  functionName,
-  overrides,
-  scopeKey,
-}: QueryKeyArgs & QueryKeyConfig) {
-  return [
-    {
-      entity: 'readContract',
-      address,
-      args,
-      blockNumber,
-      chainId,
-      functionName,
-      overrides,
-      scopeKey,
-    },
-  ] as const
+function queryKey({ address, args, chainId, functionName, overrides }: QueryKeyArgs) {
+  return [{ address, args, chainId, functionName, overrides }] as const
 }
 
 type QueryFunctionArgs<T extends (...args: any) => any> = QueryFunctionContext<ReturnType<T>>
@@ -89,8 +69,6 @@ type NgmiQueryOptions<TData, TError, TSelectData = TData> = Pick<
   | 'refetchIntervalInBackground'
 > & {
   refetchInterval?: number | false
-  /** Scope the cache to a given context. */
-  scopeKey?: string
 }
 
 export type UseContractReadConfig<
@@ -103,6 +81,13 @@ export type UseContractReadConfig<
 > &
   NgmiQueryOptions<ReadContractResult<TAbi, TFunctionName>, Error, TSelectData>
 
+const _structuralSharing = <TData>(oldData: TData | undefined, newData: TData): TData =>
+  deepEqual(oldData, newData) ? oldData : (replaceEqualDeep(oldData, newData) as any)
+
+/**
+ * since OP emits one block per tx, wagmi's `watch` option fires too often (once every block)
+ * this hook differs from wagmi's by removing the `watch` option in favor of a `refetchInterval`
+ */
 export function useContractRead<
   TAbi extends Abi,
   TFunctionName extends string,
@@ -112,80 +97,32 @@ export function useContractRead<
     abi,
     address,
     args,
-    cacheTime,
     chainId: chainId_,
-    enabled: enabled_ = true,
     functionName,
-    isDataEqual,
+    overrides,
+    select,
     onError,
     onSettled,
-    onSuccess,
-    overrides,
-    scopeKey,
-    select,
-    keepPreviousData,
-    refetchIntervalInBackground,
-    initialDataUpdatedAt,
-    refetchInterval,
-    initialData,
-    staleTime,
-    structuralSharing = (oldData, newData) =>
-      deepEqual(oldData, newData) ? oldData : (replaceEqualDeep(oldData, newData) as any),
-    suspense,
+    structuralSharing = _structuralSharing,
+    ...options
   }: UseContractReadConfig<TAbi, TFunctionName, TSelectData> = {} as any,
 ) {
   const chainId = useChainId({ chainId: chainId_ })
-  //   const { data: blockNumber } = useBlockNumber({
-  //     chainId,
-  //     enabled: watch || cacheOnBlock,
-  //     scopeKey: watch || cacheOnBlock ? undefined : 'idle',
-  //     watch,
-  //   })
 
   const queryKey_ = useMemo(
-    () =>
-      queryKey({
-        address,
-        args,
-        // blockNumber: cacheOnBlock ? blockNumber : undefined,
-        chainId,
-        functionName,
-        overrides,
-        scopeKey,
-      } as Omit<ReadContractConfig, 'abi'>),
-    [address, args, chainId, functionName, overrides, scopeKey],
+    () => queryKey({ address, args, chainId, functionName, overrides } as QueryKeyArgs),
+    [address, args, chainId, functionName, overrides],
   )
 
-  const enabled = useMemo(() => {
-    let enabled = Boolean(enabled_ && abi && address && functionName)
-    // if (cacheOnBlock) enabled = Boolean(enabled && blockNumber)
-    return enabled
-  }, [abi, address, enabled_, functionName])
-
-  //   useInvalidateOnBlock({
-  //     chainId,
-  //     enabled: Boolean(enabled && watch && !cacheOnBlock),
-  //     queryKey: queryKey_,
-  //   })
-
   return useQuery(queryKey_, queryFn({ abi }), {
-    cacheTime,
-    enabled,
-    isDataEqual,
-    select(data) {
-      const result = abi && functionName ? parseContractResult({ abi, data, functionName }) : data
-      return select ? select(result) : result
-    },
-    initialData,
-    initialDataUpdatedAt,
-    refetchInterval,
-    refetchIntervalInBackground,
-    staleTime,
-    structuralSharing,
-    keepPreviousData,
-    suspense,
-    onError,
+    enabled: Boolean(abi && address && functionName),
     onSettled,
-    onSuccess,
+    onError,
+    structuralSharing,
+    ...options,
+    select(data) {
+      const result = parseContractResult({ abi: abi!, data, functionName: functionName! })
+      return (select ? select(result) : result) as TSelectData
+    },
   })
 }
