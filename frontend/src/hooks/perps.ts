@@ -110,7 +110,7 @@ export const useRouteMarket = () => {
 
   const { data: market } = useMarkets({
     select: useCallback(
-      (markets: MarketSummaries) => markets.find((m) => m.asset === asset),
+      (markets: MarketSummaries & { price: FixedNumber }) => markets.find((m) => m.asset === asset),
       [asset],
     ),
   })

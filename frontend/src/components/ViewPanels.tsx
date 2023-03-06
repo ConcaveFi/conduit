@@ -48,8 +48,8 @@ const Tabs = () => {
           <Tab key={tab} className="outline-none">
             {({ selected }) => (
               <span
-                className={`btn h-full  px-4 py-[9px] outline-none ring-0
-                ${selected ? 'bg-ocean-600 text-ocean-300' : 'btn-underline.secondary'} `}
+                className={`btn h-full  px-6 py-[9px] outline-none ring-0
+                ${selected ? 'bg-ocean-400 text-ocean-200' : 'btn-underline.secondary'} `}
               >
                 {t(tab)}
               </span>

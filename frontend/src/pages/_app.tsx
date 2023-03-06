@@ -8,7 +8,7 @@ export default function App({ Component, pageProps }: any) {
   return (
     <AppProviders>
       <Metadata />
-      <div className="bg-main-bg flex h-screen overflow-y-auto overflow-x-hidden">
+      <div className="bg-ocean-900 flex h-screen overflow-y-auto overflow-x-hidden">
         <Component {...pageProps} />
       </div>
     </AppProviders>
