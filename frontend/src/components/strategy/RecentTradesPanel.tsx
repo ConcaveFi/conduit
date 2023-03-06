@@ -13,11 +13,10 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
           </TableRow>
         </thead>
         <tbody>
-          {new Array(7).fill(0).map((_) => {
+          {new Array(7).fill(0).map((_, i) => {
             const rand = Math.random()
-
             return (
-              <tr className="odd:bg-ocean-900  odd:bg-opacity-40">
+              <tr key={i} className="odd:bg-ocean-900  odd:bg-opacity-40">
                 <td className={cx(rand > 0.5 ? 'text-positive' : 'text-negative')}> 0.914</td>
                 <td className="text-ocean-200 py-[6px]"> $1,644.56</td>
                 <td className="text-ocean-200">30s ago</td>
