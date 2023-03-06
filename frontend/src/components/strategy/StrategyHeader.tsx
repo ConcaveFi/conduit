@@ -23,11 +23,11 @@ export function StrategyHeader() {
 
   return (
     <div className="flex gap-3">
-      <div className="centered bg-ocean-700 flex w-[380px] rounded-2xl">
+      <div className="centered bg-ocean-700 flex w-[13%] rounded-2xl">
         <MarketList />
       </div>
-      <div className="bg-ocean-700 flex min-h-[80px] w-full justify-end rounded-2xl px-6 ">
-        <div className="flex gap-20">
+      <div className="bg-ocean-700 flex min-h-[80px] w-[63%] justify-end rounded-2xl px-6 ">
+        <div className="flex sm:gap-2 md:gap-5 lg:gap-10 xl:gap-20 ">
           <ItemInfo info={'Price index'} value="$ 370.00" />
           <ItemInfo info={t('24h_volume')} value="$ 370,526,580" Icon={<BalanceIcon />} />
           <ItemInfo info={t('24h_change')} value="-1.33%" modifier="negative" />
@@ -36,7 +36,7 @@ export function StrategyHeader() {
           <ItemInfo info={'Open interest (S)'} value="$ 4.3M / $ 2.3M" />
         </div>
       </div>
-      <div className="bg-light-100 ocean:bg-ocean-700 flex min-h-[80px] w-[44%] justify-around rounded-2xl ">
+      <div className="bg-light-100 ocean:bg-ocean-700 flex min-h-[80px] w-[24%] justify-around rounded-2xl ">
         <ItemInfo
           info={'sUSD'}
           value={`$ ${format(FixedNumber.from(sUSD_Balance?.formatted || '0'))}`}
