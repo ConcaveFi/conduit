@@ -1,8 +1,9 @@
+import { useCallback, useState } from 'react'
 import ReactGridLayout from 'react-grid-layout'
 import { useGridLayout } from 'src/hooks/useGridLayout'
 import { useResizeObserver } from 'src/hooks/useResizeObserver'
 import { useWidgets } from 'src/providers/WidgetsProvider'
-import { DEFAULT_LAYOUT, WIDGET_PRESETS } from 'src/utils/gridLayout'
+import { WIDGET_PRESETS } from 'src/utils/gridLayout'
 import { GRID_WIDGETS } from 'src/utils/gridWidgets'
 
 const DEFAULT_COLS = 12
@@ -18,13 +19,15 @@ export function GridLayout() {
     minimize,
     removeGridWidget,
   } = useGridLayout()
-  const { ref, width, height } = useResizeObserver<HTMLDivElement>()
+  const [width, setWidth] = useState(0)
+  const onResize = useCallback((e) => setWidth(e[0].target.clientWidth), [])
+  const { ref, height } = useResizeObserver<HTMLDivElement>(onResize)
   const { widgets, removeWidget } = useWidgets()
 
   return (
     <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full">
       <ReactGridLayout
-        style={{ height: isMaximized ? '100%' : 'fit-content' }}
+        style={{ height: '100%' }}
         rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
         draggableHandle="[data-draggable='true']"
         cols={isMaximized ? 1 : DEFAULT_COLS}
@@ -32,7 +35,7 @@ export function GridLayout() {
         onLayoutChange={handleChange}
         containerPadding={[0, 0]}
         useCSSTransforms
-        layout={DEFAULT_LAYOUT}
+        layout={layout}
         width={width}
       >
         {widgets.map((key) => {

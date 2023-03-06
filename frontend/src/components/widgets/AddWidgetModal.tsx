@@ -19,22 +19,30 @@ export function AddWidgetModal(props: ModalProps) {
     props.onClose()
   }
 
+  const notAdded = Object.keys(GRID_WIDGETS).filter(
+    (widget) => !widgets.includes(widget as GridWidgetKeys),
+  )
+  const hasWidgetsToAdd = notAdded.length > 0
   return (
-    <Modal {...props} overlay className="card card-primary h-[300px] w-[400px] gap-4 p-5 ">
+    <Modal
+      {...props}
+      overlay
+      className="card card-primary h-fit min-h-[300px] w-[400px] gap-4 p-5 "
+    >
       <span className="text-light-400 ocean:text-ocean-200 mx-auto text-2xl font-medium">
         {t('add widget')}
       </span>
 
-      <div className="bg-light-300 centered ocean:bg-ocean-900 flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
-        {Object.keys(GRID_WIDGETS)
-          .filter((widget) => !widgets.includes(widget as GridWidgetKeys))
-          .map((key) => (
+      <div className="centered flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
+        {!hasWidgetsToAdd && <span className="text-ocean-200">No more widgets to add.</span>}
+        {hasWidgetsToAdd &&
+          notAdded.map((key) => (
             <button
               key={key}
               onClick={() => dispatch(key)}
               className={cx(
                 'btn w-fit py-2 px-5',
-                selecteds.includes(key) ? 'btn-primary' : 'btn-underline.secondary',
+                selecteds.includes(key) ? 'btn-secondary' : 'btn-underline.secondary',
               )}
             >
               {key.replace('-', ' ')}
@@ -43,7 +51,9 @@ export function AddWidgetModal(props: ModalProps) {
       </div>
       <div className="flex justify-end gap-3">
         <button className="btn btn-secondary centered h-9 w-[80px] rounded-lg ">
-          <span className="text-heading">Cancel</span>
+          <span className="text-heading" onClick={props.onClose}>
+            Cancel
+          </span>
         </button>
         <button onClick={handleApply} className="bg-green-gradient h-9 w-[80px] rounded-lg">
           Apply
