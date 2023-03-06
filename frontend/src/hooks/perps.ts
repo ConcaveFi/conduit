@@ -18,8 +18,6 @@ import { SupportedChainId } from 'src/providers/WagmiProvider'
 import { useNetwork, useProvider } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 
-type MarketSettings = {}
-
 export function useMarketSettings({
   marketKey,
   ...config
@@ -59,7 +57,7 @@ export function useMarketSettings({
 }
 
 type MarketSummariesResult = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
-const parseMarketSummaries = (summaries: MarketSummariesResult, settings?: MarketSettings) =>
+const parseMarketSummaries = (summaries: MarketSummariesResult) =>
   summaries.map(({ market, key, asset, feeRates, currentFundingRate, marketSkew, ...summary }) => ({
     market,
     address: market,
