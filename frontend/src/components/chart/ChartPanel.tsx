@@ -1,6 +1,6 @@
 import { DivProps, Panel } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
 import { useRouterEvents } from 'src/hooks/useRouterEvents'
 import { useScriptLoader } from 'src/hooks/useScriptLoader'
 import { createTVwidget } from 'src/utils/createTVwidget'
@@ -17,7 +17,19 @@ export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
   const [asset, setAsset] = useState('')
   const { t } = useTranslation()
 
-  const loadChart = () => setWidget(createTVwidget({ container_id, symbol: asset + SECOND_SYMBOL }))
+  const loadChart = useCallback(
+    function handleWidget() {
+      if (!asset) return
+      const symbol = widget?.options?.symbol?.replace('USD', '')
+      const diffAsset = symbol !== handleSynth(asset)
+      if (!widget || diffAsset) {
+        setWidget(createTVwidget({ container_id, symbol: asset + SECOND_SYMBOL }))
+      }
+      return () => widget?.iframe.remove()
+    },
+    [asset, widget],
+  )
+
   const onRouteChange = (e: string) => setAsset(handleSynth(findValueOnUrl(e, 'asset')))
   const onIsReady = ({ query }) => setAsset(handleSynth(query.asset as string) || DEFAULT_MARKET)
 
@@ -26,10 +38,8 @@ export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
 
   useEffect(() => {
     if (!asset || !loaded) return
-    if (widget) widget.iframe.remove()
-    loadChart()
-    return () => widget?.iframe.remove()
-  }, [asset, loaded])
+    return loadChart()
+  }, [asset, loaded, loadChart])
 
   return (
     <Panel

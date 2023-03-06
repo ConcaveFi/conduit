@@ -17,17 +17,18 @@ type PythId = (typeof Markets)[MarketKey]['pythIds'][PythNetwork]
 const parsePriceFeed = (feed: PriceFeed) => {
   const { price, expo } = feed.getPriceUnchecked()
   return {
-    id: feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`,
+    id: (feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`) as PythId,
     price: FixedNumber.fromValue(BigNumber.from(price), Math.abs(expo)),
   }
 }
 type ParsedPriceFeed = ReturnType<typeof parsePriceFeed>
 
-const createPriceQuery = (ids: PythId[], network: PythNetwork) => ({
+const createPriceQuery = (ids?: PythId[], network: PythNetwork = 'mainnet') => ({
   queryKey: ['pyth', { ids }],
+  enabled: !!ids,
   queryFn: async () => {
-    const feeds = await pyth[network].getLatestPriceFeeds(ids)
-    if (!feeds) return ids.map((id) => ({ id, price: FixedNumber.from(0) }))
+    const feeds = await pyth[network].getLatestPriceFeeds(ids!)
+    if (!feeds) return ids!.map((id) => ({ id, price: FixedNumber.from(0) }))
     return feeds.map(parsePriceFeed)
   },
 })
@@ -41,24 +42,32 @@ const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainn
 
 // export const prefetchPrices = () => global_queryClient.prefetchQuery(allMarketsPricesQuery)
 
-export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: boolean }) => {
+export function useOffchainPrice<TSelect = ParsedPriceFeed>({
+  marketKey,
+  watch,
+  select,
+}: {
+  marketKey?: MarketKey
+  watch?: boolean
+  select?: (priceFeed: ParsedPriceFeed) => TSelect
+}) {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
-  const marketPythId = Markets[marketKey].pythIds[pythNetwork]
+  const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
 
   const marketPriceQuery = useMemo(
-    () => createPriceQuery([marketPythId], pythNetwork),
+    () => createPriceQuery(marketPythId && [marketPythId], pythNetwork),
     [marketPythId, pythNetwork],
   )
 
   const queryClient = useQueryClient()
 
-  useWatchPrice({
+  useWatchOffchainPrice({
     pythId: marketPythId,
     network: pythNetwork,
     enabled: !!watch,
     onPriceChange: (priceFeed) => {
-      queryClient.setQueryData(marketPriceQuery.queryKey, [parsePriceFeed(priceFeed)])
+      queryClient.setQueryData(marketPriceQuery.queryKey, [priceFeed])
     },
   })
 
@@ -71,30 +80,34 @@ export const usePrice = ({ marketKey, watch }: { marketKey: MarketKey; watch?: b
     },
     select: (priceFeeds) => {
       const feed = priceFeeds?.find((f) => f.id === marketPythId)
-      if (!feed) return { id: marketPythId, price: FixedNumber.from(0) }
-      return { id: feed.id, price: FixedNumber.from(feed.price._value) }
+      const result = !!feed
+        ? { id: feed.id, price: FixedNumber.from(feed.price._value) }
+        : { id: marketPythId as PythId, price: FixedNumber.from(0) }
+      return (select ? select(result) : result) as TSelect
     },
   })
 }
 
-const useWatchPrice = ({
+export const useWatchOffchainPrice = ({
   pythId,
-  network,
+  network = 'mainnet',
   enabled = true,
   onPriceChange,
 }: {
-  pythId: PythId
-  network: PythNetwork
+  pythId?: PythId
+  network?: PythNetwork
   enabled?: boolean
-  onPriceChange: (priceFeed: PriceFeed) => void
+  onPriceChange: (priceFeed: ParsedPriceFeed) => void
 }) => {
   const _onPriceChange = useRef(onPriceChange)
   _onPriceChange.current = onPriceChange
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled || !pythId || !_onPriceChange.current) return
 
-    pyth[network].subscribePriceFeedUpdates([pythId], _onPriceChange.current)
+    pyth[network].subscribePriceFeedUpdates([pythId], (priceFeed) => {
+      _onPriceChange.current(parsePriceFeed(priceFeed))
+    })
     // pyth.onWsError() TODO: handle this somehow
 
     return () => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 export function useResizeObserver<T extends HTMLElement | null>(
-  callback = (e: ResizeObserverEntry[]) => {},
+  callback?: (e: ResizeObserverEntry[]) => void,
 ) {
   const [element, setElement] = useState<T>()
   const [observer, setObserver] = useState<ResizeObserver>()
@@ -9,10 +9,10 @@ export function useResizeObserver<T extends HTMLElement | null>(
 
   useEffect(() => {
     if (!ref.current) return
-    const obs = new ResizeObserver((e) => (callback(e), setElement(e[0].target as T)))
+    const obs = new ResizeObserver((e) => (callback?.(e), setElement(e[0].target as T)))
     obs.observe(ref.current)
     setObserver(obs)
-  }, [])
+  }, [callback])
 
   return {
     width: element?.clientWidth || 0,

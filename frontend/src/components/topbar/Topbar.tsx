@@ -2,6 +2,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, NotificationIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
+import Image from 'next/image'
 import { format } from 'src/utils/format'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
@@ -14,9 +15,9 @@ export function Topbar() {
   const { address } = useAccount()
   const { data } = useBalance({ address })
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between px-4">
       <div className="flex items-center gap-2">
-        <img src={'/assets/conduit.svg'} alt="logo" width={300} height={250} />
+        <Image src={'/assets/conduit.svg'} alt="logo" width={300} height={250} />
 
         <button className="btn btn-underline centered ml-6 w-[120px] rounded-none">
           {t('dashboard')}
@@ -47,7 +48,7 @@ export function Topbar() {
             return (
               <div className="flex gap-4">
                 <button onClick={openChainModal} className="btn btn-primary centered gap-2 px-4">
-                  <img src={chain?.iconUrl} className="w-6" alt="" />
+                  <Image width={30} height={30} src={chain?.iconUrl || ''} className="w-6" alt="" />
                   {chain?.name}
                   <ChevronIcon className="fill-ocean-200 h-3 w-3" />
                 </button>

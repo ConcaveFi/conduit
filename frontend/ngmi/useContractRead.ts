@@ -114,9 +114,10 @@ export function useContractRead<
     [address, args, chainId, functionName, overrides],
   )
 
-  return useQuery(queryKey_, queryFn({ abi }), {
+  return useQuery({
+    queryKey: queryKey_,
+    queryFn: queryFn({ abi }),
     enabled: Boolean(abi && address && functionName),
-    onSettled,
     onError,
     structuralSharing,
     ...options,

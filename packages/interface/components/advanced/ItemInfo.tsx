@@ -31,8 +31,18 @@ export function ItemInfo({ Icon, info, value, align = 'start', modifier }: ItemI
     <div className="flex items-center gap-4 ">
       {Icon}
       <div className={`flex flex-col ${styles({ align })}`}>
-        <span className="text-light-500 ocean:text-ocean-200 text-sm font-medium">{info}</span>
-        <span className={`-mt-1 text-[16px] font-semibold ${styles({ modifier })}`}>{value}</span>
+        <span className="text-light-500 ocean:text-ocean-200 whitespace-nowrap text-sm font-medium">
+          {info}
+        </span>
+        <span
+          className={`-mt-1 whitespace-nowrap font-semibold sm:text-xs md:text-sm xl:text-[16px] ${styles(
+            {
+              modifier,
+            },
+          )}`}
+        >
+          {value}
+        </span>
       </div>
     </div>
   )

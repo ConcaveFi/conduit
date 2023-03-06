@@ -75,7 +75,7 @@ export const OrderSizeInput = ({
         type: 'usd',
       })
     },
-    [max],
+    [max, onChange],
   )
 
   const sliderValue = max ? (+inputs.usd >= +max ? 1 : +inputs.usd / +max) : 0

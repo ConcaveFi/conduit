@@ -3,26 +3,13 @@ import { BigNumber, FixedNumber } from 'ethers'
 import { parseBytes32String } from 'ethers/lib/utils.js'
 import { marketABI, marketDataABI } from 'perps-hooks'
 
-const valuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
+export const valuesToFixedNumber = <T extends Record<string, BigNumber>>(obj: T) =>
   Object.entries(obj).reduce(
     (acc, [key, value]) =>
       // ethers contract result is an arraylike obj, so to filter out the array part we ignore number keys
       isNaN(+key) ? { ...acc, [key]: FixedNumber.fromValue(value, 18) } : acc,
     {} as Record<keyof T, FixedNumber>,
   )
-
-type MarketSummariesResult = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
-
-export const parseMarketSummaries = (summaries: MarketSummariesResult) =>
-  summaries.map(({ market, key, asset, feeRates, ...summary }) => ({
-    market,
-    address: market,
-    key,
-    asset: parseBytes32String(asset),
-    feeRates: valuesToFixedNumber(feeRates),
-    ...valuesToFixedNumber(summary),
-  }))
-export type MarketSummaries = ReturnType<typeof parseMarketSummaries>
 
 type OrderResult = ReadContractResult<typeof marketABI, 'delayedOrders'>
 
