@@ -7,8 +7,8 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { parsePositionDetails } from 'perps-hooks/parsers'
+import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/hooks/perps'
-import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode } from 'src/pages/perps'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
 import { format, formatUsd } from 'src/utils/format'
 import { useAccount } from 'wagmi'
