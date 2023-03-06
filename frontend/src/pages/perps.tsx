@@ -32,7 +32,7 @@ import {
 import { useCallback, useMemo, useReducer, useState } from 'react'
 import { useRouteMarket } from 'src/hooks/perps'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
-import { provider } from 'src/providers/wagmi-config'
+import { provider } from 'src/providers/WagmiProvider'
 import SuperJSON from 'superjson'
 
 import { useDebounce } from 'usehooks-ts'
