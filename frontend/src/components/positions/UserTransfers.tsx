@@ -6,7 +6,9 @@ export function UserTransfers() {
     <Table className="w-full">
       <thead>
         <TableRow rows={HEADERS}>
-          {(title) => <span className="text-ocean-200">{title}</span>}
+          {(title, index) => (
+            <span className={cx('text-ocean-200', index === 0 ? 'pl-4' : '')}>{title}</span>
+          )}
         </TableRow>
       </thead>
       <tbody>
@@ -27,8 +29,8 @@ interface TransferRowProps {
 
 function TransferRow(props: TransferRowProps) {
   return (
-    <tr>
-      <td className=" text-ocean-300 capitalize">{props.action}</td>
+    <tr className="odd:bg-ocean-900 odd:bg-opacity-50">
+      <td className="text-ocean-300 py-1 pl-4 capitalize">{props.action}</td>
       <td className={cx(props.action === 'withdraw' ? 'text-negative' : 'text-positive')}>
         ${props.amount}
       </td>

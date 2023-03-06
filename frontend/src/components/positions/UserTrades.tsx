@@ -1,4 +1,4 @@
-import { Table, TableRow } from '@tradex/interface'
+import { cx, Table, TableRow } from '@tradex/interface'
 
 const HEADERS = ['Date', 'Side', 'Price', 'Trade Size', 'Fees', 'Order Type'] as const
 export function UserTrades() {
@@ -6,7 +6,9 @@ export function UserTrades() {
     <Table className="w-full">
       <thead>
         <TableRow rows={HEADERS}>
-          {(title) => <span className="text-ocean-200">{title}</span>}
+          {(title, i) => (
+            <span className={cx('text-ocean-200', i === 0 ? 'pl-4' : '')}>{title}</span>
+          )}
         </TableRow>
       </thead>
       <tbody className="">
@@ -25,8 +27,8 @@ interface TradesProps {
 
 function Trades(props: TradesProps) {
   return (
-    <tr className="">
-      <td className="text-ocean-300">2d ago</td>
+    <tr className="odd:bg-ocean-900 px-2 odd:bg-opacity-50">
+      <td className="text-ocean-300 py-1 pl-4">2d ago</td>
       <td className="text-negative">SHORT</td>
       <td className="text-ocean-300">$71,043.90</td>
       <td className="text-ocean-300">3.45</td>
