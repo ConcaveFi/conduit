@@ -61,15 +61,15 @@ export function useMarketSettings({
 
 type MarketSummariesResult = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
 const parseMarketSummaries = (summaries: MarketSummariesResult, settings?: MarketSettings) =>
-  summaries.map(({ market, key, asset, feeRates, currentFundingRate, ...summary }) => ({
+  summaries.map(({ market, key, asset, feeRates, currentFundingRate, marketSkew, ...summary }) => ({
     market,
     address: market,
     key: parseBytes32String(key) as MarketKey,
     asset: parseBytes32String(asset) as MarketAsset,
     feeRates: valuesToFixedNumber(feeRates),
     currentFundingRate: FixedNumber.from(currentFundingRate.div(24), 6), // 1hr Funding Rate
-    marketSkew: summary.marketSkew,
-    // ...valuesToFixedNumber(summary),
+    marketSkew,
+    ...valuesToFixedNumber(summary),
   }))
 export type MarketSummaries = ReturnType<typeof parseMarketSummaries>
 
