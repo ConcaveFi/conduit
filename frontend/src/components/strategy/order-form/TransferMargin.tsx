@@ -119,7 +119,7 @@ export function TransferMarginButton() {
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
 
-  const isOpen = query && query?.get('modal') === TRANSFER_MODAL_QITEM
+  const isOpen = query ? query?.get('modal') === TRANSFER_MODAL_QITEM : false
   const href = `?modal=${TRANSFER_MODAL_QITEM}`
   return (
     <>
