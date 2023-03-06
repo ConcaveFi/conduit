@@ -2,7 +2,7 @@ import ReactGridLayout from 'react-grid-layout'
 import { useGridLayout } from 'src/hooks/useGridLayout'
 import { useResizeObserver } from 'src/hooks/useResizeObserver'
 import { useWidgets } from 'src/providers/WidgetsProvider'
-import { WIDGET_PRESETS } from 'src/utils/gridLayout'
+import { DEFAULT_LAYOUT, WIDGET_PRESETS } from 'src/utils/gridLayout'
 import { GRID_WIDGETS } from 'src/utils/gridWidgets'
 
 const DEFAULT_COLS = 12
@@ -32,7 +32,7 @@ export function GridLayout() {
         onLayoutChange={handleChange}
         containerPadding={[0, 0]}
         useCSSTransforms
-        layout={layout}
+        layout={DEFAULT_LAYOUT}
         width={width}
       >
         {widgets.map((key) => {
