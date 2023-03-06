@@ -1,14 +1,77 @@
-import { UseQueryOptions } from '@tanstack/react-query'
-import { ReadContractResult } from '@wagmi/core'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { getContract, ReadContractResult } from '@wagmi/core'
+import { FixedNumber } from 'ethers'
+import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils'
 import { useSearchParams } from 'next/navigation'
 import { useContractRead, UseContractReadConfig } from 'ngmi/useContractRead'
-import { marketDataABI, marketDataAddress } from 'perps-hooks'
-import { MarketSummaries, parseMarketSummaries } from 'perps-hooks/parsers'
+import {
+  marketDataABI,
+  marketDataAddress,
+  marketSettingsABI,
+  marketSettingsAddress,
+} from 'perps-hooks'
+import { MarketAsset, MarketKey } from 'perps-hooks/markets'
+import { valuesToFixedNumber } from 'perps-hooks/parsers'
 import { useCallback } from 'react'
-import { SupportedChainId } from 'src/providers/wagmi-config'
+import { SupportedChainId } from 'src/providers/WagmiProvider'
 
-import { useNetwork } from 'wagmi'
+import { useNetwork, useProvider } from 'wagmi'
 import { optimism } from 'wagmi/chains'
+
+type MarketSettings = {}
+
+export function useMarketSettings({
+  marketKey,
+  ...config
+}: {
+  marketKey: MarketKey | undefined
+  chainId?: SupportedChainId
+}) {
+  const { chain } = useNetwork()
+  const chainId =
+    config.chainId || (!chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId))
+
+  const provider = useProvider({ chainId })
+
+  return useQuery({
+    queryKey: ['marketSettings', marketKey],
+    queryFn: async () => {
+      const marketSettings = getContract({
+        address: marketSettingsAddress[chainId],
+        abi: marketSettingsABI,
+        signerOrProvider: provider,
+      })
+      const [skewScale] = await Promise.all([
+        marketSettings.skewScale(formatBytes32String(marketKey!)),
+      ])
+      return {
+        skewScale,
+      }
+    },
+    enabled: !!marketKey,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    refetchOnmount: false,
+    retry: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+  })
+}
+
+type MarketSummariesResult = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
+const parseMarketSummaries = (summaries: MarketSummariesResult, settings?: MarketSettings) =>
+  summaries.map(({ market, key, asset, feeRates, currentFundingRate, ...summary }) => ({
+    market,
+    address: market,
+    key: parseBytes32String(key) as MarketKey,
+    asset: parseBytes32String(asset) as MarketAsset,
+    feeRates: valuesToFixedNumber(feeRates),
+    currentFundingRate: FixedNumber.from(currentFundingRate.div(24), 6), // 1hr Funding Rate
+    marketSkew: summary.marketSkew,
+    // ...valuesToFixedNumber(summary),
+  }))
+export type MarketSummaries = ReturnType<typeof parseMarketSummaries>
 
 export function useMarkets<TSelectData = MarketSummaries>(
   config: Omit<
@@ -20,10 +83,13 @@ export function useMarkets<TSelectData = MarketSummaries>(
   } = {},
 ) {
   const { chain } = useNetwork()
-  const chainId = chain?.unsupported ? optimism.id : (chain?.id as SupportedChainId) || optimism.id
+  const chainId =
+    config.chainId || (!chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId))
+
   return useContractRead({
     abi: marketDataABI,
-    address: marketDataAddress[config.chainId || chainId],
+    address: marketDataAddress[chainId],
+    chainId,
     functionName: 'allProxiedMarketSummaries',
     refetchInterval: 2000,
     refetchIntervalInBackground: true,

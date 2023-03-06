@@ -17,7 +17,7 @@ type PythId = (typeof Markets)[MarketKey]['pythIds'][PythNetwork]
 const parsePriceFeed = (feed: PriceFeed) => {
   const { price, expo } = feed.getPriceUnchecked()
   return {
-    id: feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`,
+    id: (feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`) as PythId,
     price: FixedNumber.fromValue(BigNumber.from(price), Math.abs(expo)),
   }
 }
@@ -42,7 +42,15 @@ const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainn
 
 // export const prefetchPrices = () => global_queryClient.prefetchQuery(allMarketsPricesQuery)
 
-export const usePrice = ({ marketKey, watch }: { marketKey?: MarketKey; watch?: boolean }) => {
+export function useOffchainPrice<TSelect = ParsedPriceFeed>({
+  marketKey,
+  watch,
+  select,
+}: {
+  marketKey?: MarketKey
+  watch?: boolean
+  select?: (priceFeed: ParsedPriceFeed) => TSelect
+}) {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
   const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
@@ -54,7 +62,7 @@ export const usePrice = ({ marketKey, watch }: { marketKey?: MarketKey; watch?: 
 
   const queryClient = useQueryClient()
 
-  useWatchPrice({
+  useWatchOffchainPrice({
     pythId: marketPythId,
     network: pythNetwork,
     enabled: !!watch,
@@ -72,13 +80,15 @@ export const usePrice = ({ marketKey, watch }: { marketKey?: MarketKey; watch?: 
     },
     select: (priceFeeds) => {
       const feed = priceFeeds?.find((f) => f.id === marketPythId)
-      if (!feed) return { id: marketPythId, price: FixedNumber.from(0) }
-      return { id: feed.id, price: FixedNumber.from(feed.price._value) }
+      const result = !!feed
+        ? { id: feed.id, price: FixedNumber.from(feed.price._value) }
+        : { id: marketPythId as PythId, price: FixedNumber.from(0) }
+      return (select ? select(result) : result) as TSelect
     },
   })
 }
 
-export const useWatchPrice = ({
+export const useWatchOffchainPrice = ({
   pythId,
   network = 'mainnet',
   enabled = true,
