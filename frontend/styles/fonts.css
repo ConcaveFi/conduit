@@ -16,3 +16,7 @@
   background: #3e5389;
   border-radius: 20px;
 }
+
+#chart-container > div {
+  filter: contrast(110%) saturate(250%) brightness(120%);
+}
