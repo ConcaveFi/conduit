@@ -1,5 +1,5 @@
 import { OP_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
-import { BalanceIcon, CoinIcon, FundingIcon, GasIcon, PercentIcon } from '@tradex/icons'
+import { BalanceIcon, CoinIcon, GasIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { FixedNumber } from 'ethers'
@@ -22,24 +22,17 @@ export function StrategyHeader() {
   const { data: GasPrice } = useFeeData()
 
   return (
-    <div className="my-8 flex gap-3">
-      <div className="bg-ocean-700 flex min-h-[80px] w-full justify-between rounded-2xl px-6 ">
+    <div className="flex gap-3">
+      <div className="centered bg-ocean-700 flex w-[380px] rounded-2xl">
         <MarketList />
+      </div>
+      <div className="bg-ocean-700 flex min-h-[80px] w-full justify-end rounded-2xl px-6 ">
         <div className="flex gap-20">
           <ItemInfo info={t('24h_volume')} value="$ 370,526,580" Icon={<BalanceIcon />} />
-          <ItemInfo
-            info={t('24h_change')}
-            value="-1.33%"
-            modifier="negative"
-            Icon={<PercentIcon />}
-          />
-          <ItemInfo info={t('open')} value="$ 370,526,580" Icon={<CoinIcon />} />
-          <ItemInfo
-            modifier="positive"
-            info={t('funding_8h')}
-            value="+ 0.245%"
-            Icon={<FundingIcon />}
-          />
+          <ItemInfo info={t('24h_change')} value="-1.33%" modifier="negative" />
+          <ItemInfo info={'1H Funding Rate'} value="0.03%" modifier="positive" />
+          <ItemInfo info={'Open interest (L)'} value="$ 4.3M / $ 2.3M" />
+          <ItemInfo info={'Open interest (L)'} value="$ 4.3M / $ 2.3M" />
         </div>
       </div>
       <div className="bg-light-100 ocean:bg-ocean-700 flex min-h-[80px] w-[44%] justify-around rounded-2xl ">

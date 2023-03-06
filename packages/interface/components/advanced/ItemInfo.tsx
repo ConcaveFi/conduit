@@ -9,8 +9,8 @@ const styles = cva(cva('')(), {
       start: 'items-start',
     },
     modifier: {
-      positive: 'text-green-500',
-      negative: 'text-red-500',
+      positive: 'text-positive',
+      negative: 'text-negative',
       none: 'text-light-600 ocean:text-white ',
     },
   },

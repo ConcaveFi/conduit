@@ -1,10 +1,10 @@
 import { GridWidgetKeys } from './gridWidgets'
 
 export const WIDGET_PRESETS: { [key in GridWidgetKeys]: {} } = {
-  'chart-panel': { x: 3, y: 0, w: 6, h: 4 },
+  'chart-panel': { x: 0, y: 0, w: 9, h: 4 },
   'news-panel': { x: 9, y: 0, w: 3, h: 2.4 },
-  'order-panel': { x: 0, y: 0, w: 3, h: 3.6 },
-  'trades-panel': { x: 9, y: 9, w: 3, h: 2.4 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 4 },
+  'trades-panel': { x: 0, y: 9, w: 3, h: 2.4 },
   'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
 }
 export const DEFAULT_LAYOUT = [
