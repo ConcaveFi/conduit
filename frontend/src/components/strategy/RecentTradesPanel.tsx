@@ -10,11 +10,11 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
       ref={ref}
       name={t('recent_trades')}
       variant="secondary"
-      bodyProps={{ className: 'p-0 overflow-hidden max-h-[100%]' }}
+      bodyProps={{ className: '!p-0 overflow-hidden max-h-[100%]' }}
     >
       <div className="flex max-h-full flex-1 flex-col">
         {/* Skew */}
-        <div className="bg-ocean-500 centered flex min-h-[70px] w-full flex-col gap-1 rounded-b-xl px-4 ">
+        <div className="bg-ocean-500  centered flex min-h-[70px] w-full flex-col gap-1 rounded-b-xl px-4 ">
           <div className="flex w-full justify-between text-sm">
             <span className="text-positive">53%</span>
             <span className="text-white">Skew</span>
@@ -49,7 +49,6 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
           </Table>
         </div>
       </div>
-
     </Panel>
   )
 })
