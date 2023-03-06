@@ -2,10 +2,8 @@ import { ChevronIcon } from '@tradex/icons'
 import { ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useMarketDataAllProxiedMarketSummaries } from 'perps-hooks'
-import { parseMarketSummaries } from 'perps-hooks/parsers'
 import { forwardRef, useMemo } from 'react'
-import { useRouteMarket } from 'src/hooks/perps'
+import { useMarkets, useRouteMarket } from 'src/hooks/perps'
 
 import { format } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
@@ -14,7 +12,7 @@ export function MarketList() {
   const router = useRouter()
 
   const market = useRouteMarket()
-  const { data: markets } = useMarketDataAllProxiedMarketSummaries({ select: parseMarketSummaries })
+  const { data: markets } = useMarkets()
   const normalized_asset = useMemo(() => handleSynth(market?.asset), [market?.asset])
 
   if (!market || !markets) return null

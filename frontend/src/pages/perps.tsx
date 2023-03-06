@@ -1,16 +1,11 @@
 import * as Slider from '@radix-ui/react-slider'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { dehydrate, QueryClient } from '@tanstack/react-query'
 import { cx, NumericInput } from '@tradex/interface'
-import { getContract } from '@wagmi/core'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils.js'
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
-  marketDataABI,
-  marketDataAddress,
   useChainLinkLatestRoundData,
   useMarketDataPositionDetails,
   useMarketDelayedOrders,
@@ -22,22 +17,16 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketTransferMargin,
 } from 'perps-hooks'
-import {
-  MarketSummaries,
-  parseMarketSummaries,
-  parseOrder,
-  parsePositionDetails,
-  PositionDetails,
-} from 'perps-hooks/parsers'
-import { useCallback, useMemo, useReducer, useState } from 'react'
+import { parseOrder, parsePositionDetails, PositionDetails } from 'perps-hooks/parsers'
+import { useCallback, useMemo, useReducer, useRef, useState } from 'react'
 import { useRouteMarket } from 'src/hooks/perps'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
-import { provider } from 'src/providers/WagmiProvider'
-import SuperJSON from 'superjson'
 
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
 import { format, formatPercent, formatUsd, safeFixedNumber } from '../utils/format'
+
+import { MarketSummaries } from 'src/hooks/perps'
 
 const Markets = ({ markets }: { markets: MarketSummaries }) => {
   const searchParams = useSearchParams()
@@ -263,13 +252,16 @@ export const OrderSizeInput = ({
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
   const symbols = { usd: 'sUSD', asset: assetSymbol }
 
+  const _onChange = useRef(onChange)
+  _onChange.current = onChange
+
   const handleSizeSlider = useCallback(
     (v: number) => {
       if (!max) return
-      if (v === 0) return onChange({ value: '', type: amountDenominator })
+      if (v === 0) return _onChange.current({ value: '', type: amountDenominator })
       const sliderValue = safeFixedNumber(v.toString())
       const maxValue = safeFixedNumber(max)
-      onChange({
+      _onChange.current({
         value: sliderValue.mulUnsafe(maxValue).toString(),
         type: 'usd',
       })
@@ -287,7 +279,7 @@ export const OrderSizeInput = ({
             placeholder="0.00"
             value={inputs[amountDenominator].toString()}
             onValueChange={({ value }, { source }) => {
-              if (source === 'event') onChange({ value, type: amountDenominator })
+              if (source === 'event') _onChange.current({ value, type: amountDenominator })
             }}
           />
           <div className="h-4">
@@ -295,7 +287,7 @@ export const OrderSizeInput = ({
               className="w-min min-w-0 text-ellipsis bg-transparent text-sm font-medium text-neutral-400 outline-none"
               value={inputs[other].toString()}
               onValueChange={({ value }, { source }) => {
-                if (source === 'event') onChange({ value, type: other })
+                if (source === 'event') _onChange.current({ value, type: other })
               }}
             />
             <span className="ml-0.5 text-sm text-neutral-500">
@@ -552,41 +544,22 @@ const Price = () => {
   return null
 }
 
-SuperJSON.registerCustom<FixedNumber, string>(
-  {
-    isApplicable: (v): v is FixedNumber => FixedNumber.isFixedNumber(v),
-    serialize: (v) => v.toString(),
-    deserialize: (v) => FixedNumber.from(v),
-  },
-  'FixedNumber',
-)
+// SuperJSON.registerCustom<FixedNumber, string>(
+//   {
+//     isApplicable: (v): v is FixedNumber => FixedNumber.isFixedNumber(v),
+//     serialize: (v) => v.toString(),
+//     deserialize: (v) => FixedNumber.from(v),
+//   },
+//   'FixedNumber',
+// )
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const queryClient = new QueryClient()
-
-  // await queryClient.prefetchQuery(['posts'], getPosts)
-
-  const marketData = getContract({
-    address: marketDataAddress[10],
-    abi: marketDataABI,
-    signerOrProvider: provider({ chainId: 10 }),
-  })
-  const markets = await marketData.allProxiedMarketSummaries().then(parseMarketSummaries)
-  ctx.res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600')
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  }
-}
-
-export default function Home({ markets }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Home() {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-900 font-medium">
       <div className="flex h-[500px] gap-2">
         {/* <Suspense fallback={<span className="text-neutral-200">loading</span>}> */}
         {/* <Price /> */}
-        <Markets markets={markets} />
+        {/* <Markets markets={markets} /> */}
         {/* <div className="flex h-[500px] w-[300px] flex-col gap-2">
           <ConnectWallet />
           <OPPrice />

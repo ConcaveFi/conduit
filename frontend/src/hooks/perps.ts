@@ -70,15 +70,16 @@ const parseMarketSummaries = (summaries: MarketSummariesResult) =>
   }))
 export type MarketSummaries = ReturnType<typeof parseMarketSummaries>
 
-export function useMarkets<TSelectData = MarketSummaries>(
-  config: Omit<
-    UseContractReadConfig<typeof marketDataABI, 'allProxiedMarketSummaries', ReadContractResult>,
-    'abi' | 'address' | 'functionName' | 'select'
-  > & {
-    chainId?: keyof typeof marketDataAddress
-    select?: UseQueryOptions<MarketSummaries, unknown, TSelectData>['select']
-  } = {},
-) {
+export function useMarkets<TSelectData = MarketSummaries>({
+  select,
+  ...config
+}: Omit<
+  UseContractReadConfig<typeof marketDataABI, 'allProxiedMarketSummaries', ReadContractResult>,
+  'abi' | 'address' | 'functionName' | 'select'
+> & {
+  chainId?: keyof typeof marketDataAddress
+  select?: UseQueryOptions<MarketSummaries, unknown, TSelectData>['select']
+} = {}) {
   const { chain } = useNetwork()
   const chainId =
     config.chainId || (!chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId))
@@ -94,9 +95,9 @@ export function useMarkets<TSelectData = MarketSummaries>(
     select: useCallback(
       (summariesResult) => {
         const summaries = parseMarketSummaries(summariesResult)
-        return config.select ? config.select(summaries) : (summaries as TSelectData)
+        return select ? select(summaries) : (summaries as TSelectData)
       },
-      [config.select],
+      [select],
     ),
   })
 }
