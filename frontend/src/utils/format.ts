@@ -23,7 +23,7 @@ export const format = (value: FixedNumber | string, options?: Intl.NumberFormatO
   return f.format(value.toUnsafeFloat())
 }
 
-export const formatUsd = (value: FixedNumber | string) =>
-  format(value, { style: 'currency', currency: 'usd', currencyDisplay: 'narrowSymbol' })
+export const formatUsd = (value: FixedNumber | string, options?: Intl.NumberFormatOptions) =>
+  format(value, { style: 'currency', currency: 'usd', currencyDisplay: 'narrowSymbol', ...options })
 
 export const formatPercent = (value: FixedNumber | string) => format(value, { style: 'percent' })

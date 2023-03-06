@@ -52,7 +52,7 @@ function LockScreen(props: { onUnlock?: VoidFunction }) {
     props?.onUnlock?.()
   }
   return (
-    <div className="centered fixed z-[100] flex h-full w-full flex-col gap-4 border">
+    <div className="centered fixed z-[100] flex h-full w-full flex-col gap-4">
       <img src={'/assets/conduit-bg-theme.png'} className="absolute h-full w-full " alt="logo" />
 
       <div className="card  bg-ocean-700 centered z-10 mt-[-400px] h-[250px] w-[400px] gap-4 bg-opacity-80 p-8 shadow-xl backdrop-blur-md">
