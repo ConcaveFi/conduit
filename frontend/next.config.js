@@ -14,9 +14,6 @@ const nextConfig = {
     defaultLocale: 'us',
     localeDetection: true,
   },
-  experimental: {
-    typedRoutes: true,
-  },
 }
 
 module.exports = nextConfig
