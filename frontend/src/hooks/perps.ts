@@ -33,9 +33,9 @@ export function useMarketSettings({
 
   const provider = useProvider({ chainId })
 
-  return useQuery({
-    queryKey: ['marketSettings', marketKey],
-    queryFn: async () => {
+  return useQuery(
+    ['marketSettings', marketKey],
+    async () => {
       const marketSettings = getContract({
         address: marketSettingsAddress[chainId],
         abi: marketSettingsABI,
@@ -44,19 +44,18 @@ export function useMarketSettings({
       const [skewScale] = await Promise.all([
         marketSettings.skewScale(formatBytes32String(marketKey!)),
       ])
-      return {
-        skewScale,
-      }
+      return { skewScale }
     },
-    enabled: !!marketKey,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-    refetchOnmount: false,
-    retry: false,
-    staleTime: Infinity,
-    cacheTime: Infinity,
-  })
+    {
+      enabled: !!marketKey,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+      retry: false,
+      staleTime: Infinity,
+      cacheTime: Infinity,
+    },
+  )
 }
 
 type MarketSummariesResult = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
@@ -110,7 +109,7 @@ export const useRouteMarket = () => {
 
   const { data: market } = useMarkets({
     select: useCallback(
-      (markets: MarketSummaries & { price: FixedNumber }) => markets.find((m) => m.asset === asset),
+      (markets: MarketSummaries) => markets.find((m) => m.asset === asset),
       [asset],
     ),
   })
