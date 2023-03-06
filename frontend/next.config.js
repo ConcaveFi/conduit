@@ -15,9 +15,7 @@ const nextConfig = {
     localeDetection: true,
   },
   experimental: {
-    appDir: true,
     typedRoutes: true,
-    swcPlugins: [['next-superjson-plugin', {}]],
   },
 }
 
