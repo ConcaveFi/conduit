@@ -70,26 +70,46 @@ export function UserPositions() {
   `)
 
   return (
-    <div className="centered flex flex-wrap gap-4 overflow-hidden  ">
-      <PosItemInfo info={[market?.asset, formatUsd(market?.price || '0')]} />
-      <PosItemInfo info={['Net Funding', '-']} />
-      <PosItemInfo info={['Leverage', format(leverage, { signDisplay: 'never' })]} />
-
-      <PosItemInfo info={['Side', side]} modifirer={size?.isNegative() ? 'negative' : 'positive'} />
-      <PosItemInfo info={['Unrealized P&L', '-']} />
-      <PosItemInfo info={['Liq Price', format(positionDetails.liquidationPrice)]} />
-
-      <PosItemInfo info={['Size', sizeFormated]} />
-      <PosItemInfo info={['Realized P&L', '-']} />
-      <PosItemInfo info={['Avg Entry', format(position.lastPrice)]} />
+    <div className="border-ocean-400 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
+      <div className="flex gap-4">
+        <div className="flex w-full flex-col gap-3">
+          <PosItemInfo info={[SideNAsset(side, market.asset), formatUsd(market?.price || '0')]} />
+          <PosItemInfo info={['Size', sizeFormated]} />
+          <PosItemInfo info={['Avg Entry', format(position.lastPrice)]} />
+          <PosItemInfo info={['Realized P&L', '-']} />
+        </div>
+        <div className="flex w-full flex-col gap-3">
+          <PosItemInfo info={['Unrealized P&L', '-']} />
+          <PosItemInfo info={['Liq Price', format(positionDetails.liquidationPrice)]} />
+          <PosItemInfo info={['Net Funding', '-']} />
+          <PosItemInfo info={['Leverage', format(leverage, { signDisplay: 'never' })]} />
+        </div>
+      </div>
+      <button
+        onClick={closePosition}
+        className="btn border-negative text-negative centered h-12 w-full rounded-lg border-2"
+      >
+        Close position
+      </button>
     </div>
   )
 }
+function SideNAsset(side: string, asset: string) {
+  return (
+    <>
+      <span className={cx(side === 'SHORT' ? 'text-negative' : 'text-positive')}>{side}</span>{' '}
+      {asset}
+    </>
+  )
+}
 
-function PosItemInfo(props: { info: [string, string]; modifirer?: 'positive' | 'negative' }) {
+function PosItemInfo(props: {
+  info: [string | JSX.Element, string]
+  modifirer?: 'positive' | 'negative'
+}) {
   const { modifirer, info } = props
   return (
-    <div className="bg-ocean-500 flex h-8 w-[32%]  items-center justify-between rounded-md px-2">
+    <div className="bg-ocean-500 flex h-8 w-full  items-center justify-between rounded-md px-2">
       <span className="font-medium text-white">{info[0]}</span>
       <span
         className={cx(

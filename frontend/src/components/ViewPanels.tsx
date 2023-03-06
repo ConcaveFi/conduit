@@ -43,9 +43,9 @@ const Tabs = () => {
   const { t } = useTranslation()
   return (
     <Tab.List className={'centered flex h-full gap-2 py-2'}>
-      {TABS.map((tab) => {
+      {TABS.map((tab, index) => {
         return (
-          <Tab key={tab} className="outline-none">
+          <Tab key={index} className="outline-none">
             {({ selected }) => (
               <span
                 className={`btn h-full  px-6 py-[9px] outline-none ring-0
