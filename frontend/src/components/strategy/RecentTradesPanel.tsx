@@ -49,6 +49,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
           </Table>
         </div>
       </div>
+
     </Panel>
   )
 })

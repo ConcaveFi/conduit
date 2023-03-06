@@ -65,12 +65,10 @@ export function UserPositions() {
     )
   }
 
-  const sizeFormated = format(size, { signDisplay: 'never' })
-  // .concat(
-  //   ` (${formatUsd(size.mulUnsafe(market?.price || FixedNumber.from(0)), {
-  //     signDisplay: 'never',
-  //   })})`,
-  // )
+
+  const sizeFormated = format(size, { signDisplay: 'never' }).concat(`
+     (${formatUsd(size.mulUnsafe(market?.price), { signDisplay: 'never' })})
+  `)
 
   return (
     <div className="border-ocean-400 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">

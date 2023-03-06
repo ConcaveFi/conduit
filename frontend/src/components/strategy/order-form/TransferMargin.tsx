@@ -105,6 +105,7 @@ function TransferMargin() {
   )
 }
 
+export const TRANSFER_MODAL_QITEM = 'transfer-margin'
 export function TransferMarginButton() {
   const { t } = useTranslation()
   const query = useSearchParams()
@@ -118,13 +119,15 @@ export function TransferMarginButton() {
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
 
+  const isOpen = query ? query?.get('modal') === TRANSFER_MODAL_QITEM : false
+  const href = `?modal=${TRANSFER_MODAL_QITEM}`
   return (
     <>
-      <Link href="?modal=transfer-margin" className="text-light-400 rounded-lg text-sm">
+      <Link href={href} className="text-light-400 rounded-lg text-sm">
         Available Margin: {remainingMargin && formatUsd(remainingMargin)}{' '}
         <span className="text-ocean-200">Manage</span>
       </Link>
-      <Modal isOpen={query.get('modal') === 'transfer-margin'} onClose={() => router.back()}>
+      <Modal isOpen={isOpen} onClose={() => router.back()}>
         <TransferMargin />
       </Modal>
     </>
