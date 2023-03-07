@@ -19,7 +19,7 @@ export function UserPositions() {
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: [market?.address || '0x', address || '0x'],
+    args: market && address && [market?.address, address],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })
@@ -66,9 +66,9 @@ export function UserPositions() {
     )
   }
 
-  const sizeFormated = format(size, { signDisplay: 'never' }).concat(`
-     (${formatUsd(size.mulUnsafe(market?.price), { signDisplay: 'never' })})
-  `)
+  const sizeFormated = `${format(size, { signDisplay: 'never' })} (${formatUsd(sizeUSD, {
+    signDisplay: 'never',
+  })})`
 
   return (
     <div className="border-ocean-400 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
