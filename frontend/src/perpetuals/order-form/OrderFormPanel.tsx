@@ -4,17 +4,19 @@ import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils.js'
 import {
+  useMarketDataPositionDetails,
   useMarketPostTradeDetails,
   useMarketRemainingMargin,
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
+import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { format, formatPercent, formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount } from 'wagmi'
+import { Address, useAccount } from 'wagmi'
 import { TransferMarginButton } from './TransferMargin'
 
 function SideSelector({
@@ -47,6 +49,46 @@ function SideSelector({
   )
 }
 
+function SizeSlider({
+  value,
+  max,
+  onChange,
+}: {
+  value: string
+  max?: string
+  onChange: (s: InputState) => void
+}) {
+  const sliderValue = max ? (+value >= +max ? 1 : +value / +max) : 0
+
+  const handleSizeSlider = useCallback(
+    (v: number[]) => {
+      const value = v[0]
+      if (!max) return
+      if (value === 0) return onChange({ value: '', type: 'usd' })
+      const sliderValue = safeFixedNumber(value.toString())
+      const maxValue = safeFixedNumber(max)
+      onChange({
+        value: sliderValue.mulUnsafe(maxValue).toString(),
+        type: 'usd',
+      })
+    },
+    [max, onChange],
+  )
+
+  return (
+    <Slider.Root
+      value={[sliderValue]}
+      step={0.01}
+      max={1}
+      onValueChange={handleSizeSlider}
+      className="relative flex h-[20px] w-full touch-none select-none items-center"
+    >
+      <Slider.Track className="bg-ocean-600 relative h-[3px] flex-1 rounded-full" />
+      <Slider.Thumb className="box-[15px] bg-ocean-200 block rounded-full transition-all duration-300 ease-out hover:scale-125" />
+    </Slider.Root>
+  )
+}
+
 export const OrderSizeInput = ({
   onChange,
   inputs,
@@ -64,22 +106,6 @@ export const OrderSizeInput = ({
   )
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
   const symbols = { usd: 'sUSD', asset: assetSymbol }
-
-  const handleSizeSlider = useCallback(
-    (v: number) => {
-      if (!max) return
-      if (v === 0) return onChange({ value: '', type: 'usd' })
-      const sliderValue = safeFixedNumber(v.toString())
-      const maxValue = safeFixedNumber(max)
-      onChange({
-        value: sliderValue.mulUnsafe(maxValue).toString(),
-        type: 'usd',
-      })
-    },
-    [max, onChange],
-  )
-
-  const sliderValue = max ? (+inputs.usd >= +max ? 1 : +inputs.usd / +max) : 0
 
   return (
     <div className="flex w-full max-w-full flex-col gap-1">
@@ -112,16 +138,7 @@ export const OrderSizeInput = ({
           {symbols[amountDenominator]}
         </button>
       </div>
-      <Slider.Root
-        value={[sliderValue]}
-        step={0.01}
-        max={1}
-        onValueChange={(v) => handleSizeSlider(v[0])}
-        className="relative flex h-[20px] w-full touch-none select-none items-center"
-      >
-        <Slider.Track className="bg-ocean-600 relative h-[3px] flex-1 rounded-full" />
-        <Slider.Thumb className="box-[15px] bg-ocean-200 block rounded-full transition-all duration-300 ease-out hover:scale-125" />
-      </Slider.Root>
+      <SizeSlider max={max} onChange={onChange} value={inputs.usd.toString()} />
     </div>
   )
 }
@@ -138,15 +155,73 @@ const deriveInputs = (input?: InputState, price?: FixedNumber) => {
   }[type]()
 }
 
+const OrderType = {
+  atomic: 0,
+  delayed: 1,
+  delayedOffchain: 2,
+}
+
+const Skeleton = () => (
+  <div className="skeleton skeleton-from-ocean-200 skeleton-to-ocean-300 h-3 w-full" />
+)
+
+function BuyingPowerInfo({ market, account }: { market: { address: Address }; account: Address }) {
+  const { data: remainingMargin } = useMarketRemainingMargin({
+    address: market.address,
+    args: [account],
+    select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
+  })
+  const { data: positionDetails } = useMarketDataPositionDetails({
+    args: [market.address, account],
+    select: parsePositionDetails,
+  })
+  const buyingPower = remainingMargin && remainingMargin.mulUnsafe(MAX_LEVERAGE)
+  const inPosition = positionDetails?.notionalValue
+  const available = inPosition && buyingPower && buyingPower.subUnsafe(inPosition)
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between gap-4">
+        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-ocean-200">Deposited</span>
+          {!remainingMargin ? (
+            <Skeleton />
+          ) : (
+            <span className="text-white">{formatUsd(remainingMargin)}</span>
+          )}
+        </div>
+        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-ocean-200">Buying power</span>
+          {!buyingPower ? (
+            <Skeleton />
+          ) : (
+            <span className="text-green-400">{formatUsd(buyingPower)}</span>
+          )}
+        </div>
+        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-ocean-200">In position</span>
+          {!inPosition ? (
+            <Skeleton />
+          ) : (
+            <span className="text-red-400">{formatUsd(inPosition)}</span>
+          )}
+        </div>
+      </div>
+      <div className="bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
+        <span className="text-ocean-200">Available</span>
+        {!available ? <Skeleton /> : <span className="text-white">{formatUsd(available)}</span>}
+      </div>
+    </div>
+  )
+}
+
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const { t } = useTranslation()
 
   const market = useRouteMarket()
 
   const price = market?.price
-
   const [input, setInput] = useState<InputState>()
-
   const inputs = useMemo(() => deriveInputs(input, price), [price, input])
 
   const [side, setSide] = useState<'long' | 'short'>('long')
@@ -161,14 +236,18 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   const { data: postTradeDetails } = useMarketPostTradeDetails({
     address: market && market.address,
     enabled: !sizeDelta.isZero() && !!address,
-    args: [sizeDelta, BigNumber.from(0), 2, address!],
+    args: [
+      sizeDelta,
+      BigNumber.from(0), // <- trade price
+      OrderType.delayedOffchain,
+      address!,
+    ],
     select: (d) => ({
       margin: FixedNumber.fromValue(d.margin, 18).toString(),
       liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18).toString(),
       fee: FixedNumber.fromValue(d.fee, 18).toString(),
       price: FixedNumber.fromValue(d.price, 18).toString(),
     }),
-    keepPreviousData: true,
   })
 
   const { data: remainingMargin } = useMarketRemainingMargin({
@@ -204,7 +283,9 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
-      <TransferMarginButton />
+      <TransferMarginButton market={market} />
+
+      {address && <BuyingPowerInfo account={address} market={market} />}
 
       <div className="flex max-w-full flex-col">
         <OrderSizeInput

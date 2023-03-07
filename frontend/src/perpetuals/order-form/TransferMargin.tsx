@@ -1,11 +1,10 @@
 import { Modal, NumericInput } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { BigNumber, FixedNumber } from 'ethers'
+import { BigNumber } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils.js'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
-  useMarketRemainingMargin,
   useMarketTransferMargin,
   usePrepareMarketTransferMargin,
   useSusdBalanceOf,
@@ -15,7 +14,7 @@ import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
-import { useAccount } from 'wagmi'
+import { Address, useAccount } from 'wagmi'
 
 function SusdBalance({
   onClick,
@@ -106,26 +105,27 @@ function TransferMargin() {
   )
 }
 
-export function TransferMarginButton() {
+const transfer_margin_modal_name = 'transfer-margin'
+export function TransferMarginButton({ market }: { market: { address: Address; asset: string } }) {
   const { t } = useTranslation()
-  const query = useSearchParams()
   const router = useRouter()
 
-  const { address } = useAccount()
-  const market = useRouteMarket()
-  const { data: remainingMargin } = useMarketRemainingMargin({
-    address: market && market.market,
-    args: address && [address],
-    select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
-  })
+  // const { data: remainingMargin } = useMarketRemainingMargin({
+  //   address: market.address,
+  //   args: address && [address],
+  //   select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
+  // })
 
+  const query = useSearchParams()
   const isOpen = query ? query?.get('modal') === UrlModal.TRANSFER_MARGIN : false
   const href = `?modal=${UrlModal.TRANSFER_MARGIN}`
   return (
     <>
-      <Link href={href} className="text-light-400 rounded-lg text-sm">
-        Available Margin: {remainingMargin && formatUsd(remainingMargin)}{' '}
-        <span className="text-ocean-200">Manage</span>
+      <Link
+        href={`?modal=${transfer_margin_modal_name}`}
+        className="text-light-400 bg-ocean-300 flex w-full items-center justify-center rounded-lg py-3 text-center text-sm font-medium"
+      >
+        Deposit Margin to {market.asset}/sUSD
       </Link>
       <Modal isOpen={isOpen} onClose={() => router.back()}>
         <TransferMargin />
