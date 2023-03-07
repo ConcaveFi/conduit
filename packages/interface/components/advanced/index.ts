@@ -1,6 +1,5 @@
 export * from './ItemInfo'
 export * from './Menu'
 export * from './panel/Panel'
-export * from './panel/TabPanel'
 export * from './Popover'
 export * from './Tooltip'

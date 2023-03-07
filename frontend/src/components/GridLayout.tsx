@@ -28,8 +28,8 @@ export function GridLayout() {
     <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full">
       <ReactGridLayout
         style={{ height: '100%' }}
-        rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
         draggableHandle="[data-draggable='true']"
+        rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
         cols={isMaximized ? 1 : DEFAULT_COLS}
         className="relative transition-all "
         onLayoutChange={handleChange}

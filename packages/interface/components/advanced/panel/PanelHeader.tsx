@@ -1,6 +1,7 @@
 import { CloseIcon, ExpandIcon } from '@tradex/icons'
 import { VariantProps } from 'class-variance-authority'
 import { forwardRef, ReactNode, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { DivProps } from '../../../types/primitives'
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
@@ -22,11 +23,11 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         onMaximize()
       }
     }
-
+    className = twMerge(panelHeaderStyles({ variant }), 'cursor-move', className)
     return (
       <div
         ref={ref}
-        className={`${panelHeaderStyles({ variant, className })} cursor-move`}
+        className={className}
         onMouseDown={(e) => e.preventDefault()}
         data-draggable="true"
         {...props}
