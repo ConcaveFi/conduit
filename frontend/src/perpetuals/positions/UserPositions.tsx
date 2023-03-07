@@ -51,9 +51,8 @@ export function UserPositions() {
   const profitLoss = positionDetails.profitLoss
 
   const remainingMargin = positionDetails?.remainingMargin
-  const sizeUSD = size?.mulUnsafe(market?.price)
   const leverage = !remainingMargin.isZero()
-    ? sizeUSD?.divUnsafe(remainingMargin)
+    ? positionDetails?.notionalValue?.divUnsafe(remainingMargin)
     : FixedNumber.from(0)
 
   if (!hasPosition) {
@@ -66,9 +65,10 @@ export function UserPositions() {
     )
   }
 
-  const sizeFormated = `${format(size, { signDisplay: 'never' })} (${formatUsd(sizeUSD, {
-    signDisplay: 'never',
-  })})`
+  const sizeFormated = `${format(size, { signDisplay: 'never' })} (${formatUsd(
+    positionDetails?.notionalValue,
+    { signDisplay: 'never' },
+  )})`
 
   return (
     <div className="border-ocean-400 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
@@ -80,7 +80,7 @@ export function UserPositions() {
           <PosItemInfo info={['Realized P&L', '-']} />
         </div>
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo info={['Unrealized P&L', '-']} />
+          <PosItemInfo info={['Unrealized P&L', format(positionDetails.profitLoss)]} />
           <PosItemInfo info={['Liq Price', format(positionDetails.liquidationPrice)]} />
           <PosItemInfo info={['Net Funding', '-']} />
           <PosItemInfo info={['Leverage', format(leverage, { signDisplay: 'never' })]} />
