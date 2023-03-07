@@ -115,7 +115,7 @@ export function useSkewAdjustedOffChainPrice({
     watch,
     enabled: !!market && !!settings,
     select: ({ price }) => {
-      const skew = market.marketSkew.divUnsafe(settings.skewScale).addUnsafe(FixedNumber.from(1))
+      const skew = market!.marketSkew.divUnsafe(settings!.skewScale).addUnsafe(FixedNumber.from(1))
       const skewAdjustedPrice = price.mulUnsafe(skew)
       return skewAdjustedPrice
     },
