@@ -1,8 +1,8 @@
-import { FixedNumber } from 'ethers'
-import { useMarketSettings, useRouteMarket } from 'src/hooks/perps'
-import { useWatchOffchainPrice } from 'src/hooks/usePrice'
+import { useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { useWatchOffchainPrice } from 'src/perpetuals/hooks/useOffchainPrice'
 import { useNetwork } from 'wagmi'
 
+import { FixedNumber } from 'ethers'
 import { Markets } from 'perps-hooks/markets'
 import { formatUsd } from 'src/utils/format'
 
@@ -21,8 +21,9 @@ export function usePageTitleWithAssetPrice() {
     onPriceChange({ price }) {
       if (!market || !settings) return
 
-      const skew = FixedNumber.fromValue(market.marketSkew.div(settings.skewScale).add(1))
-      const skewAdjustedPrice = price.mulUnsafe(skew)
+      const skewAdjustedPrice = price.mulUnsafe(
+        market.marketSkew.divUnsafe(settings.skewScale).addUnsafe(FixedNumber.from(1)),
+      )
 
       document.title = `${market.asset} - ${formatUsd(skewAdjustedPrice)} | Conduit`
     },

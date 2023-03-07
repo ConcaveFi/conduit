@@ -11,7 +11,7 @@ import {
   useSusdBalanceOf,
 } from 'perps-hooks'
 import { useState } from 'react'
-import { useRouteMarket } from 'src/hooks/perps'
+import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'

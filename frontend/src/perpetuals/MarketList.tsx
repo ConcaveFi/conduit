@@ -3,7 +3,7 @@ import { ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { forwardRef, useMemo } from 'react'
-import { useMarkets, useRouteMarket } from 'src/hooks/perps'
+import { useMarkets, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 
 import { format } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
