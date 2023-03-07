@@ -105,7 +105,6 @@ function TransferMargin() {
   )
 }
 
-const transfer_margin_modal_name = 'transfer-margin'
 export function TransferMarginButton({ market }: { market: { address: Address; asset: string } }) {
   const { t } = useTranslation()
   const router = useRouter()
@@ -118,11 +117,10 @@ export function TransferMarginButton({ market }: { market: { address: Address; a
 
   const query = useSearchParams()
   const isOpen = query ? query?.get('modal') === UrlModal.TRANSFER_MARGIN : false
-  const href = `?modal=${UrlModal.TRANSFER_MARGIN}`
   return (
     <>
       <Link
-        href={`?modal=${transfer_margin_modal_name}`}
+        href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
         className="text-light-400 bg-ocean-300 flex w-full items-center justify-center rounded-lg py-3 text-center text-sm font-medium"
       >
         Deposit Margin to {market.asset}/sUSD
