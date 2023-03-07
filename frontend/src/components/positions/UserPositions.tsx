@@ -1,10 +1,10 @@
 import { cx } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { BigNumber, FixedNumber } from 'ethers'
+import { FixedNumber } from 'ethers'
 import {
+  useMarketClosePositionWithTracking,
   useMarketDataPositionDetails,
-  useMarketSubmitOffchainDelayedOrderWithTracking,
-  usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
+  usePrepareMarketClosePositionWithTracking,
 } from 'perps-hooks'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode } from 'src/constants/perps-config'
@@ -24,17 +24,17 @@ export function UserPositions() {
     enabled: !!market && !!address,
   })
   const position = positionDetails?.position
-  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+  const { config } = usePrepareMarketClosePositionWithTracking({
     address: market?.address,
     args: position && [
-      BigNumber.from(position.size).mul(-1),
+      // BigNumber.from(position.size).mul(-1),
       DEFAULT_PRICE_IMPACT_DELTA,
       TrackingCode,
     ],
   })
-  const { write: closePosition } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
+  const { write: closePosition } = useMarketClosePositionWithTracking(config)
+
   const isHydrated = useIsHydrated()
-  const {} = {}
   if (!market || !position || !isHydrated)
     return (
       <div className="centered flex h-6 w-full gap-4">
@@ -44,6 +44,7 @@ export function UserPositions() {
         <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
       </div>
     )
+
   const size = position.size
   const side = (size.isNegative() ? 'Short' : 'Long').toUpperCase()
   const hasPosition = !size.isZero()
@@ -64,7 +65,6 @@ export function UserPositions() {
       </div>
     )
   }
-
 
   const sizeFormated = format(size, { signDisplay: 'never' }).concat(`
      (${formatUsd(size.mulUnsafe(market?.price), { signDisplay: 'never' })})
