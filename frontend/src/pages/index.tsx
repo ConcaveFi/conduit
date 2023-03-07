@@ -1,7 +1,7 @@
 import { GridLayout } from 'src/components/GridLayout'
-import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
 import { Topbar } from 'src/components/topbar/Topbar'
 import { usePageTitleWithAssetPrice } from 'src/hooks/usePageTitleWithAssetPrice'
+import { StrategyHeader } from 'src/perpetuals/Header'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 

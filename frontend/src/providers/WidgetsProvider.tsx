@@ -1,7 +1,7 @@
 import { PlusIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { createContext, useContext, useState } from 'react'
-import { AddWidgetModal } from 'src/components/widgets/AddWidgetModal'
+import { AddWidgetModal } from 'src/components/AddWidgetModal'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 import {
   DEFAULT_GRID_WIDGETS,

@@ -2,9 +2,9 @@ import { Tab } from '@headlessui/react'
 import { Panel, PanelProps } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
-import { UserPositions } from './positions/UserPositions'
-import { UserTrades } from './positions/UserTrades'
-import { UserTransfers } from './positions/UserTransfers'
+import { UserPositions } from 'src/perpetuals/positions/UserPositions'
+import { UserTrades } from 'src/perpetuals/positions/UserTrades'
+import { UserTransfers } from 'src/perpetuals/positions/UserTransfers'
 
 // CONSTANTS -------------------------------------------------------------------
 

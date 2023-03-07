@@ -1,9 +1,9 @@
 import { PanelProps } from '@tradex/interface'
-import { ChartPanel } from 'src/components/chart/ChartPanel'
-import { NewsPanel } from 'src/components/strategy/NewsPanel'
-import { OrderFormPanel } from 'src/components/strategy/order-form/OrderFormPanel'
-import { RecentTradesPanel } from 'src/components/strategy/RecentTradesPanel'
 import { ViewPanels } from 'src/components/ViewPanels'
+import { ChartPanel } from 'src/perpetuals/chart/ChartPanel'
+import { NewsPanel } from 'src/perpetuals/NewsPanel'
+import { OrderFormPanel } from 'src/perpetuals/order-form/OrderFormPanel'
+import { RecentTradesPanel } from 'src/perpetuals/RecentTradesPanel'
 
 export type GridWidget = { [key: string]: React.FC<PanelProps> }
 export type GridWidgetKeys =
