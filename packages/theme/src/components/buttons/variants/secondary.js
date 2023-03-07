@@ -4,11 +4,8 @@ const secondary = {
   backgroundColor: colors.light[200],
   color: colors.light[500],
   '.ocean &': {
-    backgroundColor: colors.ocean[500],
-    color: colors.ocean[200],
-  },
-  '.ocean &:hover': {
-    backgroundColor: colors.ocean[400],
+    backgroundColor: colors.ocean[200],
+    color: colors['bright-text'],
   },
 }
 const secondaryOutlined = {
