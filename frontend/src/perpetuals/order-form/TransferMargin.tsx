@@ -1,9 +1,10 @@
-import { Modal, NumericInput } from '@tradex/interface'
+import { NumericInput } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils.js'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/router'
 import {
   useMarketTransferMargin,
   usePrepareMarketTransferMargin,
@@ -15,6 +16,7 @@ import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { Address, useAccount } from 'wagmi'
+import { ManageMarginModal } from './ManageMarginModal'
 
 function SusdBalance({
   onClick,
@@ -108,10 +110,18 @@ function TransferMargin() {
 export function TransferMarginButton({ market }: { market: { address: Address; asset: string } }) {
   const { t } = useTranslation()
   const router = useRouter()
+
   const query = useSearchParams()
   const supValues = [UrlModal.TRANSFER_MARGIN, UrlModal.WITHDRAW]
   const asset = (query ? query.get('modal') : '') as UrlModal
   const isOpen = supValues.includes(asset)
+
+  function handleClose() {
+    const { query } = router
+    delete query?.modal
+    router.replace({ query })
+  }
+
   return (
     <>
       <Link
@@ -120,9 +130,7 @@ export function TransferMarginButton({ market }: { market: { address: Address; a
       >
         Deposit Margin to {market.asset}/sUSD
       </Link>
-      <Modal isOpen={isOpen} onClose={() => router.back()}>
-        <TransferMargin />
-      </Modal>
+      <ManageMarginModal isOpen={isOpen} onClose={handleClose} />
     </>
   )
 }

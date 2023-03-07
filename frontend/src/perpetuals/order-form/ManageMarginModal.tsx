@@ -1,8 +1,12 @@
 import { sUSD_ADDRESS } from '@tradex/core'
 import { CloseIcon } from '@tradex/icons'
-import { NumericInput } from '@tradex/interface'
-import { BigNumber } from 'ethers'
-import { useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
+import { Modal, ModalProps, NumericInput } from '@tradex/interface'
+import { parseUnits } from 'ethers/lib/utils'
+import {
+  useMarketTransferMargin,
+  usePrepareMarketTransferMargin,
+  useSusdBalanceOf,
+} from 'perps-hooks'
 import { Fragment, useMemo, useState } from 'react'
 import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
@@ -11,7 +15,7 @@ import { optimism } from 'wagmi/chains'
 import { DepositWithdrawSelector, DWSelectorType } from '../DepositWithdrawSelector'
 import { useRouteMarket } from '../hooks/useMarket'
 
-export function ManageMarginModal() {
+export function ManageMarginModal(props: ModalProps) {
   const [value, setValue] = useState<number>()
   const market = useRouteMarket()
 
@@ -19,16 +23,22 @@ export function ManageMarginModal() {
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
     enabled: !!debouncedValue,
-    args: [BigNumber.from(debouncedValue || 0)],
+    args: [parseUnits(String(debouncedValue || '0'), 18)],
   })
+
+  const { address } = useAccount()
   const { write: depositMargin } = useMarketTransferMargin(config)
+  const { data: sUSDBalance } = useSusdBalanceOf({ args: address && [address] })
 
   return (
-    <div className="card card-secondary-outlined relative h-fit w-[400px] gap-4 p-[16px_12px]">
+    <Modal
+      {...props}
+      className="card card-secondary-outlined relative h-fit w-[400px] gap-4 p-[16px_12px]"
+    >
       <span className="text-ocean-200 font-medium ">Deposit</span>
       <CloseIcon className="box-4 fill-ocean-200 absolute top-5 right-4" />
       <DepositWithdrawSelector>{renderTabComponent}</DepositWithdrawSelector>
-    </div>
+    </Modal>
   )
 
   function renderTabComponent(type: DWSelectorType) {
@@ -40,6 +50,7 @@ export function ManageMarginModal() {
         </p>
         <button
           onClick={depositMargin}
+          disabled={!depositMargin || type === 'withdraw'}
           className="btn centered border-ocean-300 disabled:border-ocean-400 disabled:text-ocean-300 text-ocean-200 h-12 w-full rounded-full border-2 capitalize"
         >
           {type} Margin

@@ -21,8 +21,6 @@ export function MarketList() {
     router.replace({ query: { asset } }, undefined, { shallow: true })
     close()
   }
-  console.log(market)
-
   return (
     <Menu className={'my-auto h-fit'}>
       <Menu.Button className="btn centered gap-6 outline-none">

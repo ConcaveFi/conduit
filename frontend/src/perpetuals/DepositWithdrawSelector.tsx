@@ -13,7 +13,7 @@ export function DepositWithdrawSelector(props?: SelectorProps) {
   const [type, setType] = useState<'deposit' | 'withdraw'>(initial)
 
   const children = useMemo(() => props?.children?.(type), [props, type])
-  useEffect(() => (props?.onTypeChange?.(type), console.log('changed')), [type, props])
+  useEffect(() => props?.onTypeChange?.(type), [type, props])
   return (
     <Fragment>
       <div className="bg-ocean-400 flex h-11 w-full gap-2 rounded-full bg-opacity-50 p-[4px] ">
