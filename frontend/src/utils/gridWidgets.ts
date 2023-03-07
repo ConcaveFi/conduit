@@ -1,5 +1,5 @@
 import { PanelProps } from '@tradex/interface'
-import { ViewPanels } from 'src/components/ViewPanels'
+import { ViewPanels } from 'src/components/futures/ViewPanels'
 import { ChartPanel } from 'src/perpetuals/chart/ChartPanel'
 import { NewsPanel } from 'src/perpetuals/NewsPanel'
 import { OrderFormPanel } from 'src/perpetuals/order-form/OrderFormPanel'
