@@ -3,9 +3,9 @@ import { useTranslation } from '@tradex/languages'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
+import { UrlModal } from 'src/utils/enum/urlModal'
 import { AddWidgetModal } from './AddWidgetModal'
 
-const MODAL_ADDWIDGET_QITEM = 'addWidget'
 export function AddWidgetOverlay() {
   const { t } = useTranslation()
   const router = useRouter()
@@ -13,11 +13,11 @@ export function AddWidgetOverlay() {
 
   const { query } = router
   function handleClick() {
-    Object.assign(query, { modal: MODAL_ADDWIDGET_QITEM })
+    Object.assign(query, { modal: UrlModal.ADD_WIDGET })
     router.replace({ query })
   }
 
-  const isOpen = useMemo(() => params.get('modal') === MODAL_ADDWIDGET_QITEM, [params])
+  const isOpen = useMemo(() => params.get('modal') === UrlModal.ADD_WIDGET, [params])
   const onClose = useCallback(
     () => (delete query?.modal, router.replace({ query: query })),
     [router, query],

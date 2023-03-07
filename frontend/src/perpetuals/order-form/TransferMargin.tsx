@@ -12,6 +12,7 @@ import {
 } from 'perps-hooks'
 import { useState } from 'react'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
@@ -105,7 +106,6 @@ function TransferMargin() {
   )
 }
 
-export const TRANSFER_MODAL_QITEM = 'transfer-margin'
 export function TransferMarginButton() {
   const { t } = useTranslation()
   const query = useSearchParams()
@@ -119,8 +119,8 @@ export function TransferMarginButton() {
     select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
   })
 
-  const isOpen = query ? query?.get('modal') === TRANSFER_MODAL_QITEM : false
-  const href = `?modal=${TRANSFER_MODAL_QITEM}`
+  const isOpen = query ? query?.get('modal') === UrlModal.TRANSFER_MARGIN : false
+  const href = `?modal=${UrlModal.TRANSFER_MARGIN}`
   return (
     <>
       <Link href={href} className="text-light-400 rounded-lg text-sm">
