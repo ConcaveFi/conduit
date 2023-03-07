@@ -21,6 +21,7 @@ export function MarketList() {
     router.replace({ query: { asset } }, undefined, { shallow: true })
     close()
   }
+  console.log(market)
 
   return (
     <Menu className={'my-auto h-fit'}>

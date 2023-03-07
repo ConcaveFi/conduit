@@ -1,12 +1,12 @@
-import { GridLayout } from 'src/components/futures/GridLayout'
-import { Topbar } from 'src/components/futures/topbar/Topbar'
-import { StrategyHeader } from 'src/perpetuals/Header'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { useSkewAdjustedOffChainPrice } from 'src/perpetuals/hooks/useOffchainPrice'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
-import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 
 import Head from 'next/head'
+import { GridLayout } from 'src/components/futures/GridLayout'
+import { Topbar } from 'src/components/futures/topbar/Topbar'
+import { StrategyHeader } from 'src/perpetuals/Header'
+import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 import { formatUsd } from 'src/utils/format'
 
 function Title() {

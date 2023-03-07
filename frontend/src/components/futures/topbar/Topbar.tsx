@@ -54,7 +54,7 @@ export function Topbar() {
             }
             return (
               <div className="flex gap-4">
-                <button onClick={openChainModal} className="btn btn-primary centered gap-2 px-4">
+                <button onClick={openChainModal} className="btn btn-underline centered gap-2 px-4">
                   {chain?.iconUrl && (
                     <Image width={30} height={30} src={chain.iconUrl} className="w-6" alt="" />
                   )}

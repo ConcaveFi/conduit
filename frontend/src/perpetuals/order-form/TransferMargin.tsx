@@ -108,15 +108,10 @@ function TransferMargin() {
 export function TransferMarginButton({ market }: { market: { address: Address; asset: string } }) {
   const { t } = useTranslation()
   const router = useRouter()
-
-  // const { data: remainingMargin } = useMarketRemainingMargin({
-  //   address: market.address,
-  //   args: address && [address],
-  //   select: (d) => FixedNumber.fromValue(d.marginRemaining, 18),
-  // })
-
   const query = useSearchParams()
-  const isOpen = query ? query?.get('modal') === UrlModal.TRANSFER_MARGIN : false
+  const supValues = [UrlModal.TRANSFER_MARGIN, UrlModal.WITHDRAW]
+  const asset = (query ? query.get('modal') : '') as UrlModal
+  const isOpen = supValues.includes(asset)
   return (
     <>
       <Link
