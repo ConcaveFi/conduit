@@ -19,7 +19,7 @@ export function LocationSelector() {
       <Menu.Button>
         <Image
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
-          className="object-contain"
+          className="w-auto object-contain"
           alt="usa"
           width={30}
           height={15}
@@ -42,7 +42,7 @@ const Flag = ({ loc }: { loc: string }) => {
   return (
     <Image
       src={`/assets/flags/${LOCALE_NAME[loc]}.png`}
-      className="object-contain"
+      className="w-auto object-contain"
       alt="usa"
       width={35}
       height={15}
