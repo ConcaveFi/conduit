@@ -45,15 +45,13 @@ const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainn
 export function useOffchainPrice<TSelect = ParsedPriceFeed>({
   marketKey,
   watch,
-  enabled,
+  enabled = true,
   select,
-  onSuccess,
 }: {
   marketKey?: MarketKey
   watch?: boolean
   enabled?: boolean
   select?: (priceFeed: ParsedPriceFeed) => TSelect
-  onSuccess?: (data: TSelect) => void
 }) {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
@@ -90,25 +88,18 @@ export function useOffchainPrice<TSelect = ParsedPriceFeed>({
         : { id: marketPythId as PythId, price: FixedNumber.from(0) }
       return (select ? select(result) : result) as TSelect
     },
-    onSuccess,
   })
 }
 
 export function useSkewAdjustedOffChainPrice({
   marketKey,
   watch,
-  onSuccess,
 }: {
-  marketKey: MarketKey
+  marketKey?: MarketKey
   watch?: boolean
-  onSuccess?: (skewAdjustedPrice: FixedNumber) => void
 }) {
   const { data: market } = useMarkets({ select: (m) => m.find(({ key }) => key === marketKey) })
   const { data: settings } = useMarketSettings({ marketKey })
-
-  const { chain } = useNetwork()
-  const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
-  const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
 
   return useOffchainPrice({
     marketKey,
@@ -119,7 +110,6 @@ export function useSkewAdjustedOffChainPrice({
       const skewAdjustedPrice = price.mulUnsafe(skew)
       return skewAdjustedPrice
     },
-    onSuccess,
   })
 }
 

@@ -1,18 +1,38 @@
 import { GridLayout } from 'src/components/GridLayout'
 import { Topbar } from 'src/components/topbar/Topbar'
 import { StrategyHeader } from 'src/perpetuals/Header'
-import { usePageTitleWithAssetPrice } from 'src/perpetuals/hooks/usePageTitleWithAssetPrice'
+import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { useSkewAdjustedOffChainPrice } from 'src/perpetuals/hooks/useOffchainPrice'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 
-export default function Home() {
-  usePageTitleWithAssetPrice()
+import Head from 'next/head'
+import { formatUsd } from 'src/utils/format'
 
+function Title() {
+  const market = useRouteMarket()
+
+  const { data: price } = useSkewAdjustedOffChainPrice({
+    marketKey: market?.key,
+    watch: true,
+  })
+
+  return (
+    <Head>
+      <title>
+        {market && price ? `${market.asset} - ${formatUsd(price)} | Conduit` : 'Conduit'}
+      </title>
+    </Head>
+  )
+}
+
+export default function Home() {
   const isHydrated = useIsHydrated()
   if (!isHydrated) return null
 
   return (
     <WidgetsProvider>
+      <Title />
       <div className="skeleton flex h-full w-full flex-col gap-4 p-4">
         <Topbar />
         <StrategyHeader />
