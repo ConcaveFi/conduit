@@ -1,12 +1,12 @@
 import { Menu } from '@tradex/interface'
 import { storeLocale } from '@tradex/languages'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { LOCALE_NAME, SUPPORTED_LOCALES } from 'src/utils/locale'
 
 export function LocationSelector() {
   const router = useRouter()
   const { asPath, pathname, query } = router
-  const locales = router.locales as string[]
   const locale = router.locale as string
 
   function handleClick(locale: string) {
@@ -17,7 +17,7 @@ export function LocationSelector() {
   return (
     <Menu className="centered flex ">
       <Menu.Button>
-        <img
+        <Image
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
           className="object-contain"
           alt="usa"
@@ -39,10 +39,8 @@ export function LocationSelector() {
 }
 
 const Flag = ({ loc }: { loc: string }) => {
-  console.log(loc, LOCALE_NAME[loc])
-
   return (
-    <img
+    <Image
       src={`/assets/flags/${LOCALE_NAME[loc]}.png`}
       className="object-contain"
       alt="usa"

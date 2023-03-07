@@ -11,11 +11,11 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
-import { useRouteMarket } from 'src/hooks/perps'
+import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { TransferMarginButton } from 'src/perpetuals/order-form/TransferMargin'
 import { format, formatPercent, formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
-import { TransferMarginButton } from './TransferMargin'
 
 function SideSelector({
   side,

@@ -1,5 +1,5 @@
+import { Topbar } from 'src/components/futures/topbar/Topbar'
 import { GridLayout } from 'src/components/GridLayout'
-import { Topbar } from 'src/components/topbar/Topbar'
 import { StrategyHeader } from 'src/perpetuals/Header'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { useSkewAdjustedOffChainPrice } from 'src/perpetuals/hooks/useOffchainPrice'
