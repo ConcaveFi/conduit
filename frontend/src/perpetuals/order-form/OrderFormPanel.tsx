@@ -2,7 +2,7 @@ import * as Slider from '@radix-ui/react-slider'
 import { NumericInput, Panel, PanelProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
-import { formatBytes32String, parseEther } from 'ethers/lib/utils.js'
+import { parseEther } from 'ethers/lib/utils.js'
 import {
   useMarketPostTradeDetails,
   useMarketRemainingMargin,
@@ -10,6 +10,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
+import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { format, formatPercent, formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
@@ -125,10 +126,6 @@ export const OrderSizeInput = ({
   )
 }
 
-export const TrackingCode = formatBytes32String('conduit')
-export const DEFAULT_PRICE_IMPACT_DELTA = BigNumber.from('500000000000000000') // 0.5%
-export const MAX_LEVERAGE = FixedNumber.from(25)
-
 type InputState = { value: string; type: 'usd' | 'asset' }
 const deriveInputs = (input?: InputState, price?: FixedNumber) => {
   const { value, type } = input || {}
@@ -160,8 +157,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
     return side === 'long' ? size : size.mul(-1)
   }, [debouncedSize, side])
 
-  const priceImpact = DEFAULT_PRICE_IMPACT_DELTA
-
   const { address } = useAccount()
   const { data: postTradeDetails } = useMarketPostTradeDetails({
     address: market && market.address,
@@ -190,7 +185,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
     address: market && market.address,
     enabled:
       !sizeDelta.isZero() && buyingPower && sizeDelta.abs().lt(parseEther(buyingPower.toString())),
-    args: [BigNumber.from(sizeDelta), priceImpact, TrackingCode],
+    args: [BigNumber.from(sizeDelta), DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
