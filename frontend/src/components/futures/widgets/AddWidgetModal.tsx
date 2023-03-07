@@ -34,20 +34,7 @@ export function AddWidgetModal(props: ModalProps) {
       </span>
 
       <div className="centered flex w-full flex-1 flex-col flex-wrap gap-4 rounded-xl py-3">
-        {!hasWidgetsToAdd && <span className="text-ocean-200">No more widgets to add.</span>}
-        {hasWidgetsToAdd &&
-          notAdded.map((key) => (
-            <button
-              key={key}
-              onClick={() => dispatch(key)}
-              className={cx(
-                'btn w-fit py-2 px-5',
-                selecteds.includes(key) ? 'btn-secondary' : 'btn-underline.secondary',
-              )}
-            >
-              {key.replace('-', ' ')}
-            </button>
-          ))}
+        {renderNotAddedWidgets()}
       </div>
       <div className="flex justify-end gap-3">
         <button className="btn btn-secondary centered h-9 w-[80px] rounded-lg ">
@@ -61,4 +48,20 @@ export function AddWidgetModal(props: ModalProps) {
       </div>
     </Modal>
   )
+
+  function renderNotAddedWidgets() {
+    if (!hasWidgetsToAdd) return <span className="text-ocean-200">No more widgets to add.</span>
+    return notAdded.map((key) => {
+      const buttonVariant = selecteds.includes(key) ? 'btn-secondary' : 'btn-underline.secondary'
+      const className = cx('btn w-fit py-2 px-5', buttonVariant)
+      const onClick = () => dispatch(key)
+      const buttonProps = { onClick, className }
+
+      return (
+        <button key={key} {...buttonProps}>
+          {key.replace('-', ' ')}
+        </button>
+      )
+    })
+  }
 }
