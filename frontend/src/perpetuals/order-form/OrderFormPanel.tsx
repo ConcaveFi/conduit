@@ -7,7 +7,6 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-mo
 import Link from 'next/link'
 import {
   useMarketDataPositionDetails,
-  useMarketPostTradeDetails,
   useMarketRemainingMargin,
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
@@ -22,6 +21,7 @@ import { formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { Address, useAccount } from 'wagmi'
 import { useSkewAdjustedOffChainPrice } from '../hooks/useOffchainPrice'
+import { useTradePreview } from '../hooks/useTradePreview'
 import { TransferMarginButton } from './TransferMargin'
 
 const SideSelector = memo(function SideSelector({
@@ -452,7 +452,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     watch: true,
   })
 
-  const tradePreview = useMarketPostTradeDetails({
+  const tradePreview = useTradePreview({
     address: market && market.address,
     args: [
       BigNumber.from(sizeDelta),
@@ -461,11 +461,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       account!,
     ],
     keepPreviousData: true,
-    select: (d) => ({
-      fee: FixedNumber.fromValue(d.fee, 18),
-      entryPrice: FixedNumber.fromValue(d.price, 18),
-      liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18),
-    }),
   })
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
