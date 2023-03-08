@@ -62,7 +62,7 @@ const OrderSizeInput = ({
   onChange,
   inputs,
   assetSymbol,
-  max,
+  max = '0',
 }: {
   onChange: (s: InputState) => void
   inputs: ReturnType<typeof deriveInputs>
@@ -116,7 +116,7 @@ const OrderSizeInput = ({
                 Over your buying power
               </motion.span>
             ) : (
-              inputs[other] && (
+              +inputs[other].toString() > 0 && (
                 <motion.button
                   key={other}
                   layout="preserve-aspect"
@@ -336,7 +336,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   const buyingPower =
     remainingMargin && !remainingMargin.isZero()
       ? remainingMargin.mulUnsafe(MAX_LEVERAGE)
-      : FIXED_ONE
+      : undefined
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
@@ -358,8 +358,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
 
   const sizePercentOfBuyingPower =
     buyingPower && (sizeUsd.isZero() ? FIXED_ONE : sizeUsd).divUnsafe(buyingPower)
-
-  console.log(market)
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
