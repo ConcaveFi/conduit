@@ -401,9 +401,9 @@ const TradeDetails = memo(function TradeDetails({
 
   return (
     <ul className="text-ocean-200 text-xs">
-      <li>Entry price: {formatUsd(entryPrice)}</li>
-      <li>Execution Fee: {formatUsd(executionFee)}</li>
-      <li>Trade Fee: {formatUsd(fee)}</li>
+      <li className="bg-ocean-400 rounded px-2 py-0.5">Entry price: {formatUsd(entryPrice)}</li>
+      <li className="px-2 py-0.5">Execution Fee: {formatUsd(executionFee)}</li>
+      <li className="bg-ocean-400 rounded px-2 py-0.5">Trade Fee: {formatUsd(fee)}</li>
     </ul>
   )
 })
