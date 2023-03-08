@@ -87,7 +87,7 @@ const OrderSizeInput = ({
           <AnimatePresence mode="popLayout">
             <motion.div
               key={`order-size-${amountDenominator}`}
-              layout
+              layout="preserve-aspect"
               layoutId={`order-size-${amountDenominator}`}
               initial={{ y: 4 }}
               animate={{ y: 0 }}
