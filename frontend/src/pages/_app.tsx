@@ -11,7 +11,18 @@ const Aeonik = localFont({
 })
 
 const AeonikMono = localFont({
-  src: '../../fonts/Aeonik-Mono/AeonikMono-Regular.otf',
+  src: [
+    {
+      path: '../../fonts/Aeonik-Mono/AeonikMono-Regular.otf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../fonts/Aeonik-Mono/AeonikMono-Medium.otf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   variable: '--font-aeonik-mono',
 })
 

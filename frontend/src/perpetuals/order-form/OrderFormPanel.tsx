@@ -3,7 +3,7 @@ import { cx, NumericInput, Panel, PanelProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils.js'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import Link from 'next/link'
 import {
   useMarketDataPositionDetails,
@@ -13,7 +13,7 @@ import {
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { parsePositionDetails } from 'perps-hooks/parsers'
-import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
@@ -86,16 +86,16 @@ const OrderSizeInput = ({
         <div className="flex min-w-0 flex-col">
           <AnimatePresence mode="popLayout">
             <motion.div
-              key={amountDenominator}
-              layout="preserve-aspect"
-              layoutId={amountDenominator}
-              initial={{ y: 8 }}
+              key={`order-size-${amountDenominator}`}
+              layout
+              layoutId={`order-size-${amountDenominator}`}
+              initial={{ y: 4 }}
               animate={{ y: 0 }}
-              exit={{ y: -8, opacity: 0 }}
+              exit={{ y: -4, opacity: 0 }}
             >
               <NumericInput
                 data-overflow={isOverBuyingPower}
-                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl font-bold text-white outline-none data-[overflow=true]:text-red-400"
+                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
                 value={inputs[amountDenominator].toString()}
                 onValueChange={({ value }, { source }) => {
@@ -106,11 +106,11 @@ const OrderSizeInput = ({
 
             {isOverBuyingPower ? (
               <motion.span
-                key="error"
+                key="order-size-error"
                 layout
-                initial={{ opacity: 0, y: -10, height: inputs[other] ? 'auto' : 0 }}
+                initial={{ opacity: 0, y: -4, height: inputs[other] ? 'auto' : 0 }}
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
-                exit={{ opacity: 0, y: -10, height: 0 }}
+                exit={{ opacity: 0, y: -4, height: 0 }}
                 className="font-mono text-xs text-red-400"
               >
                 Over your buying power
@@ -118,9 +118,9 @@ const OrderSizeInput = ({
             ) : (
               +inputs[other].toString() > 0 && (
                 <motion.button
-                  key={other}
-                  layout="preserve-aspect"
-                  layoutId={other}
+                  key={`order-size-${other}`}
+                  layout
+                  layoutId={`order-size-${other}`}
                   onClick={toggleAmountDenominator}
                   initial={{ opacity: 0, y: -8, height: inputs[other] ? 'auto' : 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
@@ -149,6 +149,22 @@ const OrderSizeInput = ({
   )
 }
 
+const riskLevel = (value: number, max: number) => {
+  const levels = [
+    { label: 'HIGH', threshold: 75, text: 'text-orange-400', border: 'border-red-400' },
+    { label: 'MEDIUM', threshold: 25, text: 'text-orange-400', border: 'border-yellow-400' },
+    { label: 'LOW', threshold: 0, text: 'text-green-400', border: 'border-green-400' },
+  ] as const
+
+  const low = levels[2]
+
+  if (!max || !value) return low
+
+  const v = max ? (value >= max ? 100 : (value / max) * 100) : 0
+
+  return levels.find((lvl) => v > lvl.threshold) || low
+}
+
 function SizeSlider({
   value,
   max,
@@ -175,30 +191,50 @@ function SizeSlider({
     [max, onChange],
   )
 
+  const v = useMotionValue(sliderValue)
+  useEffect(() => {
+    v.set(sliderValue)
+  }, [sliderValue, v])
+  const borderColor = useTransform(v, [0, 0.5, 1], ['#4ade80', '#facc15', '#f87171'])
+
   return (
     <Slider.Root
+      disabled={!max}
       value={[sliderValue]}
       step={0.01}
       max={1}
       onValueChange={handleSizeSlider}
-      className="flex w-full touch-none select-none items-center"
+      className="relative flex w-full touch-none select-none items-center"
     >
-      <Slider.Track className="h-1 flex-1 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-400" />
-      <Slider.Thumb
+      <Slider.Track
         className={cx(
-          'box-4 bg-ocean-800 block rounded-full border-2 transition-all duration-300 ease-out hover:scale-110',
-          sliderValue < 0.25
-            ? 'border-green-400'
-            : sliderValue < 0.75
-            ? 'border-yellow-400'
-            : 'border-red-400',
+          'h-1 flex-1 rounded-full',
+          !max ? 'bg-ocean-500' : 'bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
         )}
       />
+      <Slider.Thumb asChild>
+        <motion.span
+          className={cx(
+            'box-4 bg-ocean-800 block rounded-full border-2 outline-none transition-all duration-300 ease-out hover:scale-110',
+          )}
+          style={{ borderColor: max ? borderColor : 'rgb(62 83 137)' }}
+        />
+      </Slider.Thumb>
     </Slider.Root>
   )
 }
 
-const LiquidationPrice = () => {
+const LiquidationPriceSlider = ({
+  liquidationPrice,
+  max,
+  inputs,
+  onChange,
+}: {
+  liquidationPrice: string | undefined
+  max: string | undefined
+  inputs: ReturnType<typeof deriveInputs>
+  onChange: (s: InputState) => void
+}) => {
   return (
     <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
@@ -206,14 +242,23 @@ const LiquidationPrice = () => {
         <span className="text-ocean-200 text-xs">Risk Level</span>
       </div>
       <div className="flex flex-col gap-2 font-mono">
-        <div className="flex justify-between">
-          <span className="text-white">$1.432.32</span>
-          <span className="text-green-400">LOW</span>
+        <div className="flex items-center justify-between">
+          <NumericInput
+            className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
+            placeholder="0.00"
+            prefix="$"
+            value={liquidationPrice?.toString() || ''}
+            decimalScale={2}
+            onValueChange={({ value }, { source }) => {
+              // if (source === 'event') onChange({ value, type: amountDenominator })
+            }}
+          />
+          <span className="font-bold text-green-400">LOW</span>
         </div>
-        <SizeSlider value="500" max="2300" onChange={() => {}} />
+        <SizeSlider value={inputs.usd.toString()} max={max} onChange={onChange} />
         <div className="flex justify-between font-mono">
-          <span className="text-xs text-green-500">$0</span>
-          <span className="text-xs text-orange-500">$2300</span>
+          <span className={cx('text-xs', max ? 'text-green-500' : 'text-ocean-300')}>$0</span>
+          {max && <span className="text-xs text-orange-500">{formatUsd(max)}</span>}
         </div>
       </div>
     </div>
@@ -380,7 +425,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         />
       </div>
 
-      <LiquidationPrice />
+      <LiquidationPriceSlider
+        liquidationPrice={postTradeDetails?.liquidationPrice.toString()}
+        inputs={inputs}
+        onChange={setInput}
+        max={buyingPower?.toString()}
+      />
 
       <div className="flex items-center justify-between">
         <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
@@ -397,7 +447,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         disabled={!submitOrder}
         className="btn centered h-11 rounded-lg bg-teal-500 text-white"
       >
-        {t('place order')}
+        {/* {t('place order')} */}
+        Place {side}
       </button>
 
       <div className="text-ocean-200 flex h-48 flex-col gap-1 text-xs">

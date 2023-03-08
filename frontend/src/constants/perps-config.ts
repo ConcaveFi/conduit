@@ -20,6 +20,23 @@ currentFundingRate: wei(currentFundingRate).div(24),
 
 marketClosureReason: getReasonFromCode(reasons[i]) as MarketClosureReason,
 
+if (positionHistory && tradePreview) {
+    const { avgEntryPrice, side, size } = positionHistory;
+    const currentSize = side === PositionSide.SHORT ? size.neg() : size;
+
+    // If the trade switched sides (long -> short or short -> long), use oracle price
+    if (currentSize.mul(tradePreview.size).lt(0)) return tradePreview.price;
+
+    // If the trade reduced position size on the same side, average entry remains the same
+    if (tradePreview.size.abs().lt(size)) return avgEntryPrice;
+
+    // If the trade increased position size on the same side, calculate new average
+    const existingValue = avgEntryPrice.mul(size);
+    const newValue = tradePreview.price.mul(tradePreview.sizeDelta.abs());
+    const totalValue = existingValue.add(newValue);
+    return totalValue.div(tradePreview.size.abs());
+}
+
 */
 
 import { BigNumber, FixedNumber } from 'ethers'
