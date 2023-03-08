@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: `var(--font-aeonik)`,
+        mono: `var(--font-aeonik-mono)`,
       },
     },
   },

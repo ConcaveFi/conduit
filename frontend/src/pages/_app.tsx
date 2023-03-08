@@ -10,11 +10,16 @@ const Aeonik = localFont({
   variable: '--font-aeonik',
 })
 
+const AeonikMono = localFont({
+  src: '../../fonts/Aeonik-Mono/AeonikMono-Regular.otf',
+  variable: '--font-aeonik-mono',
+})
+
 export default function App({ Component, pageProps }: any) {
   return (
     <AppProviders>
       <div
-        className={`bg-ocean-900 flex h-screen overflow-y-auto overflow-x-hidden ${Aeonik.variable} font-sans`}
+        className={`bg-ocean-900 flex h-screen overflow-y-auto overflow-x-hidden ${Aeonik.variable} ${AeonikMono.variable} font-sans`}
       >
         <Component {...pageProps} />
       </div>

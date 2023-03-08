@@ -31,7 +31,7 @@ function SideSelector({
 }) {
   const { t } = useTranslation()
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 font-mono">
       <button
         onClick={() => onChange('long')}
         className={cx(
@@ -95,7 +95,7 @@ const OrderSizeInput = ({
             >
               <NumericInput
                 data-overflow={isOverBuyingPower}
-                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent text-xl font-bold text-white outline-none data-[overflow=true]:text-red-400"
+                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl font-bold text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
                 value={inputs[amountDenominator].toString()}
                 onValueChange={({ value }, { source }) => {
@@ -111,7 +111,7 @@ const OrderSizeInput = ({
                 initial={{ opacity: 0, y: -10, height: inputs[other] ? 'auto' : 0 }}
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: -10, height: 0 }}
-                className="text-xs text-red-400"
+                className="font-mono text-xs text-red-400"
               >
                 Over your buying power
               </motion.span>
@@ -129,7 +129,7 @@ const OrderSizeInput = ({
                     y: -8,
                     height: isOverBuyingPower ? 'auto' : 0,
                   }}
-                  className="text-ocean-200 min-h-0 max-w-full text-ellipsis text-start text-xs outline-none hover:text-white"
+                  className="text-ocean-200 min-h-0 max-w-full text-ellipsis text-start font-mono text-xs outline-none hover:text-white"
                 >
                   <span className="text-ellipsis font-medium">{inputs[other].toString()}</span>
                   <span className="ml-0.5 text-inherit">{symbols[other]}</span>
@@ -205,13 +205,13 @@ const LiquidationPrice = () => {
         <span className="text-ocean-200 text-xs">Liquidation Price:</span>
         <span className="text-ocean-200 text-xs">Risk Level</span>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 font-mono">
         <div className="flex justify-between">
           <span className="text-white">$1.432.32</span>
           <span className="text-green-400">LOW</span>
         </div>
         <SizeSlider value="500" max="2300" onChange={() => {}} />
-        <div className="flex justify-between">
+        <div className="flex justify-between font-mono">
           <span className="text-xs text-green-500">$0</span>
           <span className="text-xs text-orange-500">$2300</span>
         </div>
@@ -264,7 +264,7 @@ function BuyingPowerInfo({ market, account }: { market: { address: Address }; ac
           {!remainingMargin ? (
             <Skeleton />
           ) : (
-            <span className="text-white">{formatUsd(remainingMargin)}</span>
+            <span className="font-mono text-white">{formatUsd(remainingMargin)}</span>
           )}
         </div>
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
@@ -272,7 +272,7 @@ function BuyingPowerInfo({ market, account }: { market: { address: Address }; ac
           {!buyingPower ? (
             <Skeleton />
           ) : (
-            <span className="text-green-400">{formatUsd(buyingPower)}</span>
+            <span className="font-mono text-green-400">{formatUsd(buyingPower)}</span>
           )}
         </div>
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
@@ -280,13 +280,17 @@ function BuyingPowerInfo({ market, account }: { market: { address: Address }; ac
           {!inPosition ? (
             <Skeleton />
           ) : (
-            <span className="text-red-400">{formatUsd(inPosition)}</span>
+            <span className="font-mono text-red-400">{formatUsd(inPosition)}</span>
           )}
         </div>
       </div>
       <div className="bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
         <span className="text-ocean-200">Available</span>
-        {!available ? <Skeleton /> : <span className="text-white">{formatUsd(available)}</span>}
+        {!available ? (
+          <Skeleton />
+        ) : (
+          <span className="font-mono text-white">{formatUsd(available)}</span>
+        )}
       </div>
     </div>
   )
