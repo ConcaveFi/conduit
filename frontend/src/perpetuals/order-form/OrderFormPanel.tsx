@@ -87,7 +87,7 @@ const OrderSizeInput = ({
           <AnimatePresence mode="popLayout">
             <motion.div
               key={`order-size-${amountDenominator}`}
-              layout="preserve-aspect"
+              layout="position"
               layoutId={`order-size-${amountDenominator}`}
               initial={{ y: 4 }}
               animate={{ y: 0 }}
@@ -140,7 +140,7 @@ const OrderSizeInput = ({
         </div>
         <button
           onClick={toggleAmountDenominator}
-          className="hover:bg-ocean-500 mb-auto rounded-xl px-3 py-1 text-sm font-medium text-white"
+          className="hover:bg-ocean-500 -mx-2 mb-auto rounded-xl px-2 py-1 text-sm font-medium text-white"
         >
           {symbols[amountDenominator]}
         </button>
@@ -267,9 +267,9 @@ const LiquidationPrice = memo(function LiquidationPrice({
         <span className="text-ocean-200 text-xs">Risk Level</span>
       </div>
       <div className="flex flex-col gap-2 font-mono">
-        <div className="flex items-center justify-between">
+        <div className="flex h-7 items-center justify-between">
           {isLoading ? (
-            <Skeleton />
+            <div className="animate-skeleton bg-ocean-400 skeleton-from-ocean-300 skeleton-to-ocean-400 mb-1 h-5 w-24 rounded" />
           ) : (
             <NumericInput
               disabled
@@ -416,7 +416,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const liquidationPrice = useMarketPostTradeDetails({
     address: market && market.address,
-    enabled: false,
     args: [
       BigNumber.from(sizeDelta),
       BigNumber.from(0), // <- trade price
