@@ -456,7 +456,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     address: market && market.address,
     args: [
       BigNumber.from(sizeDelta),
-      BigNumber.from(marketPrice),
+      BigNumber.from(marketPrice || 0),
       OrderType.delayedOffchain,
       account!,
     ],
