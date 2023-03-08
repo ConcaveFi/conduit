@@ -1,8 +1,10 @@
 import * as Slider from '@radix-ui/react-slider'
-import { NumericInput, Panel, PanelProps } from '@tradex/interface'
+import { cx, NumericInput, Panel, PanelProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils.js'
+import { AnimatePresence, motion } from 'framer-motion'
+import Link from 'next/link'
 import {
   useMarketDataPositionDetails,
   useMarketPostTradeDetails,
@@ -14,6 +16,7 @@ import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useMemo, useReducer, useState } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { UrlModal } from 'src/utils/enum/urlModal'
 import { format, formatPercent, formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { Address, useAccount } from 'wagmi'
@@ -31,21 +34,118 @@ function SideSelector({
     <div className="flex gap-4">
       <button
         onClick={() => onChange('long')}
-        className={`btn centered flex-1 rounded-lg py-2 ${
-          side === 'long' ? 'btn-green-gradient' : 'btn-down'
-        }`}
+        className={cx(
+          `btn centered flex-1 rounded-lg py-2`,
+          side === 'long'
+            ? 'bg-teal-500  text-white'
+            : 'text-teal-400 ring-1 ring-inset ring-teal-400',
+        )}
       >
         {t('long')}
       </button>
       <button
         onClick={() => onChange('short')}
-        className={`centered btn flex-1 rounded-lg py-2 ${
-          side === 'short' ? 'btn-red-gradient' : 'btn-down'
-        }`}
+        className={cx(
+          'centered btn flex-1 rounded-lg py-2',
+          side === 'short'
+            ? 'bg-red-500 text-white'
+            : 'text-red-400 ring-1 ring-inset ring-red-400',
+        )}
       >
         {t('short')}
       </button>
     </div>
+  )
+}
+
+const OrderSizeInput = ({
+  onChange,
+  inputs,
+  assetSymbol,
+  max,
+}: {
+  onChange: (s: InputState) => void
+  inputs: ReturnType<typeof deriveInputs>
+  assetSymbol: string
+  max: string | undefined
+}) => {
+  const [amountDenominator, toggleAmountDenominator] = useReducer(
+    (s) => (s === 'usd' ? 'asset' : 'usd'),
+    'usd',
+  )
+  const other = amountDenominator === 'usd' ? 'asset' : 'usd'
+  const symbols = { usd: 'sUSD', asset: assetSymbol }
+
+  const isOverBuyingPower =
+    !!max && !!inputs.usd && parseEther(inputs.usd.toString()).gt(parseEther(max))
+
+  return (
+    <motion.div className="bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+      <span className="text-ocean-200 text-xs">Order Size</span>
+      <div className="flex w-full max-w-full justify-between">
+        <div className="flex min-w-0 flex-col">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={amountDenominator}
+              layout="preserve-aspect"
+              layoutId={amountDenominator}
+              initial={{ y: 8 }}
+              animate={{ y: 0 }}
+              exit={{ y: -8, opacity: 0 }}
+            >
+              <NumericInput
+                data-overflow={isOverBuyingPower}
+                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent text-xl font-bold text-white outline-none data-[overflow=true]:text-red-400"
+                placeholder="0.00"
+                value={inputs[amountDenominator].toString()}
+                onValueChange={({ value }, { source }) => {
+                  if (source === 'event') onChange({ value, type: amountDenominator })
+                }}
+              />
+            </motion.div>
+
+            {isOverBuyingPower ? (
+              <motion.span
+                key="error"
+                layout
+                initial={{ opacity: 0, y: -10, height: inputs[other] ? 'auto' : 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -10, height: 0 }}
+                className="text-xs text-red-400"
+              >
+                Over your buying power
+              </motion.span>
+            ) : (
+              inputs[other] && (
+                <motion.button
+                  key={other}
+                  layout="preserve-aspect"
+                  layoutId={other}
+                  onClick={toggleAmountDenominator}
+                  initial={{ opacity: 0, y: -8, height: inputs[other] ? 'auto' : 0 }}
+                  animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  exit={{
+                    opacity: 0,
+                    y: -8,
+                    height: isOverBuyingPower ? 'auto' : 0,
+                  }}
+                  className="text-ocean-200 min-h-0 max-w-full text-ellipsis text-start text-xs outline-none hover:text-white"
+                >
+                  <span className="text-ellipsis font-medium">{inputs[other].toString()}</span>
+                  <span className="ml-0.5 text-inherit">{symbols[other]}</span>
+                </motion.button>
+              )
+            )}
+          </AnimatePresence>
+        </div>
+        <button
+          onClick={toggleAmountDenominator}
+          className="hover:bg-ocean-500 mb-auto rounded-xl px-3 py-1 text-sm font-medium text-white"
+        >
+          {symbols[amountDenominator]}
+        </button>
+      </div>
+    </motion.div>
   )
 }
 
@@ -55,7 +155,7 @@ function SizeSlider({
   onChange,
 }: {
   value: string
-  max?: string
+  max: string | undefined
   onChange: (s: InputState) => void
 }) {
   const sliderValue = max ? (+value >= +max ? 1 : +value / +max) : 0
@@ -81,64 +181,41 @@ function SizeSlider({
       step={0.01}
       max={1}
       onValueChange={handleSizeSlider}
-      className="relative flex h-[20px] w-full touch-none select-none items-center"
+      className="flex w-full touch-none select-none items-center"
     >
-      <Slider.Track className="bg-ocean-600 relative h-[3px] flex-1 rounded-full" />
-      <Slider.Thumb className="box-[15px] bg-ocean-200 block rounded-full transition-all duration-300 ease-out hover:scale-125" />
+      <Slider.Track className="h-1 flex-1 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-400" />
+      <Slider.Thumb
+        className={cx(
+          'box-4 bg-ocean-800 block rounded-full border-2 transition-all duration-300 ease-out hover:scale-110',
+          sliderValue < 0.25
+            ? 'border-green-400'
+            : sliderValue < 0.75
+            ? 'border-yellow-400'
+            : 'border-red-400',
+        )}
+      />
     </Slider.Root>
   )
 }
 
-export const OrderSizeInput = ({
-  onChange,
-  inputs,
-  assetSymbol,
-  max,
-}: {
-  onChange: (s: InputState) => void
-  inputs: ReturnType<typeof deriveInputs>
-  assetSymbol: string
-  max: string | undefined
-}) => {
-  const [amountDenominator, toggleAmountDenominator] = useReducer(
-    (s) => (s === 'usd' ? 'asset' : 'usd'),
-    'usd',
-  )
-  const other = amountDenominator === 'usd' ? 'asset' : 'usd'
-  const symbols = { usd: 'sUSD', asset: assetSymbol }
-
+const LiquidationPrice = () => {
   return (
-    <div className="flex w-full max-w-full flex-col gap-1">
-      <span className="text-light-400 text-xs">Order Size</span>
-      <div className="flex h-[60px] w-full max-w-full justify-between">
-        <div className="flex min-w-0 flex-col">
-          <NumericInput
-            className="text-light-200 placeholder:text-ocean-200 min-w-0 text-ellipsis bg-transparent text-xl font-bold outline-none"
-            placeholder="0.00"
-            value={inputs[amountDenominator].toString()}
-            onValueChange={({ value }, { source }) => {
-              if (source === 'event') onChange({ value, type: amountDenominator })
-            }}
-          />
-          <div className="h-4">
-            <NumericInput
-              className="text-ocean-200 w-min min-w-0 text-ellipsis bg-transparent text-sm font-medium outline-none"
-              value={inputs[other].toString()}
-              onValueChange={({ value }, { source }) => {
-                if (source === 'event') onChange({ value, type: other })
-              }}
-            />
-            <span className="text-ocean-200 ml-0.5 text-sm">{inputs[other] && symbols[other]}</span>
-          </div>
-        </div>
-        <button
-          onClick={toggleAmountDenominator}
-          className="text-ocean-200 hover:bg-light-800 mb-auto rounded-xl px-3 py-1 text-sm font-medium"
-        >
-          {symbols[amountDenominator]}
-        </button>
+    <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+      <div className="flex justify-between">
+        <span className="text-ocean-200 text-xs">Liquidation Price:</span>
+        <span className="text-ocean-200 text-xs">Risk Level</span>
       </div>
-      <SizeSlider max={max} onChange={onChange} value={inputs.usd.toString()} />
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between">
+          <span className="text-white">$1.432.32</span>
+          <span className="text-green-400">LOW</span>
+        </div>
+        <SizeSlider value="500" max="2300" onChange={() => {}} />
+        <div className="flex justify-between">
+          <span className="text-xs text-green-500">$0</span>
+          <span className="text-xs text-orange-500">$2300</span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -215,6 +292,7 @@ function BuyingPowerInfo({ market, account }: { market: { address: Address }; ac
   )
 }
 
+const FIXED_ONE = FixedNumber.from(1)
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   const { t } = useTranslation()
 
@@ -258,7 +336,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   const buyingPower =
     remainingMargin && !remainingMargin.isZero()
       ? remainingMargin.mulUnsafe(MAX_LEVERAGE)
-      : undefined
+      : FIXED_ONE
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market && market.address,
@@ -279,7 +357,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
     remainingMargin && !remainingMargin.isZero() && sizeUsd.divUnsafe(remainingMargin)
 
   const sizePercentOfBuyingPower =
-    buyingPower && (sizeUsd.isZero() ? FixedNumber.from(1) : sizeUsd).divUnsafe(buyingPower)
+    buyingPower && (sizeUsd.isZero() ? FIXED_ONE : sizeUsd).divUnsafe(buyingPower)
 
   console.log(market)
 
@@ -288,6 +366,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
       <TransferMarginButton asset={market?.asset} />
 
       {address && <BuyingPowerInfo account={address} market={market} />}
+
+      <SideSelector side={side} onChange={setSide} />
 
       <div className="flex max-w-full flex-col">
         <OrderSizeInput
@@ -298,7 +378,25 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
         />
       </div>
 
-      <SideSelector side={side} onChange={setSide} />
+      <LiquidationPrice />
+
+      <div className="flex items-center justify-between">
+        <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
+        <Link
+          href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
+          className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
+        >
+          Deposit Margin
+        </Link>
+      </div>
+
+      <button
+        onClick={submitOrder}
+        disabled={!submitOrder}
+        className="btn centered h-11 rounded-lg bg-teal-500 text-white"
+      >
+        {t('place order')}
+      </button>
 
       <div className="text-ocean-200 flex h-48 flex-col gap-1 text-xs">
         {leveragedIn && (
@@ -323,14 +421,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
           {formatPercent(feeRate)})
         </span>
       </div>
-
-      <button
-        onClick={submitOrder}
-        disabled={!submitOrder}
-        className="btn btn-green-gradient skeleton centered h-16 rounded-lg text-xl "
-      >
-        {t('place order')}
-      </button>
     </Panel>
   )
 })
