@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { getContract, ReadContractResult } from '@wagmi/core'
+import { getContract, Provider, ReadContractResult } from '@wagmi/core'
 import { FixedNumber } from 'ethers'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils'
 import { useSearchParams } from 'next/navigation'
@@ -77,11 +77,40 @@ export const useRouteMarket = () => {
   return market
 }
 
-export function useMarketSettings({
+const fetchMarketSettings = async ({
+  provider,
+  chainId,
   marketKey,
+}: {
+  provider: Provider
+  chainId: number
+  marketKey: MarketKey
+}) => {
+  const marketSettings = getContract({
+    address: marketSettingsAddress[chainId],
+    abi: marketSettingsABI,
+    signerOrProvider: provider,
+  })
+  const marketKeyHex = formatBytes32String(marketKey)
+  const [skewScale, minInitialMargin, minKeeperFee] = await Promise.all([
+    marketSettings.skewScale(marketKeyHex),
+    marketSettings.minInitialMargin(),
+    marketSettings.minKeeperFee(),
+    // marketSettings.maxKeeperFee(),
+    // marketSettings.liquidationBufferRatio(),
+    // marketSettings.liquidationFeeRatio(),
+    // marketSettings.liquidationFeeRatio(),
+  ])
+  return valuesToFixedNumber({ skewScale: skewScale, minInitialMargin, minKeeperFee })
+}
+
+export function useMarketSettings<TSelectData>({
+  marketKey,
+  select,
   ...config
 }: {
   marketKey: MarketKey | undefined
+  select?: (d: Awaited<ReturnType<typeof fetchMarketSettings>>) => TSelectData
   chainId?: SupportedChainId
 }) {
   const { chain } = useNetwork()
@@ -92,29 +121,13 @@ export function useMarketSettings({
 
   return useQuery(
     ['marketSettings', marketKey],
-    async () => {
-      const marketSettings = getContract({
-        address: marketSettingsAddress[chainId],
-        abi: marketSettingsABI,
-        signerOrProvider: provider,
-      })
-      const marketKeyHex = formatBytes32String(marketKey!)
-      const [skewScale, minInitialMargin, minKeeperFee] = await Promise.all([
-        marketSettings.skewScale(marketKeyHex),
-        marketSettings.minInitialMargin(),
-        marketSettings.minKeeperFee(),
-        // marketSettings.maxKeeperFee(),
-        // marketSettings.liquidationBufferRatio(),
-        // marketSettings.liquidationFeeRatio(),
-        // marketSettings.liquidationFeeRatio(),
-      ])
-      return valuesToFixedNumber({ skewScale: skewScale, minInitialMargin, minKeeperFee })
-    },
+    async () => fetchMarketSettings({ marketKey: marketKey!, chainId, provider }),
     {
       enabled: !!marketKey,
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
+      select,
       retry: false,
       staleTime: Infinity,
       cacheTime: Infinity,
