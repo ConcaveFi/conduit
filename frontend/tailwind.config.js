@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: `"Aeonik"`,
+        sans: `var(--font-aeonik)`,
         mono: `var(--font-aeonik-mono)`,
       },
     },
