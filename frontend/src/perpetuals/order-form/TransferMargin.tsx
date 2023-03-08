@@ -10,12 +10,13 @@ import {
   usePrepareMarketTransferMargin,
   useSusdBalanceOf,
 } from 'perps-hooks'
+import { MarketAsset } from 'perps-hooks/markets'
 import { useState } from 'react'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
-import { Address, useAccount } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { ManageMarginModal } from './ManageMarginModal'
 
 function SusdBalance({
@@ -107,7 +108,7 @@ function TransferMargin() {
   )
 }
 
-export function TransferMarginButton({ market }: { market: { address: Address; asset: string } }) {
+export function TransferMarginButton(props: { asset?: MarketAsset }) {
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -128,7 +129,7 @@ export function TransferMarginButton({ market }: { market: { address: Address; a
         href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
         className="text-light-400 bg-ocean-300 flex w-full items-center justify-center rounded-lg py-3 text-center text-sm font-medium"
       >
-        Deposit Margin to {market.asset}/sUSD
+        Deposit Margin to {props.asset}/sUSD
       </Link>
       <ManageMarginModal isOpen={isOpen} onClose={handleClose} />
     </>

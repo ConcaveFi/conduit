@@ -281,9 +281,11 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref
   const sizePercentOfBuyingPower =
     buyingPower && (sizeUsd.isZero() ? FixedNumber.from(1) : sizeUsd).divUnsafe(buyingPower)
 
+  console.log(market)
+
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
-      <TransferMarginButton market={market} />
+      <TransferMarginButton asset={market?.asset} />
 
       {address && <BuyingPowerInfo account={address} market={market} />}
 
