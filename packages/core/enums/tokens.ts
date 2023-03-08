@@ -5,6 +5,10 @@ export const sUSD_ADDRESS: TokenAddress = {
   [optimism.id]: '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9',
   [optimismGoerli.id]: '0xeBaEAAD9236615542844adC5c149F86C36aD1136',
 }
+export const SNX_ADDRESS: TokenAddress = {
+  [optimism.id]: '0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4',
+  [optimismGoerli.id]: '0x2E5ED97596a8368EB9E44B1f3F25B2E813845303',
+}
 
 export const OP_ADDRESS: TokenAddress = {
   [optimism.id]: '0x4200000000000000000000000000000000000042',
