@@ -20,10 +20,11 @@ export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
   const loadChart = useCallback(
     function handleWidget() {
       if (!asset) return
-      const symbol = widget?.options?.symbol?.replace('USD', '')
+      const symbol = widget?.options?.symbol?.replace('USD', '').replace('BINANCE:', '')
       const diffAsset = symbol !== handleSynth(asset)
       if (!widget || diffAsset) {
-        setWidget(createTVwidget({ container_id, symbol: asset + SECOND_SYMBOL }))
+        const market = `BINANCE:${asset + SECOND_SYMBOL}`
+        setWidget(createTVwidget({ container_id, symbol: market }))
       }
       return () => widget?.iframe.remove()
     },

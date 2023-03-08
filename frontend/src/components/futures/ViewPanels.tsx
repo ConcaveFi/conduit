@@ -26,7 +26,9 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
           <Tab.Panel>
             <UserPositions />
           </Tab.Panel>
-          <Tab.Panel>Content 2</Tab.Panel>
+          <Tab.Panel>
+            <></>
+          </Tab.Panel>
           <Tab.Panel>
             <UserTrades />
           </Tab.Panel>
