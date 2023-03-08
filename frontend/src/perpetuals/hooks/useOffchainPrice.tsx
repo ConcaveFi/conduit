@@ -42,6 +42,9 @@ const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainn
 
 // export const prefetchPrices = () => global_queryClient.prefetchQuery(allMarketsPricesQuery)
 
+const ZERO = FixedNumber.from(0)
+const ONE = FixedNumber.from(1)
+
 export function useOffchainPrice<TSelect = ParsedPriceFeed>({
   marketKey,
   watch,
@@ -85,8 +88,8 @@ export function useOffchainPrice<TSelect = ParsedPriceFeed>({
       const feed = priceFeeds?.find((f) => f.id === marketPythId)
       const result = !!feed
         ? { id: feed.id, price: FixedNumber.from(feed.price._value) }
-        : { id: marketPythId as PythId, price: FixedNumber.from(0) }
-      return (select ? select(result) : result) as TSelect
+        : { id: marketPythId as PythId, price: ZERO }
+      return select ? select(result) : (result as TSelect)
     },
   })
 }
@@ -106,9 +109,8 @@ export function useSkewAdjustedOffChainPrice({
     watch,
     enabled: !!market && !!settings,
     select: ({ price }) => {
-      const skew = market!.marketSkew.divUnsafe(settings!.skewScale).addUnsafe(FixedNumber.from(1))
-      const skewAdjustedPrice = price.mulUnsafe(skew)
-      return skewAdjustedPrice
+      const skew = market!.marketSkew.divUnsafe(settings!.skewScale).addUnsafe(ONE)
+      return price.mulUnsafe(skew)
     },
   })
 }

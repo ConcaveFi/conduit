@@ -454,9 +454,10 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const tradePreview = useTradePreview({
     address: market && market.address,
-    args: [
-      BigNumber.from(sizeDelta),
-      BigNumber.from(marketPrice || 0),
+    enabled: !!market && !!marketPrice && !!sizeDelta,
+    args: marketPrice && [
+      sizeDelta,
+      BigNumber.from(marketPrice),
       OrderType.delayedOffchain,
       account!,
     ],
