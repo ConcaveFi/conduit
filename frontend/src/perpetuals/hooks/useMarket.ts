@@ -104,7 +104,9 @@ const fetchMarketSettings = async ({
   return valuesToFixedNumber({ skewScale: skewScale, minInitialMargin, minKeeperFee })
 }
 
-export function useMarketSettings<TSelectData>({
+type MarketSettings = Awaited<ReturnType<typeof fetchMarketSettings>>
+
+export function useMarketSettings<TSelectData = MarketSettings>({
   marketKey,
   select,
   ...config
