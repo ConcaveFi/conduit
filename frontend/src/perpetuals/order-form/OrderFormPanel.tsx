@@ -12,10 +12,11 @@ import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
+import { MarketKey } from 'perps-hooks/markets'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
-import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
@@ -382,7 +383,31 @@ const BuyingPowerInfo = memo(function BuyingPowerInfo({
   )
 })
 
-const FIXED_ONE = FixedNumber.from(1)
+const TradeDetails = memo(function TradeDetails({
+  marketKey,
+  fee,
+  entryPrice,
+}: {
+  marketKey: MarketKey
+  fee: FixedNumber | undefined
+  entryPrice: FixedNumber | undefined
+}) {
+  const { data: executionFee } = useMarketSettings({
+    marketKey,
+    select: (settigns) => settigns.minKeeperFee,
+  })
+
+  if (!executionFee || !fee || !entryPrice) return null
+
+  return (
+    <ul className="text-ocean-200 text-xs">
+      <li>Entry price: {formatUsd(entryPrice)}</li>
+      <li>Execution Fee: {formatUsd(executionFee)}</li>
+      <li>Trade Fee: {formatUsd(fee)}</li>
+    </ul>
+  )
+})
+
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function OrderFormPanel(
   props,
   ref,
@@ -414,7 +439,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     },
   })
 
-  const liquidationPrice = useMarketPostTradeDetails({
+  const tradePreview = useMarketPostTradeDetails({
     address: market && market.address,
     args: [
       BigNumber.from(sizeDelta),
@@ -422,7 +447,11 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       OrderType.delayedOffchain,
       account!,
     ],
-    select: (d) => FixedNumber.fromValue(d.liqPrice, 18).toString(),
+    select: (d) => ({
+      fee: FixedNumber.fromValue(d.fee, 18),
+      entryPrice: FixedNumber.fromValue(d.price, 18),
+      liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18),
+    }),
   })
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
@@ -464,8 +493,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       </div>
 
       <LiquidationPrice
-        liquidationPrice={liquidationPrice.data}
-        isLoading={liquidationPrice.isLoading}
+        liquidationPrice={tradePreview.data?.liquidationPrice.toString()}
+        isLoading={tradePreview.isLoading}
         sizeUsd={inputs.usd.toString()}
         onChange={setInput}
         max={buyingPower?.toString()}
@@ -489,6 +518,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
         {/* {t('place order')} */}
         Place {side}
       </button>
+
+      <TradeDetails
+        marketKey={market.key}
+        fee={tradePreview.data?.fee}
+        entryPrice={tradePreview.data?.entryPrice}
+      />
 
       {/* <div className="text-ocean-200 flex h-48 flex-col gap-1 text-xs">
         {leveragedIn && (
