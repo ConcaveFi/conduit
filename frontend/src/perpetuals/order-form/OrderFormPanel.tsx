@@ -21,6 +21,7 @@ import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd, safeFixedNumber } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { Address, useAccount } from 'wagmi'
+import { useSkewAdjustedOffChainPrice } from '../hooks/useOffchainPrice'
 import { TransferMarginButton } from './TransferMargin'
 
 const SideSelector = memo(function SideSelector({
@@ -397,13 +398,20 @@ const TradeDetails = memo(function TradeDetails({
     select: (settigns) => settigns.minKeeperFee,
   })
 
-  if (!executionFee || !fee || !entryPrice) return null
-
   return (
     <ul className="text-ocean-200 text-xs">
-      <li className="bg-ocean-400 rounded px-2 py-0.5">Entry price: {formatUsd(entryPrice)}</li>
-      <li className="px-2 py-0.5">Execution Fee: {formatUsd(executionFee)}</li>
-      <li className="bg-ocean-400 rounded px-2 py-0.5">Trade Fee: {formatUsd(fee)}</li>
+      <li className="bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
+        <span>Entry price:</span>
+        {entryPrice && <span> {formatUsd(entryPrice)}</span>}
+      </li>
+      <li className="flex w-full justify-between px-2 py-0.5">
+        <span>Execution Fee:</span>
+        {executionFee && <span>{formatUsd(executionFee)}</span>}
+      </li>
+      <li className="bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
+        <span>Trade Fee: </span>
+        {fee && <span>{formatUsd(fee)}</span>}
+      </li>
     </ul>
   )
 })
@@ -439,14 +447,20 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     },
   })
 
+  const { data: marketPrice } = useSkewAdjustedOffChainPrice({
+    marketKey: market?.key,
+    watch: true,
+  })
+
   const tradePreview = useMarketPostTradeDetails({
     address: market && market.address,
     args: [
       BigNumber.from(sizeDelta),
-      BigNumber.from(0), // <- trade price
+      BigNumber.from(marketPrice),
       OrderType.delayedOffchain,
       account!,
     ],
+    keepPreviousData: true,
     select: (d) => ({
       fee: FixedNumber.fromValue(d.fee, 18),
       entryPrice: FixedNumber.fromValue(d.price, 18),
@@ -463,17 +477,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
   if (!market) return null
-
-  // const feeType = sizeDelta.isNegative() && market.marketSkew.isNegative() ? 'maker' : 'taker'
-  // const feeRate = market.feeRates[`${feeType}FeeOffchainDelayedOrder`]
-
-  // const sizeUsd = safeFixedNumber(inputs.usd)
-
-  // const leveragedIn =
-  //   remainingMargin && !remainingMargin.isZero() && sizeUsd.divUnsafe(remainingMargin)
-
-  // const sizePercentOfBuyingPower =
-  //   buyingPower && (sizeUsd.isZero() ? FIXED_ONE : sizeUsd).divUnsafe(buyingPower)
 
   return (
     <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
@@ -524,30 +527,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
         fee={tradePreview.data?.fee}
         entryPrice={tradePreview.data?.entryPrice}
       />
-
-      {/* <div className="text-ocean-200 flex h-48 flex-col gap-1 text-xs">
-        {leveragedIn && (
-          <span>
-            Leveraged in:{' '}
-            {leveragedIn.toUnsafeFloat() < 1
-              ? 'Not leveraged'
-              : `x${format(leveragedIn)} (max: x${MAX_LEVERAGE.toUnsafeFloat()})`}
-          </span>
-        )}
-        {sizePercentOfBuyingPower && (
-          <span>
-            Position size is {formatPercent(sizePercentOfBuyingPower)} of your buying power
-          </span>
-        )}
-        <span>Entry price: {postTradeDetails && formatUsd(postTradeDetails.price)}</span>
-        <span>
-          Liquidation price: {postTradeDetails && formatUsd(postTradeDetails.liquidationPrice)}
-        </span>
-        <span>
-          Trade fee: {postTradeDetails && formatUsd(postTradeDetails.fee)} ({feeType}{' '}
-          {formatPercent(feeRate)})
-        </span>
-      </div> */}
     </Panel>
   )
 })
