@@ -103,6 +103,10 @@ export function useMarketSettings({
         marketSettings.skewScale(marketKeyHex),
         marketSettings.minInitialMargin(),
         marketSettings.minKeeperFee(),
+        // marketSettings.maxKeeperFee(),
+        // marketSettings.liquidationBufferRatio(),
+        // marketSettings.liquidationFeeRatio(),
+        // marketSettings.liquidationFeeRatio(),
       ])
       return valuesToFixedNumber({ skewScale: skewScale, minInitialMargin, minKeeperFee })
     },

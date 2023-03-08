@@ -36,7 +36,9 @@ export function ManageMarginModal(props: ModalProps) {
       className="card card-secondary-outlined relative h-fit w-[400px] gap-4 p-[16px_12px]"
     >
       <span className="text-ocean-200 font-medium ">Deposit</span>
-      <CloseIcon className="box-4 fill-ocean-200 absolute top-5 right-4" />
+      <button onClick={props.onClose} className="outline-none ">
+        <CloseIcon className="box-4 fill-ocean-200 absolute top-5 right-4" />
+      </button>
       <DepositWithdrawSelector>{renderTabComponent}</DepositWithdrawSelector>
     </Modal>
   )
@@ -68,7 +70,8 @@ function SUSDInput(props: { value?: number; onValueChange?: (e?: number) => void
   const { data: sUSDBalance, isLoading } = useBalance({ address, token: sUSD_ADDRESS[chainId] })
   const numBalance = useMemo(() => Number(sUSDBalance?.formatted || '0'), [sUSDBalance])
 
-  if (isLoading) return sUSDInputSkeleton
+  if (isLoading) return <SUSDInputSkeleton />
+
   const balance = formatUsd(sUSDBalance?.formatted || '0')
   return (
     <div className=" ">
@@ -100,7 +103,7 @@ function SUSDInput(props: { value?: number; onValueChange?: (e?: number) => void
   )
 }
 
-const sUSDInputSkeleton = (
+const SUSDInputSkeleton = () => (
   <div className=" flex flex-col gap-2">
     <div className="flex items-center justify-between px-2">
       <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-200 h-4 w-10 rounded-lg"></div>

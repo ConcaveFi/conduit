@@ -11,7 +11,7 @@ import {
   useSusdBalanceOf,
 } from 'perps-hooks'
 import { MarketAsset } from 'perps-hooks/markets'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
 import { formatUsd } from 'src/utils/format'
@@ -108,7 +108,9 @@ function TransferMargin() {
   )
 }
 
-export function TransferMarginButton(props: { asset?: MarketAsset }) {
+export const TransferMarginButton = memo(function TransferMarginButton(props: {
+  asset?: MarketAsset
+}) {
   const { t } = useTranslation()
   const router = useRouter()
 
@@ -134,4 +136,4 @@ export function TransferMarginButton(props: { asset?: MarketAsset }) {
       <ManageMarginModal isOpen={isOpen} onClose={handleClose} />
     </>
   )
-}
+})
