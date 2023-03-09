@@ -1,7 +1,6 @@
-import { PlusIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { createContext, useContext, useState } from 'react'
-import { AddWidgetModal } from 'src/components/widgets/AddWidgetModal'
+import { AddWidgetOverlay } from 'src/components/futures/widgets/AddWidgetOverlay'
 import { useDisclosure } from 'src/hooks/useDisclosure'
 import {
   DEFAULT_GRID_WIDGETS,
@@ -53,7 +52,8 @@ export function WidgetsProvider({ children }: any) {
   return (
     <WidgetsContext.Provider value={{ hasWidget, widgets, addWidgets, removeWidget }}>
       {children}
-      <div className="pointer-events-none fixed flex h-screen w-full items-end justify-end p-6">
+      <AddWidgetOverlay />
+      {/* <div className="pointer-events-none fixed flex h-screen w-full items-end justify-end p-6">
         <button
           onClick={modal.onOpen}
           className="btn btn-green-gradient pointer-events-auto gap-3 rounded-full px-8 py-4 shadow-xl"
@@ -62,7 +62,7 @@ export function WidgetsProvider({ children }: any) {
           <PlusIcon className="fill-ocean-900" />
         </button>
         <AddWidgetModal isOpen={modal.isOpen} onClose={modal.onClose} />
-      </div>
+      </div> */}
     </WidgetsContext.Provider>
   )
 }

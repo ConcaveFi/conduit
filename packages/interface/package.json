@@ -5,11 +5,12 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "react": "^18.2.0",
     "@headlessui/react": "^1.7.10",
+    "react": "^18.2.0",
     "tailwind": "^4.0.0"
   },
   "dependencies": {
-    "class-variance-authority": "^0.4.0"
+    "class-variance-authority": "^0.4.0",
+    "tailwind-merge": "^1.10.0"
   }
 }

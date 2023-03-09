@@ -2,13 +2,13 @@ const colors = {
   ocean: {
     900: '#0E052D', // Same as `Main-bg` at figma
     800: '#0A112D',
-    700: '#0C0D36',
+    700: '#0C0D36', //Same as chart-ng at figma
     600: '#10183D',
-    500: '#0B1640',
+    500: '#0B1640', // Same as block-bg50 at figma
     400: '#082652',
-    300: '#3E5389',
-    200: '#6FA0E4', // Same as `Blue` on figma
-    100: '#00D1FF',
+    300: '#3E5389', // Same as "main-dim" at figma
+    200: '#6FA0E4', // Same as "Blue" at figma
+    100: '#00D1FF', //Same as "buttons" at fimga
   },
   light: {
     600: '#2B4057',

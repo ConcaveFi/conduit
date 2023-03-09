@@ -1,6 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: `var(--font-aeonik)`,
+        mono: `var(--font-aeonik-mono)`,
+      },
+    },
+  },
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
     '../packages/icons/components/**/*.tsx',

@@ -31,6 +31,7 @@
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.2",
     "ethers": "^5.7.2",
+    "framer-motion": "^10.2.3",
     "multicall-provider": "^0.1.17",
     "next": "^13.0.2",
     "next-superjson-plugin": "^0.5.6",

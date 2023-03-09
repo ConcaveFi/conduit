@@ -1,14 +1,34 @@
-import { useState } from 'react'
-import { GridLayout } from 'src/components/GridLayout'
-import { StrategyHeader } from 'src/components/strategy/StrategyHeader'
-import { Topbar } from 'src/components/topbar/Topbar'
-import { usePageTitleWithAssetPrice } from 'src/hooks/usePageTitleWithAssetPrice'
+import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { useSkewAdjustedOffChainPrice } from 'src/perpetuals/hooks/useOffchainPrice'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
+
+import Head from 'next/head'
+import Image from 'next/image'
+import { useState } from 'react'
+import { GridLayout } from 'src/components/futures/GridLayout'
+import { Topbar } from 'src/components/futures/topbar/Topbar'
+import { StrategyHeader } from 'src/perpetuals/Header'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
+import { formatUsd } from 'src/utils/format'
+
+function Title() {
+  const market = useRouteMarket()
+
+  const { data: price } = useSkewAdjustedOffChainPrice({
+    marketKey: market?.key,
+    watch: true,
+  })
+
+  return (
+    <Head>
+      <title>
+        {market && price ? `${market.asset} - ${formatUsd(price)} | Conduit` : 'Conduit'}
+      </title>
+    </Head>
+  )
+}
 
 export default function Home() {
-  usePageTitleWithAssetPrice()
-
   const isHydrated = useIsHydrated()
   const [unlocked, setUnlocked] = useState(false)
   if (!isHydrated) return null
@@ -17,6 +37,7 @@ export default function Home() {
       {!unlocked && <LockScreen onUnlock={() => setUnlocked(true)} />}
       {unlocked && (
         <WidgetsProvider>
+          <Title />
           <div className="skeleton flex h-full w-full flex-col gap-4 p-4">
             <Topbar />
             <StrategyHeader />
@@ -35,7 +56,7 @@ function LockScreen(props: { onUnlock?: VoidFunction }) {
   }
   return (
     <div className="centered fixed z-[100] flex h-full w-full flex-col gap-4">
-      <img
+      <Image
         src={'/assets/conduit-bg-theme.png'}
         className="absolute h-full w-full object-cover "
         alt="logo"

@@ -2,13 +2,10 @@ const colors = require('../../../colors')
 
 const primary = {
   backgroundColor: colors.light[100],
-  color: colors.light[500],
+  color: colors.light[100],
   '.ocean &': {
-    backgroundColor: colors.ocean[700],
-    color: colors.ocean[200],
-  },
-  '.ocean &:hover': {
-    backgroundColor: colors.ocean[500],
+    backgroundColor: colors.ocean[100],
+    color: colors.ocean[900],
   },
 }
 
