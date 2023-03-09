@@ -3,8 +3,6 @@ import { useSkewAdjustedOffChainPrice } from 'src/perpetuals/hooks/useOffchainPr
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
 
 import Head from 'next/head'
-import { GridLayout } from 'src/components/futures/GridLayout'
-import { Topbar } from 'src/components/futures/topbar/Topbar'
 import { StrategyHeader } from 'src/perpetuals/Header'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
 import { formatUsd } from 'src/utils/format'
@@ -34,9 +32,9 @@ export default function Home() {
     <WidgetsProvider>
       <Title />
       <div className="skeleton flex h-full w-full flex-col gap-4 p-4">
-        <Topbar />
+        {/* <Topbar /> */}
         <StrategyHeader />
-        <GridLayout />
+        {/*<GridLayout /> */}
       </div>
     </WidgetsProvider>
   )
