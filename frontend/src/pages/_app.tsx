@@ -6,7 +6,18 @@ import '../../styles/fonts.css'
 import localFont from 'next/font/local'
 
 const Aeonik = localFont({
-  src: '../../public/assets/fonts/Aeonik/Aeonik-Regular.otf',
+  src: [
+    {
+      path: '../../public/assets/fonts/Aeonik/Aeonik-Regular.otf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../public/assets/fonts/Aeonik/Aeonik-Bold.otf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   variable: '--font-aeonik',
 })
 
