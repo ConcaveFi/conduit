@@ -1,11 +1,7 @@
 {
-  "name": "exchange",
+  "name": "conduit",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "packages/*"
-  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev frontend",
@@ -14,17 +10,14 @@
     "gen:lng-keys": "cd packages/languages && yarn gen:keys "
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^13.0.2",
-    "eslint-config-custom": "*",
+    "@next/eslint-plugin-next": "^13.2.3",
+    "eslint-config-next": "^13.2.3",
     "prettier": "^2.8.4",
     "prettier-plugin-organize-imports": "^3.2.2",
-    "prettier-plugin-tailwindcss": "^0.2.3",
-    "ts-node": "^10.9.1",
-    "eslint-config-next": "^13.2.3",
-    "turbo": "^1.8.1"
+    "prettier-plugin-tailwindcss": "^0.2.4",
+    "turbo": "^1.8.3"
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "packageManager": "yarn@1.22.19"
+  }
 }

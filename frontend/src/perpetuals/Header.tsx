@@ -94,11 +94,3 @@ const tokenFeedSekeleton = (
     </div>
   </div>
 )
-const tokenFeedSkeletons = (
-  <div className="bg-light-100 ocean:bg-ocean-700 flex min-h-[80px] w-[35%] justify-around rounded-2xl ">
-    {tokenFeedSekeleton}
-    {tokenFeedSekeleton}
-    {tokenFeedSekeleton}
-    {tokenFeedSekeleton}
-  </div>
-)

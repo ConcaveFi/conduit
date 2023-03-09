@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@wagmi/core": "^0.9.6",
-    "typescript": "^4.9.4"
+    "@wagmi/core": "^0.9.7",
+    "typescript": "^4.9.5"
   },
   "private": true
 }

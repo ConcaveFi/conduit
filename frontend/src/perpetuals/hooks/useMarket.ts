@@ -20,14 +20,14 @@ import { optimism } from 'wagmi/chains'
 
 type MarketSummariesResult = ReadContractResult<typeof marketDataABI, 'allProxiedMarketSummaries'>
 const parseMarketSummaries = (summaries: MarketSummariesResult) =>
-  summaries.map(({ market, key, asset, feeRates, currentFundingRate, ...summary }) => ({
+  summaries.map(({ market, key, asset, feeRates, currentFundingRate, ...s }) => ({
     market,
     address: market,
     key: parseBytes32String(key) as MarketKey,
     asset: parseBytes32String(asset) as MarketAsset,
     feeRates: valuesToFixedNumber(feeRates),
     currentFundingRate: FixedNumber.from(currentFundingRate.div(24), 6), // 1hr Funding Rate
-    ...valuesToFixedNumber(summary),
+    ...valuesToFixedNumber(s),
   }))
 export type MarketSummaries = ReturnType<typeof parseMarketSummaries>
 

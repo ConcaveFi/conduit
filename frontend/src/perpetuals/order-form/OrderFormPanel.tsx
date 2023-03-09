@@ -1,4 +1,4 @@
-import { cx, NumericInput, Panel, PanelProps } from '@tradex/interface'
+import { cx, NumericInput, Panel, PanelProps, twMerge } from '@tradex/interface'
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
@@ -63,12 +63,12 @@ const SideSelector = memo(function SideSelector({
 const OrderSizeInput = ({
   onChange,
   inputs,
-  assetSymbol,
+  assetSymbol = '',
   max = '0',
 }: {
   onChange: (s: InputState) => void
   inputs: ReturnType<typeof deriveInputs>
-  assetSymbol: string
+  assetSymbol: string | undefined
   max: string | undefined
 }) => {
   const [amountDenominator, toggleAmountDenominator] = useReducer(
@@ -80,6 +80,8 @@ const OrderSizeInput = ({
 
   const isOverBuyingPower =
     !!max && !!inputs.usd && parseEther(inputs.usd.toString()).gt(parseEther(max))
+
+  const hasValue = +inputs[other].toString() > 0
 
   return (
     <motion.div className="bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
@@ -118,7 +120,7 @@ const OrderSizeInput = ({
                 Over your buying power
               </motion.span>
             ) : (
-              +inputs[other].toString() > 0 && (
+              hasValue && (
                 <motion.button
                   key={`order-size-${other}`}
                   layout
@@ -270,8 +272,8 @@ const LiquidationPrice = memo(function LiquidationPrice({
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
-          {isLoading ? (
-            <div className="animate-skeleton bg-ocean-400 skeleton-from-ocean-300 skeleton-to-ocean-400 mb-1 h-5 w-24 rounded" />
+          {+sizeUsd > 0 && isLoading ? (
+            <Skeleton className="mb-1 h-5 w-24" />
           ) : (
             <NumericInput
               disabled
@@ -317,19 +319,25 @@ const OrderType = {
   delayedOffchain: 2,
 }
 
-const Skeleton = () => (
-  <div className="skeleton skeleton-from-ocean-200 skeleton-to-ocean-300 h-3 w-full" />
+const Skeleton = ({ className }: { className?: string }) => (
+  <div
+    className={twMerge(
+      'animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-400 h-3 w-full rounded',
+      className,
+    )}
+  />
 )
 
-const BuyingPowerInfo = memo(function BuyingPowerInfo({
+const MarginDetails = memo(function MarginDetails({
   market,
   account,
 }: {
-  market: Address
-  account: Address
+  market: Address | undefined
+  account: Address | undefined
 }) {
   const { data: details } = useMarketDataPositionDetails({
-    args: [market, account],
+    args: !!market && !!account ? [market, account] : undefined,
+    enabled: !!market && !!account,
     select: (p) => {
       const details = parsePositionDetails(p)
       const buyingPower = details.remainingMargin.mulUnsafe(MAX_LEVERAGE)
@@ -389,7 +397,7 @@ const TradeDetails = memo(function TradeDetails({
   fee,
   entryPrice,
 }: {
-  marketKey: MarketKey
+  marketKey: MarketKey | undefined
   fee: FixedNumber | undefined
   entryPrice: FixedNumber | undefined
 }) {
@@ -421,11 +429,12 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
   sizeDelta,
   buyingPower,
 }: {
-  market: Address
+  market: Address | undefined
   sizeDelta: BigNumber
   buyingPower: string | undefined
 }) {
-  const isOverBuyingPower = sizeDelta.abs().gt(parseEther(buyingPower || '0'))
+  const isOverBuyingPower =
+    !!buyingPower && parseEther(sizeDelta.abs().toString()).gt(parseEther(buyingPower))
 
   const side = sizeDelta.isNegative() ? 'short' : 'long'
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
@@ -513,13 +522,11 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     keepPreviousData: true,
   })
 
-  if (!market) return null
-
   return (
     <Panel ref={ref} name="Order Form" bodyProps={{ className: 'p-3' }} {...props}>
       <TransferMarginButton asset={market?.asset} />
 
-      {account && <BuyingPowerInfo account={account} market={market.address} />}
+      <MarginDetails account={account} market={market?.address} />
 
       <SideSelector side={side} onChange={setSide} />
 
@@ -528,7 +535,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
           inputs={inputs}
           onChange={setInput}
           max={buyingPower}
-          assetSymbol={market.asset}
+          assetSymbol={market?.asset}
         />
       </div>
 
@@ -550,10 +557,10 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
         </Link>
       </div>
 
-      <PlaceOrderButton market={market.address} buyingPower={buyingPower} sizeDelta={sizeDelta} />
+      <PlaceOrderButton market={market?.address} buyingPower={buyingPower} sizeDelta={sizeDelta} />
 
       <TradeDetails
-        marketKey={market.key}
+        marketKey={market?.key}
         fee={tradePreview.data?.fee}
         entryPrice={tradePreview.data?.entryPrice}
       />

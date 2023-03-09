@@ -5,7 +5,8 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@headlessui/react": "^1.7.10",
+    "@headlessui/react": "^1.7.13",
+    "@tradex/icons": "workspace:*",
     "react": "^18.2.0",
     "tailwind": "^4.0.0"
   },
