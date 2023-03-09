@@ -448,7 +448,7 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
     return (
       <button
         disabled
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 text-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 font-bold h-11 rounded-lg shadow-lg"
       >
         Enter an amount
       </button>
@@ -458,9 +458,9 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
     return (
       <button
         disabled
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 text-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 font-bold h-11 rounded-lg shadow-lg"
       >
-        Order is over your buying power
+        Not enough margin
       </button>
     )
 
@@ -468,7 +468,7 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
     <button
       onClick={submitOrder}
       disabled={!submitOrder}
-      className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 text-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
+      className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 font-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
     >
       Place {side}
     </button>
@@ -485,7 +485,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const { data: marketPrice } = useSkewAdjustedOffChainPrice({
     marketKey: market?.key,
-    watch: true,
   })
 
   const [input, setInput] = useState<InputState>()
@@ -493,7 +492,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const debouncedSize = useDebounce(inputs.asset, 150)
+  const debouncedSize = useDebounce(inputs.asset.toString(), 150)
   const sizeDelta = useMemo(() => {
     const size = BigNumber.from(safeFixedNumber(debouncedSize))
     return side === 'long' ? size : size.mul(-1)
@@ -530,14 +529,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
       <SideSelector side={side} onChange={setSide} />
 
-      <div className="flex max-w-full flex-col">
-        <OrderSizeInput
-          inputs={inputs}
-          onChange={setInput}
-          max={buyingPower}
-          assetSymbol={market?.asset}
-        />
-      </div>
+      <OrderSizeInput
+        inputs={inputs}
+        onChange={setInput}
+        max={buyingPower}
+        assetSymbol={market?.asset}
+      />
 
       <LiquidationPrice
         liquidationPrice={tradePreview.data?.liquidationPrice.toString()}

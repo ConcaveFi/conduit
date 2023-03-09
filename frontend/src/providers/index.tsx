@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TranslationProvider } from '@tradex/languages'
 import { PropsWithChildren } from 'react'
+import { OffchainPricesProvider } from 'src/perpetuals/hooks/useOffchainPrice'
 import { IsHydratedProvider } from 'src/providers/IsHydratedProvider'
 import { WagmiProvider } from 'src/providers/WagmiProvider'
 
@@ -17,7 +18,9 @@ export default function AppProviders({ children }: PropsWithChildren) {
     <IsHydratedProvider>
       <WagmiProvider>
         <TranslationProvider>
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+          <QueryClientProvider client={queryClient}>
+            <OffchainPricesProvider>{children}</OffchainPricesProvider>
+          </QueryClientProvider>
         </TranslationProvider>
       </WagmiProvider>
     </IsHydratedProvider>

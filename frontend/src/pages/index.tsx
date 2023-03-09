@@ -14,7 +14,6 @@ function Title() {
 
   const { data: price } = useSkewAdjustedOffChainPrice({
     marketKey: market?.key,
-    watch: true,
   })
 
   return (
