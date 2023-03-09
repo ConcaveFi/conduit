@@ -416,6 +416,56 @@ const TradeDetails = memo(function TradeDetails({
   )
 })
 
+const PlaceOrderButton = memo(function PlaceOrderButton({
+  market,
+  sizeDelta,
+  buyingPower,
+}: {
+  market: Address
+  sizeDelta: BigNumber
+  buyingPower: string | undefined
+}) {
+  const isOverBuyingPower = sizeDelta.abs().gt(parseEther(buyingPower || '0'))
+
+  const side = sizeDelta.isNegative() ? 'short' : 'long'
+  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+    address: market,
+    enabled: !sizeDelta.isZero() && !!buyingPower && !isOverBuyingPower,
+    args: [sizeDelta, DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
+  })
+  const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
+
+  if (sizeDelta.isZero())
+    return (
+      <button
+        disabled
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 text-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
+      >
+        Enter an amount
+      </button>
+    )
+
+  if (isOverBuyingPower)
+    return (
+      <button
+        disabled
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 text-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
+      >
+        Order is over your buying power
+      </button>
+    )
+
+  return (
+    <button
+      onClick={submitOrder}
+      disabled={!submitOrder}
+      className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 text-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
+    >
+      Place {side}
+    </button>
+  )
+})
+
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function OrderFormPanel(
   props,
   ref,
@@ -424,9 +474,13 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const market = useRouteMarket()
 
-  const price = market?.price
+  const { data: marketPrice } = useSkewAdjustedOffChainPrice({
+    marketKey: market?.key,
+    watch: true,
+  })
+
   const [input, setInput] = useState<InputState>()
-  const inputs = useMemo(() => deriveInputs(input, price), [price, input])
+  const inputs = useMemo(() => deriveInputs(input, marketPrice), [marketPrice, input])
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
@@ -443,13 +497,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     args: account && [account],
     select: (d) => {
       const margin = FixedNumber.fromValue(d.marginRemaining, 18)
-      return margin.mulUnsafe(MAX_LEVERAGE)
+      return margin.mulUnsafe(MAX_LEVERAGE).toString()
     },
-  })
-
-  const { data: marketPrice } = useSkewAdjustedOffChainPrice({
-    marketKey: market?.key,
-    watch: true,
   })
 
   const tradePreview = useTradePreview({
@@ -464,18 +513,10 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     keepPreviousData: true,
   })
 
-  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    address: market && market.address,
-    enabled:
-      !sizeDelta.isZero() && buyingPower && sizeDelta.abs().lt(parseEther(buyingPower.toString())),
-    args: [BigNumber.from(sizeDelta), DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
-  })
-  const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
-
   if (!market) return null
 
   return (
-    <Panel ref={ref} name="Order Form" className="w-3/12 " {...props}>
+    <Panel ref={ref} name="Order Form" bodyProps={{ className: 'p-3' }} {...props}>
       <TransferMarginButton asset={market?.asset} />
 
       {account && <BuyingPowerInfo account={account} market={market.address} />}
@@ -486,7 +527,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
         <OrderSizeInput
           inputs={inputs}
           onChange={setInput}
-          max={buyingPower?.toString()}
+          max={buyingPower}
           assetSymbol={market.asset}
         />
       </div>
@@ -496,7 +537,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
         isLoading={tradePreview.isLoading}
         sizeUsd={inputs.usd.toString()}
         onChange={setInput}
-        max={buyingPower?.toString()}
+        max={buyingPower}
       />
 
       <div className="flex items-center justify-between">
@@ -509,14 +550,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
         </Link>
       </div>
 
-      <button
-        onClick={submitOrder}
-        disabled={!submitOrder}
-        className="btn centered h-11 rounded-lg bg-teal-500 text-white"
-      >
-        {/* {t('place order')} */}
-        Place {side}
-      </button>
+      <PlaceOrderButton market={market.address} buyingPower={buyingPower} sizeDelta={sizeDelta} />
 
       <TradeDetails
         marketKey={market.key}
