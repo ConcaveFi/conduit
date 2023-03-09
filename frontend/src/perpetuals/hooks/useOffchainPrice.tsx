@@ -1,4 +1,13 @@
-import { PropsWithChildren, useEffect, useMemo } from 'react'
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { EvmPriceServiceConnection, PriceFeed } from '@pythnetwork/pyth-evm-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -7,6 +16,7 @@ import { MarketKey, Markets } from 'perps-hooks/markets'
 import { BigNumber, FixedNumber } from 'ethers'
 import { useNetwork } from 'wagmi'
 import { useMarkets, useMarketSettings } from './useMarket'
+import { queryClient } from 'src/providers'
 
 const pyth = {
   mainnet: new EvmPriceServiceConnection('https://xc-mainnet.pyth.network'),
@@ -24,12 +34,12 @@ const parsePriceFeed = (feed: PriceFeed) => {
 }
 type ParsedPriceFeed = ReturnType<typeof parsePriceFeed>
 
-const priceQueryKey = (ids?: PythId[]) => ['pyth', { ids }]
-const createPriceQuery = (ids?: PythId[], network: PythNetwork = 'mainnet') => ({
+const priceQueryKey = (ids?: PythId[]) => ['pyth', ids]
+const createPythPricesQuery = (ids?: PythId[], network: PythNetwork = 'mainnet') => ({
   queryKey: priceQueryKey(ids),
   queryFn: async () => {
     const feeds = await pyth[network].getLatestPriceFeeds(ids!)
-    if (!feeds) return ids!.map((id) => ({ id, price: FixedNumber.from(0) }))
+    if (!feeds) return ids?.map((id) => ({ id, price: FixedNumber.from(0) }))
     return feeds.map(parsePriceFeed)
   },
 })
@@ -39,28 +49,28 @@ const allMarketsPythIds = {
   mainnet: allMarketsKeys.map((key) => Markets[key].pythIds.mainnet),
   testnet: allMarketsKeys.map((key) => Markets[key].pythIds.testnet),
 }
-const allMarketsPricesQuery = createPriceQuery(allMarketsPythIds.mainnet, 'mainnet')
+const allMarketsPricesQuery = createPythPricesQuery(allMarketsPythIds.mainnet, 'mainnet')
 
-// export const prefetchPrices = () => global_queryClient.prefetchQuery(allMarketsPricesQuery)
+export const prefetchPrices = () => queryClient.prefetchQuery(allMarketsPricesQuery)
 
 const ZERO = FixedNumber.from(0)
 const ONE = FixedNumber.from(1)
 
-export function useOffchainPrice<TSelect = ParsedPriceFeed>({
+export function useOffchainPrice<TSelect = FixedNumber>({
   marketKey,
   enabled = true,
   select,
 }: {
   marketKey?: MarketKey
   enabled?: boolean
-  select?: (priceFeed: ParsedPriceFeed) => TSelect
+  select?: (priceFeed: FixedNumber) => TSelect
 }) {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
   const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
 
   const marketPriceQuery = useMemo(
-    () => createPriceQuery(marketPythId && [marketPythId], pythNetwork),
+    () => createPythPricesQuery(marketPythId && [marketPythId], pythNetwork),
     [marketPythId, pythNetwork],
   )
 
@@ -75,11 +85,10 @@ export function useOffchainPrice<TSelect = ParsedPriceFeed>({
       return feed ? [feed] : undefined
     },
     select: (priceFeeds) => {
-      const feed = priceFeeds?.find((f) => f.id === marketPythId)
-      const result = !!feed
-        ? { id: feed.id, price: FixedNumber.from(feed.price._value) }
-        : { id: marketPythId as PythId, price: ZERO }
-      return select ? select(result) : (result as TSelect)
+      if (!priceFeeds) return ZERO
+      const feed = priceFeeds.find((f) => f.id === marketPythId)
+      const result = !!feed ? FixedNumber.from(feed.price._value) : ZERO
+      return (select ? select(result) : result) as TSelect
     },
   })
 }
@@ -91,14 +100,13 @@ export function useSkewAdjustedOffChainPrice({ marketKey }: { marketKey?: Market
   return useOffchainPrice({
     marketKey,
     enabled: !!market && !!settings,
-    select: ({ price }) => {
-      const skew = market!.marketSkew.divUnsafe(settings!.skewScale).addUnsafe(ONE)
+    select: (price) => {
+      if (!market || !settings) return undefined
+      const skew = market.marketSkew.divUnsafe(settings.skewScale).addUnsafe(ONE)
       return price.mulUnsafe(skew)
     },
   })
 }
-
-// const OffchainPricesContext = createContext()
 
 export function OffchainPricesProvider({ children }: PropsWithChildren<{}>) {
   const { chain } = useNetwork()
@@ -108,10 +116,9 @@ export function OffchainPricesProvider({ children }: PropsWithChildren<{}>) {
 
   useEffect(() => {
     pyth[pythNetwork].subscribePriceFeedUpdates(allMarketsPythIds[pythNetwork], (priceFeed) => {
-      queryClient.setQueryData(priceQueryKey([priceFeed.id as PythId]), parsePriceFeed(priceFeed))
+      const feed = parsePriceFeed(priceFeed)
+      queryClient.setQueryData(priceQueryKey([feed.id]), [feed])
     })
-    // pyth.onWsError() TODO
-
     return () => {
       pyth[pythNetwork].unsubscribePriceFeedUpdates(allMarketsPythIds[pythNetwork])
     }
@@ -119,3 +126,12 @@ export function OffchainPricesProvider({ children }: PropsWithChildren<{}>) {
 
   return <>{children}</>
 }
+
+// function useWatchOffchainPrice({ pythId }: { pythId: PythId | undefined }) {
+//   const { watch, unwatch } = useContext(OffchainPricesContext)
+//   useEffect(() => {
+//     if (!pythId) return
+//     watch(pythId)
+//     return () => unwatch(pythId)
+//   })
+// }

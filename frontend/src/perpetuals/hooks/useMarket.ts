@@ -50,7 +50,7 @@ export function useMarkets<TSelectData = MarketSummaries>({
     address: marketDataAddress[chainId],
     chainId,
     functionName: 'allProxiedMarketSummaries',
-    refetchInterval: 2500,
+    // refetchInterval: 2500,
     // refetchIntervalInBackground: true,
     ...config,
     select: useCallback(

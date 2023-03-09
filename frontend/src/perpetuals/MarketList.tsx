@@ -2,18 +2,39 @@ import { ChevronIcon } from '@tradex/icons'
 import { ButtonProps, ItemInfo, Menu } from '@tradex/interface'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { forwardRef, useMemo } from 'react'
+import { MarketKey } from 'perps-hooks/markets'
+import { forwardRef } from 'react'
 import { useMarkets, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 
-import { format } from 'src/utils/format'
+import { format, formatUsd } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
+import { useSkewAdjustedOffChainPrice } from './hooks/useOffchainPrice'
+
+function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
+  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey })
+  return (
+    <ItemInfo
+      info={`${asset} Perpetual`}
+      value={price ? formatUsd(price) : ''}
+      Icon={
+        <Image
+          alt={`${asset} icon`}
+          src={`/assets/tokens/${asset?.toLowerCase()}.png`}
+          className="rounded-full"
+          width={30}
+          height={30}
+        />
+      }
+    />
+  )
+}
 
 export function MarketList() {
   const router = useRouter()
 
   const market = useRouteMarket()
   const { data: markets } = useMarkets()
-  const normalized_asset = useMemo(() => handleSynth(market?.asset), [market?.asset])
+  const normalized_asset = handleSynth(market?.asset)
 
   if (!market || !markets) return null
 
@@ -24,27 +45,16 @@ export function MarketList() {
   return (
     <Menu className={'my-auto h-fit'}>
       <Menu.Button className="btn centered gap-6 outline-none">
-        <ItemInfo
-          info={`${normalized_asset} Perpetual`}
-          value={format(market.price)}
-          Icon={
-            <Image
-              alt={`${normalized_asset} icon`}
-              src={`/assets/tokens/${normalized_asset?.toLowerCase()}.png`}
-              className="rounded-full"
-              width={30}
-              height={30}
-            />
-          }
-        />
+        <SelectedMarket marketKey={market.key} asset={normalized_asset} />
         <ChevronIcon />
       </Menu.Button>
       <Menu.Items className="card card-translucent-glass left-10 h-[500px] w-[360px] origin-top-left overflow-y-auto rounded-tl-sm p-2">
-        {markets.map(({ asset, price }, i) => (
+        {markets.map(({ key, asset, price }, i) => (
           <Menu.Item key={i}>
             {({ close }) => (
               <MarketButton
                 asset={asset}
+                marketKey={key}
                 price={format(price)}
                 onClick={handleAssetClick(asset, close)}
               />
@@ -60,26 +70,34 @@ interface MarketButton extends ButtonProps {
   asset: string
   price: string
   percent?: string
+  marketKey: MarketKey
 }
-// css-s6i0el-menu
-const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
-  ({ asset, price, percent, ...props }, ref) => {
-    const styles =
-      'btn gap-6 h-fit justify-between even:bg-light-400 ocean:even:bg-ocean-600 p-2 px-3 rounded-lg'
-    const icon = (
-      <Image
-        alt="bitcoin icon"
-        src={`/assets/tokens/${handleSynth(asset).toLowerCase()}.png`}
-        className="rounded-full"
-        width={30}
-        height={30}
-      />
-    )
 
+const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
+  ({ asset, marketKey, percent, ...props }, ref) => {
+    // const { data: price } = useSkewAdjustedOffChainPrice({ marketKey })
     return (
-      <button ref={ref} className={styles} {...props}>
-        <ItemInfo info={asset + ' Perpetual '} value={`${asset}-PERP`} Icon={icon} />
-        <ItemInfo align="end" info={percent || '0.00%'} value={price} />
+      <button
+        ref={ref}
+        className={
+          'btn gap-6 h-fit justify-between even:bg-light-400 ocean:even:bg-ocean-600 p-2 px-3 rounded-lg'
+        }
+        {...props}
+      >
+        <ItemInfo
+          info={asset + ' Perpetual '}
+          value={`${asset}-PERP`}
+          Icon={
+            <Image
+              alt={`${asset} icon`}
+              src={`/assets/tokens/${handleSynth(asset).toLowerCase()}.png`}
+              className="rounded-full"
+              width={30}
+              height={30}
+            />
+          }
+        />
+        {/* <ItemInfo align="end" info={percent || '0.00%'} value={price && formatUsd(price)} /> */}
       </button>
     )
   },

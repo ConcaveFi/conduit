@@ -156,7 +156,7 @@ const OrderSizeInput = ({
 const useInterpolateSliderColor = (value: number, max: number) => {
   const v = useMotionValue(value)
   useEffect(() => v.set(value), [value, v])
-  return useTransform(v, [0, max / 2, max], ['#4ade80', '#facc15', '#f87171'])
+  return useTransform(v, [max, max / 2, 0], ['#f87171', '#facc15', '#4ade80'])
 }
 
 const SizeSlider = memo(function SizeSlider({
@@ -243,9 +243,9 @@ const SizeSlider = memo(function SizeSlider({
 // }
 
 const riskLevelLabel = (value: number, max: number) => {
-  if (value >= max * 0.75) return 'HIGH'
-  if (value >= max * 0.25) return 'MEDIUM'
-  return 'LOW'
+  if (value <= max * 0.25) return 'LOW'
+  if (value <= max * 0.75) return 'MEDIUM'
+  return 'HIGH'
 }
 
 const LiquidationPrice = memo(function LiquidationPrice({
@@ -291,7 +291,7 @@ const LiquidationPrice = memo(function LiquidationPrice({
             {riskLabel}
           </motion.span>
         </div>
-        <SizeSlider value={+sizeUsd} max={+max} onChange={onChange} disabled={max === '0'} />
+        <SizeSlider value={+sizeUsd} max={+max} onChange={onChange} disabled={!max} />
         <div className="flex justify-between font-mono">
           <span className={cx('text-xs', max ? 'text-green-500' : 'text-ocean-300')}>$0</span>
           {max && <span className="text-xs text-orange-500">{formatUsd(max)}</span>}
@@ -511,7 +511,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const tradePreview = useTradePreview({
     address: market && market.address,
-    enabled: !!market && !!marketPrice && !!sizeDelta,
+    enabled: !!market && !!marketPrice && !sizeDelta.isZero(),
     args: marketPrice && [
       sizeDelta,
       BigNumber.from(marketPrice),
