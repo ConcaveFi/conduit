@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Layout } from 'react-grid-layout'
 import { BREAKPOINTS } from 'src/utils/contants/breakpoints'
-import { GridLayout } from 'src/utils/grid.layout'
-import { GridWidgetPresets } from 'src/utils/widgets.presets'
+import { GridLayout } from 'src/utils/grid/grid.layout'
+import { GridWidgetPresets } from 'src/utils/grid/widgets.presets'
 import { useBreakpoint } from 'use-breakpoint'
 
 export interface GridLayoutHook {
