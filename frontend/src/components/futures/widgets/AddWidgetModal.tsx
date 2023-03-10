@@ -18,7 +18,7 @@ export function AddWidgetModal(props: ModalProps) {
     props.onClose()
   }
 
-  const notAdded = Object.keys(GridWidget.getDefaultWidgets()).filter(
+  const notAdded = GridWidget.getDefaultWidgets().filter(
     (widget) => !widgets.includes(widget as GridWidgets),
   )
   const hasWidgetsToAdd = notAdded.length > 0
