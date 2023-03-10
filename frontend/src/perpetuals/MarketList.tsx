@@ -1,12 +1,12 @@
 import { ChevronIcon } from '@tradex/icons'
-import { ButtonProps, ItemInfo, Menu } from '@tradex/interface'
+import { ButtonProps, cx, ItemInfo, Menu, Skeleton } from '@tradex/interface'
+import { FixedNumber } from 'ethers'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { MarketKey } from 'perps-hooks/markets'
-import { forwardRef } from 'react'
+import { forwardRef, memo, useEffect, useRef } from 'react'
 import { useMarkets, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
-
-import { format, formatUsd } from 'src/utils/format'
+import { formatPercent, formatUsd } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
 import { useSkewAdjustedOffChainPrice } from './hooks/useOffchainPrice'
 
@@ -29,36 +29,22 @@ function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: Market
   )
 }
 
-export function MarketList() {
-  const router = useRouter()
-
+export const MarketList = function MarketList() {
   const market = useRouteMarket()
   const { data: markets } = useMarkets()
-  const normalized_asset = handleSynth(market?.asset)
 
   if (!market || !markets) return null
 
-  const handleAssetClick = (asset: string, close: VoidFunction) => () => {
-    router.replace({ query: { asset } }, undefined, { shallow: true })
-    close()
-  }
   return (
     <Menu className={'my-auto h-fit'}>
       <Menu.Button className="btn centered gap-6 outline-none">
-        <SelectedMarket marketKey={market.key} asset={normalized_asset} />
+        <SelectedMarket marketKey={market.key} asset={handleSynth(market?.asset)} />
         <ChevronIcon />
       </Menu.Button>
       <Menu.Items className="card card-translucent-glass left-10 h-[500px] w-[360px] origin-top-left overflow-y-auto rounded-tl-sm p-2">
-        {markets.map(({ key, asset, price }, i) => (
-          <Menu.Item key={i}>
-            {({ close }) => (
-              <MarketButton
-                asset={asset}
-                marketKey={key}
-                price={format(price)}
-                onClick={handleAssetClick(asset, close)}
-              />
-            )}
+        {markets.map(({ key, asset }) => (
+          <Menu.Item key={key}>
+            <MarketButton asset={asset} marketKey={key} />
           </Menu.Item>
         ))}
       </Menu.Items>
@@ -66,18 +52,48 @@ export function MarketList() {
   )
 }
 
-interface MarketButton extends ButtonProps {
+type MarketButton = {
   asset: string
   price: string
-  percent?: string
   marketKey: MarketKey
+  percent?: string
+} & ButtonProps
+
+function usePrevious<T>(state: T): T | undefined {
+  const ref = useRef<T>()
+  useEffect(() => {
+    ref.current = state
+  })
+  return ref.current
 }
+
+const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
+  const priceChange = FixedNumber.from(0)
+  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey })
+  // const lastPrice = usePrevious(price)
+  // const color = lastPrice.greaterThan(price) ? 'text-red-400' : 'text-green-400'
+
+  return (
+    <div className="flex flex-col items-end">
+      <span className="text-ocean-200 whitespace-nowrap text-[10px] font-medium">
+        {formatPercent(priceChange)}
+      </span>
+      {!price ? (
+        <Skeleton className="w-10" />
+      ) : (
+        <span className="whitespace-nowrap text-white text-sm font-semibold">
+          {formatUsd(price)}
+        </span>
+      )}
+    </div>
+  )
+})
 
 const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
   ({ asset, marketKey, percent, ...props }, ref) => {
-    // const { data: price } = useSkewAdjustedOffChainPrice({ marketKey })
     return (
-      <button
+      <Link
+        href={`?asset=${asset}`}
         ref={ref}
         className={
           'btn gap-6 h-fit justify-between even:bg-light-400 ocean:even:bg-ocean-600 p-2 px-3 rounded-lg'
@@ -97,8 +113,8 @@ const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
             />
           }
         />
-        {/* <ItemInfo align="end" info={percent || '0.00%'} value={price && formatUsd(price)} /> */}
-      </button>
+        <Price marketKey={marketKey} />
+      </Link>
     )
   },
 )

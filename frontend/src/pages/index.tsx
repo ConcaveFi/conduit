@@ -12,9 +12,7 @@ import { formatUsd } from 'src/utils/format'
 function Title() {
   const market = useRouteMarket()
 
-  const { data: price } = useSkewAdjustedOffChainPrice({
-    marketKey: market?.key,
-  })
+  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey: market?.key })
 
   return (
     <Head>

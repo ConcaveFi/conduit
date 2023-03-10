@@ -1,22 +1,13 @@
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { PropsWithChildren, useCallback, useEffect, useMemo } from 'react'
 
-import { EvmPriceServiceConnection, PriceFeed } from '@pythnetwork/pyth-evm-js'
+import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MarketKey, Markets } from 'perps-hooks/markets'
 
 import { BigNumber, FixedNumber } from 'ethers'
 import { useNetwork } from 'wagmi'
-import { useMarkets, useMarketSettings } from './useMarket'
-import { queryClient } from 'src/providers'
+import { marketsQueryKey, MarketSummaries, useMarkets, useMarketSettings } from './useMarket'
+import { SupportedChainId } from 'src/providers/WagmiProvider'
 
 const pyth = {
   mainnet: new EvmPriceServiceConnection('https://xc-mainnet.pyth.network'),
@@ -25,35 +16,8 @@ const pyth = {
 type PythNetwork = 'mainnet' | 'testnet'
 type PythId = (typeof Markets)[MarketKey]['pythIds'][PythNetwork]
 
-const parsePriceFeed = (feed: PriceFeed) => {
-  const { price, expo } = feed.getPriceUnchecked()
-  return {
-    id: (feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`) as PythId,
-    price: FixedNumber.fromValue(BigNumber.from(price), Math.abs(expo)),
-  }
-}
-type ParsedPriceFeed = ReturnType<typeof parsePriceFeed>
+const priceQueryKey = (id?: PythId) => ['pyth', id]
 
-const priceQueryKey = (ids?: PythId[]) => ['pyth', ids]
-const createPythPricesQuery = (ids?: PythId[], network: PythNetwork = 'mainnet') => ({
-  queryKey: priceQueryKey(ids),
-  queryFn: async () => {
-    const feeds = await pyth[network].getLatestPriceFeeds(ids!)
-    if (!feeds) return ids?.map((id) => ({ id, price: FixedNumber.from(0) }))
-    return feeds.map(parsePriceFeed)
-  },
-})
-
-const allMarketsKeys = Object.keys(Markets) as MarketKey[]
-const allMarketsPythIds = {
-  mainnet: allMarketsKeys.map((key) => Markets[key].pythIds.mainnet),
-  testnet: allMarketsKeys.map((key) => Markets[key].pythIds.testnet),
-}
-const allMarketsPricesQuery = createPythPricesQuery(allMarketsPythIds.mainnet, 'mainnet')
-
-export const prefetchPrices = () => queryClient.prefetchQuery(allMarketsPricesQuery)
-
-const ZERO = FixedNumber.from(0)
 const ONE = FixedNumber.from(1)
 
 export function useOffchainPrice<TSelect = FixedNumber>({
@@ -63,49 +27,52 @@ export function useOffchainPrice<TSelect = FixedNumber>({
 }: {
   marketKey?: MarketKey
   enabled?: boolean
-  select?: (priceFeed: FixedNumber) => TSelect
+  select?: (price: FixedNumber) => TSelect
 }) {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
   const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
 
-  const marketPriceQuery = useMemo(
-    () => createPythPricesQuery(marketPythId && [marketPythId], pythNetwork),
-    [marketPythId, pythNetwork],
-  )
-
   const queryClient = useQueryClient()
 
   return useQuery({
-    ...marketPriceQuery,
+    queryKey: priceQueryKey(marketPythId),
     enabled: enabled && !!marketPythId,
     initialData: () => {
-      const allFeeds = queryClient.getQueryData<ParsedPriceFeed[]>(allMarketsPricesQuery.queryKey)
-      const feed = allFeeds?.find((m) => m.id === marketPythId)
-      return feed ? [feed] : undefined
+      const queryKey = marketsQueryKey((chain?.id as SupportedChainId) || 10)
+      const markets = queryClient.getQueryData<MarketSummaries>(queryKey)
+      const market = markets?.find((m) => m.key === marketKey)
+      return market?.price
     },
-    select: (priceFeeds) => {
-      if (!priceFeeds) return ZERO
-      const feed = priceFeeds.find((f) => f.id === marketPythId)
-      const result = !!feed ? FixedNumber.from(feed.price._value) : ZERO
-      return (select ? select(result) : result) as TSelect
-    },
+    select,
+    staleTime: Infinity,
   })
 }
 
 export function useSkewAdjustedOffChainPrice({ marketKey }: { marketKey?: MarketKey }) {
-  const { data: market } = useMarkets({ select: (m) => m.find(({ key }) => key === marketKey) })
-  const { data: settings } = useMarketSettings({ marketKey })
+  const { data: marketSkew } = useMarkets({
+    select: useCallback((m) => m.find(({ key }) => key === marketKey)?.marketSkew, [marketKey]),
+  })
+  const { data: skewScale } = useMarketSettings({ marketKey, select: (s) => s.skewScale })
 
   return useOffchainPrice({
     marketKey,
-    enabled: !!market && !!settings,
-    select: (price) => {
-      if (!market || !settings) return undefined
-      const skew = market.marketSkew.divUnsafe(settings.skewScale).addUnsafe(ONE)
-      return price.mulUnsafe(skew)
-    },
+    enabled: !!marketSkew && !!skewScale,
+    select: useCallback(
+      (price) => {
+        if (!marketSkew || !skewScale) return undefined
+        const skew = marketSkew.divUnsafe(skewScale).addUnsafe(ONE)
+        return price.mulUnsafe(skew)
+      },
+      [marketSkew, skewScale],
+    ),
   })
+}
+
+const allMarketsKeys = Object.keys(Markets) as MarketKey[]
+const allMarketsPythIds = {
+  mainnet: allMarketsKeys.map((key) => Markets[key].pythIds.mainnet),
+  testnet: allMarketsKeys.map((key) => Markets[key].pythIds.testnet),
 }
 
 export function OffchainPricesProvider({ children }: PropsWithChildren<{}>) {
@@ -115,9 +82,11 @@ export function OffchainPricesProvider({ children }: PropsWithChildren<{}>) {
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    pyth[pythNetwork].subscribePriceFeedUpdates(allMarketsPythIds[pythNetwork], (priceFeed) => {
-      const feed = parsePriceFeed(priceFeed)
-      queryClient.setQueryData(priceQueryKey([feed.id]), [feed])
+    pyth[pythNetwork].subscribePriceFeedUpdates(allMarketsPythIds[pythNetwork], (feed) => {
+      const { price, expo } = feed.getPriceUnchecked()
+      const _price = FixedNumber.fromValue(BigNumber.from(price), Math.abs(expo))
+      const id = (feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`) as PythId
+      queryClient.setQueryData(priceQueryKey(id), _price)
     })
     return () => {
       pyth[pythNetwork].unsubscribePriceFeedUpdates(allMarketsPythIds[pythNetwork])

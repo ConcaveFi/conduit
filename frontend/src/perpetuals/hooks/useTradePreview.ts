@@ -8,6 +8,12 @@ import { SupportedChainId } from 'src/providers/WagmiProvider'
 import { useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 
+const select = (d: ReadContractResult<typeof marketAbi, 'postTradeDetails'>) => ({
+  fee: FixedNumber.fromValue(d.fee, 18),
+  entryPrice: FixedNumber.fromValue(d.price, 18),
+  liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18),
+})
+
 export function useTradePreview({
   ...config
 }: Omit<
@@ -25,10 +31,6 @@ export function useTradePreview({
     chainId,
     functionName: 'postTradeDetails',
     ...config,
-    select: (d) => ({
-      fee: FixedNumber.fromValue(d.fee, 18),
-      entryPrice: FixedNumber.fromValue(d.price, 18),
-      liquidationPrice: FixedNumber.fromValue(d.liqPrice, 18),
-    }),
+    select,
   })
 }
