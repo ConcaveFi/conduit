@@ -40,7 +40,7 @@ const parseMarketSummaries = (summaries: MarketSummariesResult) =>
         makerFeeOffchainDelayedOrder: from([fee.makerFeeOffchainDelayedOrder, 18]),
         overrideCommitFee: from([fee.overrideCommitFee, 18]),
       },
-      currentFundingRate: from(divide(m.currentFundingRate, 24), 6), // 1hr Funding Rate
+      currentFundingRate: divide([m.currentFundingRate, 16], 24), // 1hr Funding Rate
       price: from([m.price, 18]),
       currentFundingVelocity: from([m.currentFundingVelocity, 18]),
       marketDebt: from([m.marketDebt, 18]),
@@ -86,14 +86,22 @@ export function useMarkets<TSelectData = MarketSummaries>({
   })
 }
 
-export const useRouteMarket = () => {
+export const useRouteMarket = <TSelect>({
+  select,
+}: {
+  select?: (m: MarketSummaries[number]) => TSelect
+} = {}) => {
   const searchParams = useSearchParams()
   const asset = searchParams?.get('asset')
 
   const { data: market } = useMarkets({
     select: useCallback(
-      (markets: MarketSummaries) => markets.find((m) => m.asset === asset),
-      [asset],
+      (markets: MarketSummaries) => {
+        const market = markets.find((m) => m.asset === asset)
+        if (!market) return
+        return select ? select(market) : (market as TSelect)
+      },
+      [asset, select],
     ),
   })
 

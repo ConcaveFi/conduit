@@ -7,6 +7,7 @@ import { format, from } from 'dnum'
 import Image from 'next/image'
 import { useChainLinkLatestRoundData } from 'perps-hooks'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
+import { useRouteMarket } from './hooks/useMarket'
 import { MarketList } from './MarketList'
 
 const OP_USD_FEED = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
@@ -35,6 +36,8 @@ export function StrategyHeader() {
   const SNXBalance = useBalance({ token: SNX_ADDRESS[chain?.id!], ...balanceConfig })
   const ETHBalance = useBalance({ ...balanceConfig })
 
+  const fundingRate = useRouteMarket({ select: (m) => format(m.currentFundingRate, 6) })
+
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
       <div className="centered bg-ocean-700 order-2 flex min-h-[80px] w-full rounded-2xl px-5 md:order-[0] md:w-fit ">
@@ -44,7 +47,7 @@ export function StrategyHeader() {
         <ItemInfo info={'Price index'} value="$ 370.00" />
         <ItemInfo info={t('24h_volume')} value="$ 370,526,580" Icon={<BalanceIcon />} />
         <ItemInfo info={t('24h_change')} value="-1.33%" modifier="negative" />
-        <ItemInfo info={'1H Funding Rate'} value="0.03%" modifier="positive" />
+        <ItemInfo info={'1H Funding Rate'} value={fundingRate || '0.0'} modifier="positive" />
         <ItemInfo info={'Open interest (L)'} value="$ 4.3M / $ 2.3M" />
         <ItemInfo info={'Open interest (S)'} value="$ 4.3M / $ 2.3M" />
       </div>
