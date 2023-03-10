@@ -7,18 +7,19 @@ import { GridLayout } from 'src/components/futures/GridLayout'
 import { Topbar } from 'src/components/futures/topbar/Topbar'
 import { StrategyHeader } from 'src/perpetuals/Header'
 import { WidgetsProvider } from 'src/providers/WidgetsProvider'
-import { formatUsd } from 'src/utils/format'
+import { format } from 'dnum'
 
 function Title() {
   const market = useRouteMarket()
 
-  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey: market?.key })
+  const { data: price } = useSkewAdjustedOffChainPrice({
+    marketKey: market?.key,
+    select: (p) => format(p, 2),
+  })
 
   return (
     <Head>
-      <title>
-        {market && price ? `${market.asset} - ${formatUsd(price)} | Conduit` : 'Conduit'}
-      </title>
+      <title>{market && price ? `${market.asset} - $ ${price} | Conduit` : 'Conduit'}</title>
     </Head>
   )
 }

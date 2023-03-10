@@ -2,17 +2,22 @@ import { OP_ADDRESS, SNX_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
 import { BalanceIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { FixedNumber } from 'ethers'
+import { FetchBalanceResult } from '@wagmi/core'
+import { format, from } from 'dnum'
 import Image from 'next/image'
 import { useChainLinkLatestRoundData } from 'perps-hooks'
-import { format, formatUsd } from 'src/utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { MarketList } from './MarketList'
 
 const OP_USD_FEED = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
 const SNX_FEED = '0x2fcf37343e916eaed1f1ddaaf84458a359b53877'
 const ETH_FEED = '0x13e3ee699d1909e989722e753853ae30b17e08c5'
-const select = (v) => FixedNumber.fromValue(v.answer, 8)
+
+const select = (v) => from([v.answer.toBigInt(), 8])
+
+const formatBalance = (b: FetchBalanceResult | undefined) =>
+  b ? format(from([b.value.toBigInt(), b.decimals]), 2) : '0.0'
+
 export function StrategyHeader() {
   const { t } = useTranslation()
   const { chain } = useNetwork()
@@ -25,10 +30,10 @@ export function StrategyHeader() {
 
   const enabled = Boolean(chain?.id)
   const balanceConfig = { address, enabled }
-  const sUSD_Balance = useBalance({ token: sUSD_ADDRESS[chain?.id!], ...balanceConfig })
-  const OP_Balance = useBalance({ token: OP_ADDRESS[chain?.id!], ...balanceConfig })
-  const SNX_Balance = useBalance({ token: SNX_ADDRESS[chain?.id!], ...balanceConfig })
-  const ETH_Balance = useBalance({ ...balanceConfig })
+  const sUSDBalance = useBalance({ token: sUSD_ADDRESS[chain?.id!], ...balanceConfig })
+  const OPBalance = useBalance({ token: OP_ADDRESS[chain?.id!], ...balanceConfig })
+  const SNXBalance = useBalance({ token: SNX_ADDRESS[chain?.id!], ...balanceConfig })
+  const ETHBalance = useBalance({ ...balanceConfig })
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
@@ -44,39 +49,39 @@ export function StrategyHeader() {
         <ItemInfo info={'Open interest (S)'} value="$ 4.3M / $ 2.3M" />
       </div>
       <div className="bg-ocean-700  flex min-h-[80px] w-[35%] flex-1 justify-around gap-4 rounded-2xl px-4 ">
-        {sUSD_Balance?.isLoading ? (
+        {sUSDBalance.isLoading ? (
           tokenFeedSekeleton
         ) : (
           <ItemInfo
             info={'sUSD'}
-            value={`$ ${format(FixedNumber.from(sUSD_Balance?.data?.formatted || '0'))}`}
+            value={formatBalance(sUSDBalance.data)}
             Icon={<Image width={25} height={25} alt="sUSD logo" src={'/assets/tokens/susd.png'} />}
           />
         )}
-        {OP_Balance?.isLoading ? (
+        {OPBalance.isLoading ? (
           tokenFeedSekeleton
         ) : (
           <ItemInfo
-            info={`OP - ${formatUsd(opPrice?.data || '0.0')}`}
-            value={`${format(FixedNumber.from(OP_Balance?.data?.formatted || '0'))}`}
+            info={`OP - $ ${format(opPrice?.data || [0n, 0])}`}
+            value={formatBalance(OPBalance.data)}
             Icon={<Image width={25} height={25} alt="OP logo" src={'/assets/tokens/op.png'} />}
           />
         )}
-        {SNX_Balance?.isLoading ? (
+        {SNXBalance.isLoading ? (
           tokenFeedSekeleton
         ) : (
           <ItemInfo
-            info={`SNX - ${formatUsd(snxPrice?.data || '0.0')}`}
-            value={`${format(FixedNumber.from(SNX_Balance?.data?.formatted || '0'))}`}
+            info={`SNX - $ ${format(snxPrice?.data || [0n, 0])}`}
+            value={formatBalance(SNXBalance.data)}
             Icon={<Image width={25} height={25} alt="SNX logo" src={'/assets/tokens/snx.png'} />}
           />
         )}
-        {ETH_Balance?.isLoading ? (
+        {ETHBalance.isLoading ? (
           tokenFeedSekeleton
         ) : (
           <ItemInfo
-            info={`ETH - ${formatUsd(ethPrice?.data || '0.0')}`}
-            value={`${format(FixedNumber.from(ETH_Balance?.data?.formatted || '0'))}`}
+            info={`ETH - ${format(ethPrice?.data || [0n, 0])}`}
+            value={formatBalance(ETHBalance.data)}
             Icon={<Image width={25} height={25} alt="SNX logo" src={'/assets/tokens/eth.png'} />}
           />
         )}

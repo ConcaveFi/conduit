@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { getContract, Provider, ReadContractResult } from '@wagmi/core'
-import { FixedNumber } from 'ethers'
+import { divide, Dnum, format, from } from 'dnum'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils'
 import { useSearchParams } from 'next/navigation'
 import {
@@ -10,7 +10,7 @@ import {
   marketSettingsAddress,
 } from 'perps-hooks'
 import { MarketAsset, MarketKey } from 'perps-hooks/markets'
-import { valuesToFixedNumber } from 'perps-hooks/parsers'
+import { valuesToBigInt } from 'perps-hooks/parsers'
 import { useCallback } from 'react'
 import { SupportedChainId } from 'src/providers/WagmiProvider'
 
@@ -22,18 +22,36 @@ export type MarketSummariesResult = ReadContractResult<
   'allProxiedMarketSummaries'
 >
 const parseMarketSummaries = (summaries: MarketSummariesResult) =>
-  summaries.map(({ market, key, asset, feeRates, currentFundingRate, ...s }) => ({
-    market,
-    address: market,
-    key: parseBytes32String(key) as MarketKey,
-    asset: parseBytes32String(asset) as MarketAsset,
-    feeRates: valuesToFixedNumber(feeRates),
-    currentFundingRate: FixedNumber.from(currentFundingRate.div(24), 6), // 1hr Funding Rate
-    ...valuesToFixedNumber(s),
-  }))
+  summaries.map(({ key, asset, feeRates, market: address, ..._market }) => {
+    const m = valuesToBigInt(_market)
+    const fee = valuesToBigInt(feeRates)
+    return {
+      address: address,
+      key: parseBytes32String(key) as MarketKey,
+      asset: parseBytes32String(asset) as MarketAsset,
+      feeRates: {
+        // ----- we only doing offchain delayed orders rn -----
+        // takerFee: from([fee.takerFee, 18]),
+        // makerFee:  from([fee.makerFee, 18]),
+        // takerFeeDelayedOrder:  from([fee.takerFeeDelayedOrder, 18]),
+        // makerFeeDelayedOrder:  from([fee.makerFeeDelayedOrder, 18]),
+        // ----------------------------------------------------
+        takerFeeOffchainDelayedOrder: from([fee.takerFeeOffchainDelayedOrder, 18]),
+        makerFeeOffchainDelayedOrder: from([fee.makerFeeOffchainDelayedOrder, 18]),
+        overrideCommitFee: from([fee.overrideCommitFee, 18]),
+      },
+      currentFundingRate: from(divide(m.currentFundingRate, 24), 6), // 1hr Funding Rate
+      price: from([m.price, 18]),
+      currentFundingVelocity: from([m.currentFundingVelocity, 18]),
+      marketDebt: from([m.marketDebt, 18]),
+      marketSize: from([m.marketSize, 18]),
+      marketSkew: from([m.marketSkew, 18]),
+      maxLeverage: from([m.maxLeverage, 18]),
+    }
+  })
 export type MarketSummaries = ReturnType<typeof parseMarketSummaries>
 
-export const marketsQueryKey = (chainId: SupportedChainId) => ['all markets summaries']
+export const marketsQueryKey = (chainId: SupportedChainId) => ['all markets summaries', chainId]
 
 const fetchMarkets = async ({ provider, chainId }: { provider: Provider; chainId: number }) => {
   const marketData = getContract({
@@ -106,7 +124,12 @@ const fetchMarketSettings = async ({
     // marketSettings.liquidationFeeRatio(),
     // marketSettings.liquidationFeeRatio(),
   ])
-  return valuesToFixedNumber({ skewScale: skewScale, minInitialMargin, minKeeperFee })
+  const s = valuesToBigInt({ skewScale, minInitialMargin, minKeeperFee })
+  return {
+    skewScale: from([s.skewScale, 18]),
+    minInitialMargin: from([s.minInitialMargin, 18]),
+    minKeeperFee: from([s.minKeeperFee, 18]),
+  }
 }
 
 type MarketSettings = Awaited<ReturnType<typeof fetchMarketSettings>>

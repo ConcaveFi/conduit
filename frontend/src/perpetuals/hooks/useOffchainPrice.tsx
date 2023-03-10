@@ -4,10 +4,10 @@ import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { MarketKey, Markets } from 'perps-hooks/markets'
 
-import { BigNumber, FixedNumber } from 'ethers'
 import { useNetwork } from 'wagmi'
 import { marketsQueryKey, MarketSummaries, useMarkets, useMarketSettings } from './useMarket'
 import { SupportedChainId } from 'src/providers/WagmiProvider'
+import { add, divide, Dnum, multiply, subtract, greaterThan, abs } from 'dnum'
 
 const pyth = {
   mainnet: new EvmPriceServiceConnection('https://xc-mainnet.pyth.network'),
@@ -18,16 +18,14 @@ type PythId = (typeof Markets)[MarketKey]['pythIds'][PythNetwork]
 
 const priceQueryKey = (id?: PythId) => ['pyth', id]
 
-const ONE = FixedNumber.from(1)
-
-export function useOffchainPrice<TSelect = FixedNumber>({
+export function useOffchainPrice<TSelect = Dnum>({
   marketKey,
   enabled = true,
   select,
 }: {
   marketKey?: MarketKey
   enabled?: boolean
-  select?: (price: FixedNumber) => TSelect
+  select?: (price: Dnum) => TSelect
 }) {
   const { chain } = useNetwork()
   const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
@@ -44,28 +42,32 @@ export function useOffchainPrice<TSelect = FixedNumber>({
       const market = markets?.find((m) => m.key === marketKey)
       return market?.price
     },
-    select,
+    select: select,
     staleTime: Infinity,
   })
 }
 
-export function useSkewAdjustedOffChainPrice({ marketKey }: { marketKey?: MarketKey }) {
+export function useSkewAdjustedOffChainPrice<TSelect = Dnum>({
+  marketKey,
+  select,
+}: {
+  marketKey?: MarketKey
+  select?: (price: Dnum) => TSelect
+}) {
   const { data: marketSkew } = useMarkets({
-    select: useCallback((m) => m.find(({ key }) => key === marketKey)?.marketSkew, [marketKey]),
+    select: (m) => m.find(({ key }) => key === marketKey)?.marketSkew,
   })
   const { data: skewScale } = useMarketSettings({ marketKey, select: (s) => s.skewScale })
 
   return useOffchainPrice({
     marketKey,
     enabled: !!marketSkew && !!skewScale,
-    select: useCallback(
-      (price) => {
-        if (!marketSkew || !skewScale) return undefined
-        const skew = marketSkew.divUnsafe(skewScale).addUnsafe(ONE)
-        return price.mulUnsafe(skew)
-      },
-      [marketSkew, skewScale],
-    ),
+    select: (price) => {
+      if (!marketSkew || !skewScale) return undefined
+      const skew = add(divide(marketSkew, skewScale), 1)
+      const skewAdjustedPrice = multiply(price, skew)
+      return select ? select(skewAdjustedPrice) : (skewAdjustedPrice as TSelect)
+    },
   })
 }
 
@@ -84,8 +86,13 @@ export function OffchainPricesProvider({ children }: PropsWithChildren<{}>) {
   useEffect(() => {
     pyth[pythNetwork].subscribePriceFeedUpdates(allMarketsPythIds[pythNetwork], (feed) => {
       const { price, expo } = feed.getPriceUnchecked()
-      const _price = FixedNumber.fromValue(BigNumber.from(price), Math.abs(expo))
+      const _price = divide(price, 10 ** Math.abs(expo), 18)
       const id = (feed.id.startsWith('0x') ? feed.id : `0x${feed.id}`) as PythId
+      const lastPrice = queryClient.getQueryData<Dnum>(priceQueryKey(id))
+      // if (
+      //   lastPrice &&
+      //   greaterThan(abs(multiply(divide(subtract(lastPrice, price), abs(lastPrice)), 100)), 0.1)
+      // )
       queryClient.setQueryData(priceQueryKey(id), _price)
     })
     return () => {

@@ -1,6 +1,6 @@
 import { cx } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { FixedNumber } from 'ethers'
+import { abs, divide, equal, format, from, greaterThan } from 'dnum'
 import {
   useMarketClosePositionWithTracking,
   useMarketDataPositionDetails,
@@ -10,7 +10,7 @@ import { parsePositionDetails } from 'perps-hooks/parsers'
 import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { useIsHydrated } from 'src/providers/IsHydratedProvider'
-import { format, formatUsd } from 'src/utils/format'
+import { toBigNumber } from 'src/utils/toBigNumber'
 import { useAccount } from 'wagmi'
 
 export function UserPositions() {
@@ -28,7 +28,7 @@ export function UserPositions() {
     address: market?.address,
     args: position && [
       // BigNumber.from(position.size).mul(-1),
-      DEFAULT_PRICE_IMPACT_DELTA,
+      toBigNumber(DEFAULT_PRICE_IMPACT_DELTA),
       TrackingCode,
     ],
   })
@@ -46,14 +46,9 @@ export function UserPositions() {
     )
 
   const size = position.size
-  const side = (size.isNegative() ? 'Short' : 'Long').toUpperCase()
-  const hasPosition = !size.isZero()
-  const profitLoss = positionDetails.profitLoss
+  const side = (greaterThan(size, 0) ? 'Long' : 'Short').toUpperCase()
 
-  const remainingMargin = positionDetails?.remainingMargin
-  const leverage = !remainingMargin.isZero()
-    ? positionDetails?.notionalValue?.divUnsafe(remainingMargin)
-    : FixedNumber.from(0)
+  const hasPosition = !equal(size, 0)
 
   if (!hasPosition) {
     return (
@@ -65,16 +60,21 @@ export function UserPositions() {
     )
   }
 
-  const sizeFormated = `${format(size, { signDisplay: 'never' })} (${formatUsd(
-    positionDetails?.notionalValue,
-    { signDisplay: 'never' },
-  )})`
+  const profitLoss = positionDetails.profitLoss
+
+  const remainingMargin = positionDetails.remainingMargin
+
+  const leverage = !equal(remainingMargin, 0)
+    ? divide(positionDetails.notionalValue, remainingMargin)
+    : from([0n, 0])
+
+  const sizeFormated = `${format(abs(size))} ($ ${format(abs(positionDetails.notionalValue))})`
 
   return (
     <div className="border-ocean-400 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
       <div className="flex gap-4">
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo info={[SideNAsset(side, market.asset), formatUsd(market?.price || '0')]} />
+          <PosItemInfo info={[SideNAsset(side, market.asset), format(market?.price || '0')]} />
           <PosItemInfo info={['Size', sizeFormated]} />
           <PosItemInfo info={['Avg Entry', format(position.lastPrice)]} />
           <PosItemInfo info={['Realized P&L', '-']} />
@@ -83,7 +83,7 @@ export function UserPositions() {
           <PosItemInfo info={['Unrealized P&L', format(positionDetails.profitLoss)]} />
           <PosItemInfo info={['Liq Price', format(positionDetails.liquidationPrice)]} />
           <PosItemInfo info={['Net Funding', '-']} />
-          <PosItemInfo info={['Leverage', format(leverage, { signDisplay: 'never' })]} />
+          <PosItemInfo info={['Leverage', format(leverage)]} />
         </div>
       </div>
       <button

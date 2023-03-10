@@ -1,21 +1,20 @@
 import { ChevronIcon } from '@tradex/icons'
-import { ButtonProps, cx, ItemInfo, Menu, Skeleton } from '@tradex/interface'
-import { FixedNumber } from 'ethers'
+import { ButtonProps, ItemInfo, Menu, Skeleton } from '@tradex/interface'
+import { format } from 'dnum'
 import Image from 'next/image'
 import Link from 'next/link'
 import { MarketKey } from 'perps-hooks/markets'
 import { forwardRef, memo, useEffect, useRef } from 'react'
 import { useMarkets, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
-import { formatPercent, formatUsd } from 'src/utils/format'
 import { handleSynth } from 'src/utils/handleTokenLogo'
 import { useSkewAdjustedOffChainPrice } from './hooks/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
-  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey })
+  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
-      value={price ? formatUsd(price) : ''}
+      value={price ? `$ ${price}` : ''}
       Icon={
         <Image
           alt={`${asset} icon`}
@@ -68,22 +67,20 @@ function usePrevious<T>(state: T): T | undefined {
 }
 
 const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
-  const priceChange = FixedNumber.from(0)
-  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey })
+  const priceChange = 0
+  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
   // const lastPrice = usePrevious(price)
   // const color = lastPrice.greaterThan(price) ? 'text-red-400' : 'text-green-400'
 
   return (
     <div className="flex flex-col items-end">
       <span className="text-ocean-200 whitespace-nowrap text-[10px] font-medium">
-        {formatPercent(priceChange)}
+        % {priceChange}
       </span>
       {!price ? (
         <Skeleton className="w-10" />
       ) : (
-        <span className="whitespace-nowrap text-white text-sm font-semibold">
-          {formatUsd(price)}
-        </span>
+        <span className="whitespace-nowrap text-white text-sm font-semibold">{price}</span>
       )}
     </div>
   )

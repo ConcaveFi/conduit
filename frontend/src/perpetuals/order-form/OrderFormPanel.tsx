@@ -1,8 +1,18 @@
 import { cx, NumericInput, Panel, PanelProps, Skeleton } from '@tradex/interface'
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
-import { BigNumber, FixedNumber } from 'ethers'
-import { parseEther } from 'ethers/lib/utils.js'
+import {
+  divide,
+  Dnum,
+  equal,
+  from,
+  greaterThan,
+  isDnum,
+  multiply,
+  subtract,
+  toNumber,
+  toParts,
+} from 'dnum'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import Link from 'next/link'
 import {
@@ -17,8 +27,9 @@ import { forwardRef, memo, useCallback, useEffect, useMemo, useReducer, useState
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
 import { useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
-import { formatUsd, safeFixedNumber } from 'src/utils/format'
+import { toBigNumber } from 'src/utils/toBigNumber'
 import { useDebounce } from 'usehooks-ts'
+import { dn, format } from 'src/utils/format'
 import { Address, useAccount } from 'wagmi'
 import { useSkewAdjustedOffChainPrice } from '../hooks/useOffchainPrice'
 import { useTradePreview } from '../hooks/useTradePreview'
@@ -64,12 +75,12 @@ const OrderSizeInput = ({
   onChange,
   inputs,
   assetSymbol = '',
-  max = '0',
+  max = [0n, 18],
 }: {
   onChange: (s: InputState) => void
   inputs: ReturnType<typeof deriveInputs>
   assetSymbol: string | undefined
-  max: string | undefined
+  max: Dnum | undefined
 }) => {
   const [amountDenominator, toggleAmountDenominator] = useReducer(
     (s) => (s === 'usd' ? 'asset' : 'usd'),
@@ -78,10 +89,9 @@ const OrderSizeInput = ({
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
   const symbols = { usd: 'sUSD', asset: assetSymbol }
 
-  const isOverBuyingPower =
-    !!max && !!inputs.usd && parseEther(inputs.usd.toString()).gt(parseEther(max))
+  const isOverBuyingPower = !!inputs.usd && greaterThan(inputs.usd || 0, max)
 
-  const hasValue = +inputs[other].toString() > 0
+  const hasValue = greaterThan(inputs[other] || 0, 0)
 
   return (
     <motion.div className="bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
@@ -102,7 +112,7 @@ const OrderSizeInput = ({
                 data-overflow={isOverBuyingPower}
                 className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
-                value={inputs[amountDenominator].toString()}
+                value={format(inputs[amountDenominator], false)}
                 onValueChange={({ value }, { source }) => {
                   if (source === 'event') onChange({ value, type: amountDenominator })
                 }}
@@ -137,7 +147,7 @@ const OrderSizeInput = ({
                   }}
                   className=" text-ocean-200 min-h-0 max-w-full text-ellipsis text-start font-mono text-xs outline-none hover:text-white"
                 >
-                  <span className="text-ellipsis font-medium">{inputs[other].toString()}</span>
+                  <span className="text-ellipsis font-medium">{format(inputs[other], 9)}</span>
                   <span className="ml-0.5 text-inherit">{symbols[other]}</span>
                 </motion.button>
               )
@@ -253,18 +263,18 @@ const riskLevelLabel = (value: number, max: number) => {
 const LiquidationPrice = memo(function LiquidationPrice({
   liquidationPrice,
   isLoading,
-  max = '0',
+  max = 0,
   sizeUsd,
   onChange,
 }: {
   isLoading: boolean
   liquidationPrice: string | undefined
-  max: string | undefined
-  sizeUsd: string
+  max: number | undefined
+  sizeUsd: number
   onChange: (s: InputState) => void
 }) {
-  const color = useInterpolateLiquidationRiskColor(+sizeUsd, +max)
-  const riskLabel = riskLevelLabel(+sizeUsd, +max)
+  const color = useInterpolateLiquidationRiskColor(sizeUsd, max)
+  const riskLabel = riskLevelLabel(sizeUsd, max)
 
   return (
     <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
@@ -274,7 +284,7 @@ const LiquidationPrice = memo(function LiquidationPrice({
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
-          {+sizeUsd > 0 && isLoading ? (
+          {sizeUsd > 0 && isLoading ? (
             <Skeleton className="mb-1 h-5 w-24" />
           ) : (
             <NumericInput
@@ -293,10 +303,10 @@ const LiquidationPrice = memo(function LiquidationPrice({
             {riskLabel}
           </motion.span>
         </div>
-        <SizeSlider value={+sizeUsd} max={+max} onChange={onChange} disabled={!max} />
+        <SizeSlider value={sizeUsd} max={max} onChange={onChange} disabled={!max} />
         <div className="flex justify-between font-mono">
           <span className={cx('text-xs', max ? 'text-green-500' : 'text-ocean-300')}>$0</span>
-          {max && <span className="text-xs text-orange-500">{formatUsd(max)}</span>}
+          {max && <span className="text-xs text-orange-500">$ {format(max)}</span>}
         </div>
       </div>
     </div>
@@ -304,14 +314,14 @@ const LiquidationPrice = memo(function LiquidationPrice({
 })
 
 type InputState = { value: string; type: 'usd' | 'asset' }
-const deriveInputs = (input?: InputState, price?: FixedNumber) => {
+const deriveInputs = (input?: InputState, price?: Dnum): Record<'usd' | 'asset', Dnum> => {
   const { value, type } = input || {}
-  if (!value || !type) return { usd: '', asset: '' }
-  if (!price || price.isZero()) return { usd: '', asset: '', [type]: value }
-  const amount = safeFixedNumber(value)
+  if (!value || !type) return { usd: [0n, 0], asset: [0n, 0] }
+  if (!price || equal(price, 0)) return { usd: [0n, 0], asset: [0n, 0], [type]: value }
+  const amount = dn(value)
   return {
-    usd: () => ({ usd: value, asset: amount.divUnsafe(price) }),
-    asset: () => ({ usd: amount.mulUnsafe(price), asset: value }),
+    usd: () => ({ usd: amount, asset: divide(amount, price, 18) }),
+    asset: () => ({ usd: multiply(amount, price, 18), asset: amount }),
   }[type]()
 }
 
@@ -333,10 +343,10 @@ const MarginDetails = memo(function MarginDetails({
     enabled: !!market && !!account,
     select: (p) => {
       const details = parsePositionDetails(p)
-      const buyingPower = details.remainingMargin.mulUnsafe(MAX_LEVERAGE)
+      const buyingPower = multiply(details.remainingMargin, MAX_LEVERAGE)
       return {
         buyingPower,
-        available: buyingPower.subUnsafe(details.notionalValue),
+        available: subtract(buyingPower, details.notionalValue),
         notionalValue: details.notionalValue,
         remainingMargin: details.remainingMargin,
       }
@@ -353,7 +363,7 @@ const MarginDetails = memo(function MarginDetails({
           {!remainingMargin ? (
             <Skeleton />
           ) : (
-            <span className="font-mono text-white">{formatUsd(remainingMargin)}</span>
+            <span className="font-mono text-white">$ {format(remainingMargin)}</span>
           )}
         </div>
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
@@ -361,7 +371,7 @@ const MarginDetails = memo(function MarginDetails({
           {!buyingPower ? (
             <Skeleton />
           ) : (
-            <span className="font-mono text-green-400">{formatUsd(buyingPower)}</span>
+            <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
           )}
         </div>
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
@@ -369,7 +379,7 @@ const MarginDetails = memo(function MarginDetails({
           {!notionalValue ? (
             <Skeleton />
           ) : (
-            <span className="font-mono text-red-400">{formatUsd(notionalValue)}</span>
+            <span className="font-mono text-red-400">$ {format(notionalValue)}</span>
           )}
         </div>
       </div>
@@ -378,7 +388,7 @@ const MarginDetails = memo(function MarginDetails({
         {!available ? (
           <Skeleton />
         ) : (
-          <span className="font-mono text-white">{formatUsd(available)}</span>
+          <span className="font-mono text-white">$ {format(available)}</span>
         )}
       </div>
     </div>
@@ -391,27 +401,27 @@ const TradeDetails = memo(function TradeDetails({
   entryPrice,
 }: {
   marketKey: MarketKey | undefined
-  fee: FixedNumber | undefined
-  entryPrice: FixedNumber | undefined
+  fee: Dnum | undefined
+  entryPrice: Dnum | undefined
 }) {
   const { data: executionFee } = useMarketSettings({
     marketKey,
-    select: (settigns) => settigns.minKeeperFee,
+    select: (settings) => settings.minKeeperFee,
   })
 
   return (
     <ul className="text-ocean-200 text-xs">
       <li className="bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
         <span>Entry price:</span>
-        {entryPrice && <span> {formatUsd(entryPrice)}</span>}
+        {entryPrice && <span>$ {format(entryPrice)}</span>}
       </li>
       <li className="flex w-full justify-between px-2 py-0.5">
         <span>Execution Fee:</span>
-        {executionFee && <span>{formatUsd(executionFee)}</span>}
+        {executionFee && <span>$ {format(executionFee)}</span>}
       </li>
       <li className="bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
         <span>Trade Fee: </span>
-        {fee && <span>{formatUsd(fee)}</span>}
+        {fee && <span>$ {format(fee)}</span>}
       </li>
     </ul>
   )
@@ -423,21 +433,20 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
   buyingPower,
 }: {
   market: Address | undefined
-  sizeDelta: BigNumber
-  buyingPower: string | undefined
+  sizeDelta: Dnum
+  buyingPower: Dnum | undefined
 }) {
-  const isOverBuyingPower =
-    !!buyingPower && parseEther(sizeDelta.abs().toString()).gt(parseEther(buyingPower))
+  const isOverBuyingPower = !!buyingPower && greaterThan(sizeDelta, buyingPower)
 
-  const side = sizeDelta.isNegative() ? 'short' : 'long'
+  const side = greaterThan(sizeDelta, 0) ? 'long' : 'short'
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market,
-    enabled: !sizeDelta.isZero() && !!buyingPower && !isOverBuyingPower,
-    args: [sizeDelta, DEFAULT_PRICE_IMPACT_DELTA, TrackingCode],
+    enabled: !!market && !equal(sizeDelta, 0) && !!buyingPower && !isOverBuyingPower,
+    args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
-  if (sizeDelta.isZero())
+  if (equal(sizeDelta, 0))
     return (
       <button
         disabled
@@ -459,8 +468,8 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
 
   return (
     <button
-      onClick={submitOrder}
-      disabled={!submitOrder}
+      // onClick={submitOrder}
+      // disabled={!submitOrder}
       className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 font-bold h-11 rounded-lg bg-teal-500 text-white shadow-lg"
     >
       Place {side}
@@ -476,19 +485,17 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const market = useRouteMarket()
 
-  const { data: marketPrice } = useSkewAdjustedOffChainPrice({
-    marketKey: market?.key,
-  })
+  const { data: marketPrice } = useSkewAdjustedOffChainPrice({ marketKey: market?.key })
 
   const [input, setInput] = useState<InputState>()
   const inputs = useMemo(() => deriveInputs(input, marketPrice), [marketPrice, input])
 
   const [side, setSide] = useState<'long' | 'short'>('long')
 
-  const debouncedSize = useDebounce(inputs.asset.toString(), 150)
+  const debouncedSize = useDebounce(inputs.asset, 150)
   const sizeDelta = useMemo(() => {
-    const size = BigNumber.from(safeFixedNumber(debouncedSize))
-    return side === 'long' ? size : size.mul(-1)
+    const size = dn(debouncedSize)
+    return side === 'long' ? size : multiply(size, -1)
   }, [debouncedSize, side])
 
   const { address: account } = useAccount()
@@ -496,18 +503,18 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
   const { data: buyingPower } = useMarketRemainingMargin({
     address: market && market.address,
     args: account && [account],
-    select: (d) => {
-      const margin = FixedNumber.fromValue(d.marginRemaining, 18)
-      return margin.mulUnsafe(MAX_LEVERAGE).toString()
-    },
+    select: useCallback((d) => {
+      const margin = from([d.marginRemaining.toBigInt(), 18])
+      return multiply(margin, MAX_LEVERAGE)
+    }, []),
   })
 
   const tradePreview = useTradePreview({
     address: market && market.address,
-    enabled: !!market && !!marketPrice && !sizeDelta.isZero(),
+    enabled: !!market && !!marketPrice && !equal(sizeDelta, 0),
     args: marketPrice && [
-      sizeDelta,
-      BigNumber.from(marketPrice),
+      toBigNumber(sizeDelta),
+      toBigNumber(marketPrice),
       OrderType.delayedOffchain,
       account!,
     ],
@@ -535,11 +542,11 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       />
 
       <LiquidationPrice
-        liquidationPrice={tradePreview.data?.liquidationPrice.toString()}
+        liquidationPrice={format(tradePreview.data?.liquidationPrice)}
         isLoading={tradePreview.isLoading}
-        sizeUsd={inputs.usd.toString()}
+        sizeUsd={toNumber(dn(inputs.usd), 2)}
         onChange={setInput}
-        max={buyingPower}
+        max={buyingPower && toNumber(buyingPower, 2)}
       />
 
       <div className="flex items-center justify-between">

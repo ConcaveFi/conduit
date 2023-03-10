@@ -39,11 +39,11 @@ if (positionHistory && tradePreview) {
 
 */
 
-import { BigNumber, FixedNumber } from 'ethers'
+import { from } from 'dnum'
 import { formatBytes32String } from 'ethers/lib/utils'
 
 export const TrackingCode = formatBytes32String('Conduit')
 
-export const DEFAULT_PRICE_IMPACT_DELTA = BigNumber.from('500000000000000000') // 0.5%
+export const DEFAULT_PRICE_IMPACT_DELTA = from(0.5, 18)
 
-export const MAX_LEVERAGE = FixedNumber.from(25)
+export const MAX_LEVERAGE = from(25, 18)
