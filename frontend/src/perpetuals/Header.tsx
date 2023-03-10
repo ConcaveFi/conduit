@@ -62,7 +62,7 @@ export function StrategyHeader() {
           tokenFeedSekeleton
         ) : (
           <ItemInfo
-            info={`OP - $ ${format(opPrice?.data || [0n, 0])}`}
+            info={`OP - $ ${format(opPrice?.data || [0n, 0], 2)}`}
             value={formatBalance(OPBalance.data)}
             Icon={<Image width={25} height={25} alt="OP logo" src={'/assets/tokens/op.png'} />}
           />
@@ -71,7 +71,7 @@ export function StrategyHeader() {
           tokenFeedSekeleton
         ) : (
           <ItemInfo
-            info={`SNX - $ ${format(snxPrice?.data || [0n, 0])}`}
+            info={`SNX - $ ${format(snxPrice?.data || [0n, 0], 2)}`}
             value={formatBalance(SNXBalance.data)}
             Icon={<Image width={25} height={25} alt="SNX logo" src={'/assets/tokens/snx.png'} />}
           />
@@ -80,7 +80,7 @@ export function StrategyHeader() {
           tokenFeedSekeleton
         ) : (
           <ItemInfo
-            info={`ETH - ${format(ethPrice?.data || [0n, 0])}`}
+            info={`ETH - ${format(ethPrice?.data || [0n, 0], 2)}`}
             value={formatBalance(ETHBalance.data)}
             Icon={<Image width={25} height={25} alt="SNX logo" src={'/assets/tokens/eth.png'} />}
           />
