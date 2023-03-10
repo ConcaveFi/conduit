@@ -153,7 +153,7 @@ const OrderSizeInput = ({
   )
 }
 
-const useInterpolateSliderColor = (value: number, max: number) => {
+const useInterpolateLiquidationRiskColor = (value: number, max: number) => {
   const v = useMotionValue(value)
   useEffect(() => v.set(value), [value, v])
   return useTransform(v, [max, max / 2, 0], ['#f87171', '#facc15', '#4ade80'])
@@ -180,7 +180,7 @@ const SizeSlider = memo(function SizeSlider({
     [max, onChange],
   )
 
-  const borderColor = useInterpolateSliderColor(value, max)
+  const borderColor = useInterpolateLiquidationRiskColor(value, max)
 
   return (
     <Slider.Root
@@ -261,7 +261,7 @@ const LiquidationPrice = memo(function LiquidationPrice({
   sizeUsd: string
   onChange: (s: InputState) => void
 }) {
-  const color = useInterpolateSliderColor(+sizeUsd, +max)
+  const color = useInterpolateLiquidationRiskColor(+sizeUsd, +max)
   const riskLabel = riskLevelLabel(+sizeUsd, +max)
 
   return (

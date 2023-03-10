@@ -1,5 +1,5 @@
-import { replaceEqualDeep, useQuery } from '@tanstack/react-query'
-import { deepEqual, getContract, Provider, ReadContractResult } from '@wagmi/core'
+import { useQuery } from '@tanstack/react-query'
+import { getContract, Provider, ReadContractResult } from '@wagmi/core'
 import { FixedNumber } from 'ethers'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils'
 import { useSearchParams } from 'next/navigation'
@@ -11,7 +11,7 @@ import {
 } from 'perps-hooks'
 import { MarketAsset, MarketKey } from 'perps-hooks/markets'
 import { valuesToFixedNumber } from 'perps-hooks/parsers'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { SupportedChainId } from 'src/providers/WagmiProvider'
 
 import { useNetwork, useProvider } from 'wagmi'
