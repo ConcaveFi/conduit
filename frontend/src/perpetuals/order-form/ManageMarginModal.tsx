@@ -8,7 +8,7 @@ import {
   useSusdBalanceOf,
 } from 'perps-hooks'
 import { Fragment, useMemo, useState } from 'react'
-import { formatUsd } from 'src/utils/format'
+import { format } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
@@ -72,7 +72,7 @@ function SUSDInput(props: { value?: number; onValueChange?: (e?: number) => void
 
   if (isLoading) return <SUSDInputSkeleton />
 
-  const balance = formatUsd(sUSDBalance?.formatted || '0')
+  const balance = format(sUSDBalance?.formatted || '0')
   return (
     <div className=" ">
       {/* Info section */}

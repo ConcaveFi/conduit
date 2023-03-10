@@ -51,9 +51,10 @@ export const MarketList = function MarketList() {
   )
 }
 
+// commented price to fix build as we are not using this price yet.
 type MarketButton = {
   asset: string
-  price: string
+  // price: string
   marketKey: MarketKey
   percent?: string
 } & ButtonProps
@@ -86,7 +87,7 @@ const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
   )
 })
 
-const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
+const MarketButton = forwardRef<HTMLAnchorElement, MarketButton>(
   ({ asset, marketKey, percent, ...props }, ref) => {
     return (
       <Link
@@ -95,7 +96,7 @@ const MarketButton = forwardRef<HTMLButtonElement, MarketButton>(
         className={
           'btn gap-6 h-fit justify-between even:bg-light-400 ocean:even:bg-ocean-600 p-2 px-3 rounded-lg'
         }
-        {...props}
+        {...(props as any)} // added "as any", buz ButtonProps is not compatible with, Link props, need to fix in future.
       >
         <ItemInfo
           info={asset + ' Perpetual '}

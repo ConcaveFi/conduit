@@ -14,7 +14,7 @@ import { MarketAsset } from 'perps-hooks/markets'
 import { memo, useState } from 'react'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
-import { formatUsd } from 'src/utils/format'
+import { format } from 'src/utils/format'
 import { useDebounce } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
 import { ManageMarginModal } from './ManageMarginModal'
@@ -35,7 +35,7 @@ function SusdBalance({
     <button className="btn btn-underline" onClick={() => onClick(balance)}>
       <span className="text-light-500 ocean:text-ocean-200 text-xs font-medium ">Balance: </span>
       <span className="text-light-600 ocean:text-white text-xs font-medium">
-        {formatUsd(formatUnits(balance, 18))}
+        {format(formatUnits(balance, 18))}
       </span>
     </button>
   )

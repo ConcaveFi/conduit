@@ -4,10 +4,12 @@ import { ButtonProps, DivProps } from '../../types/primitives'
 
 export function Menu({ ...props }: DivProps) {
   props.className = `relative z-10 ${props.className}`
-  return React.createElement(PrimitiveMenu, { as: 'div', ...props })
+  // @ts-ignore headlessui types not good
+  return React.createElement(PrimitiveMenu, { ...props })
 }
 
 const MenuButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  // @ts-ignore
   return <PrimitiveMenu.Button as={'button'} ref={ref} {...props} />
 })
 

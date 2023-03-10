@@ -86,7 +86,7 @@ export function useMarkets<TSelectData = MarketSummaries>({
   })
 }
 
-export const useRouteMarket = <TSelect>({
+export const useRouteMarket = <TSelect = MarketSummaries[number]>({
   select,
 }: {
   select?: (m: MarketSummaries[number]) => TSelect

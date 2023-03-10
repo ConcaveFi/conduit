@@ -23,6 +23,7 @@ export function Modal(props: ModalProps) {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
+            {/* @ts-ignore */}
             <Dialog.Panel as={'div'} {...panelProps} />
           </Transition.Child>
         </div>

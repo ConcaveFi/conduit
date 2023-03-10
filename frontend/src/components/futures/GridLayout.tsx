@@ -1,3 +1,4 @@
+import { DivProps } from '@tradex/interface'
 import { useMemo } from 'react'
 import RGL, { WidthProvider } from 'react-grid-layout'
 import { useGridLayout } from 'src/hooks/useGridLayout'
@@ -14,7 +15,7 @@ export function GridLayout() {
 
   const panels = useMemo(() => {
     return widgets.map((widget) => {
-      const Panel = GridWidget.toPanel(widget)
+      const Panel = GridWidget.toPanel(widget) as React.FC<DivProps>
       return <Panel className="duration-300 ease-out" key={widget} />
     })
   }, [widgets])

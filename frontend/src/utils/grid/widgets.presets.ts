@@ -1,4 +1,4 @@
-import { Breakpoints } from './contants/breakpoints'
+import { Breakpoints } from '../contants/breakpoints'
 import { Layout } from 'react-grid-layout'
 import { GridWidgets } from './grid.widgets'
 

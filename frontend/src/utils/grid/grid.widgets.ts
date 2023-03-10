@@ -1,10 +1,8 @@
-import { DivProps, PanelProps } from '@tradex/interface'
 import { ViewPanels } from 'src/components/futures/ViewPanels'
 import { ChartPanel } from 'src/perpetuals/chart/ChartPanel'
 import { NewsPanel } from 'src/perpetuals/NewsPanel'
 import { OrderFormPanel } from 'src/perpetuals/order-form/OrderFormPanel'
 import { RecentTradesPanel } from 'src/perpetuals/RecentTradesPanel'
-import { runInThisContext } from 'vm'
 
 export type GridWidgets =
   | 'order-panel'
