@@ -96,6 +96,7 @@ const OrderSizeInput = ({
               initial={{ y: 4 }}
               animate={{ y: 0 }}
               exit={{ y: -4, opacity: 0 }}
+              transition={{ layout: { ease: 'backOut' } }}
             >
               <NumericInput
                 data-overflow={isOverBuyingPower}
@@ -128,6 +129,7 @@ const OrderSizeInput = ({
                   onClick={toggleAmountDenominator}
                   initial={{ opacity: 0, y: -8, height: inputs[other] ? 'auto' : 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
+                  transition={{ layout: { ease: 'backOut' } }}
                   exit={{
                     opacity: 0,
                     y: -8,
