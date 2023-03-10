@@ -1,49 +1,36 @@
-import { useState } from 'react'
-import { getStoredLayout, storeLayout } from 'src/utils/gridLayout'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Layout } from 'react-grid-layout'
+import { BREAKPOINTS } from 'src/utils/contants/breakpoints'
+import { GridLayout } from 'src/utils/grid.layout'
+import { GridWidgetPresets } from 'src/utils/widgets.presets'
+import { useBreakpoint } from 'use-breakpoint'
 
 export interface GridLayoutHook {
-  defaultLayout?: ReactGridLayout.Layout[]
+  defaultLayout?: Layout[]
 }
 export function useGridLayout(props?: GridLayoutHook) {
-  const [layout, setLayout] = useState(props?.defaultLayout || getStoredLayout())
-  const [maximizedPanel, setMaxPanel] = useState('')
-  const [unMaximizedLayout, setUnMaximizedLayout] = useState(layout)
-  const isMaximized = Boolean(maximizedPanel)
+  const { breakpoint } = useBreakpoint(BREAKPOINTS)
+  const [layout, setLayout] = useState(props?.defaultLayout)
 
-  function maximizePanel(key: string) {
-    const panel = Object.assign<{}, ReactGridLayout.Layout>({}, { h: 1, x: 0, y: -1, w: 1, i: key })
-    if (!panel) return
-    // setUnMaximizedLayout(layout)
-    setLayout([panel])
-    setMaxPanel(key)
-  }
+  useEffect(() => {
+    if (breakpoint === undefined) return
 
-  function minimize() {
-    setLayout(unMaximizedLayout)
-    setMaxPanel('')
-  }
+    const stored = GridLayout.getStoredlayout(breakpoint)
+    if (stored !== undefined) return setLayout(stored)
 
-  function removeGridWidget(key?: string) {
-    if (!key) return
-    const newLayout = layout.filter((grid) => grid.i !== key)
-    setLayout(newLayout)
-    storeLayout(newLayout)
-  }
+    setLayout(GridWidgetPresets.getByBreakpoint(breakpoint))
+  }, [breakpoint])
 
-  function handleChange(layout: ReactGridLayout.Layout[]) {
-    if (!isMaximized) {
-      setUnMaximizedLayout(layout)
-      storeLayout(layout)
-    }
-  }
+  const handleChange = useCallback(
+    function storeLayout(_layout: Layout[]) {
+      if (!breakpoint) return
+      GridLayout.storeLayout(_layout, breakpoint)
+    },
+    [breakpoint],
+  )
 
   return {
     layout,
-    isMaximized,
-    maximizedPanel,
-    maximize: maximizePanel,
-    removeGridWidget,
     handleChange,
-    minimize,
   }
 }

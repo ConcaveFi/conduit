@@ -2,8 +2,7 @@ import { cx, Modal, ModalProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useReducer } from 'react'
 import { useWidgets } from 'src/providers/WidgetsProvider'
-import { GridWidgetKeys, GRID_WIDGETS } from 'src/utils/gridWidgets'
-
+import { GridWidget, GridWidgets } from 'src/utils/grid.widgets'
 function reducer(state: string[], action: string) {
   if (action === 'wipe') return []
   if (state.includes(action)) return state.filter((widget) => widget !== action)
@@ -14,13 +13,13 @@ export function AddWidgetModal(props: ModalProps) {
   const [selecteds, dispatch] = useReducer(reducer, [])
   const { t } = useTranslation()
   function handleApply() {
-    addWidgets(selecteds as GridWidgetKeys[])
+    addWidgets(selecteds as GridWidgets[])
     dispatch('wipe')
     props.onClose()
   }
 
-  const notAdded = Object.keys(GRID_WIDGETS).filter(
-    (widget) => !widgets.includes(widget as GridWidgetKeys),
+  const notAdded = Object.keys(GridWidget.getDefaultWidgets()).filter(
+    (widget) => !widgets.includes(widget as GridWidgets),
   )
   const hasWidgetsToAdd = notAdded.length > 0
   return (

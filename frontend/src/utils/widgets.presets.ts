@@ -1,6 +1,6 @@
-import { GridWidgetKeys } from './gridWidgets'
 import { Breakpoints } from './contants/breakpoints'
 import { Layout } from 'react-grid-layout'
+import { GridWidgets } from './grid.widgets'
 
 const X_EXTRA_LARGE_LAYOUT: WidgetPreset = {
   'chart-panel': { x: 3, y: 0, w: 6, h: 3.5 },
@@ -83,7 +83,7 @@ export class GridWidgetPresets {
 }
 
 export type WidgetPreset = {
-  [key in GridWidgetKeys]: {
+  [key in GridWidgets]: {
     x: number
     y: number
     w: number

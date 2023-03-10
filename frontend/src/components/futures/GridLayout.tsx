@@ -1,50 +1,38 @@
-import { useCallback, useState } from 'react'
-import ReactGridLayout from 'react-grid-layout'
+import { useMemo } from 'react'
+import RGL, { WidthProvider } from 'react-grid-layout'
 import { useGridLayout } from 'src/hooks/useGridLayout'
-import { useResizeObserver } from 'src/hooks/useResizeObserver'
 import { useWidgets } from 'src/providers/WidgetsProvider'
-import { DEFAULT_LAYOUT, WIDGET_PRESETS } from 'src/utils/gridLayout'
-import { GRID_WIDGETS } from 'src/utils/gridWidgets'
+import { GridWidget } from 'src/utils/grid.widgets'
 
-const DEFAULT_COLS = 12
-const DEFAULT_ROW_HEIGHT = 145
+const ReactGridLayout = WidthProvider(RGL)
+const GRID_COLS = 12
+const GRID_ROW_HEIGHT = 145
+
 export function GridLayout() {
-  const { handleChange, isMaximized, maximize, maximizedPanel, minimize, removeGridWidget } =
-    useGridLayout()
-  const [width, setWidth] = useState(0)
-  const onResize = useCallback((e) => setWidth(e[0].target.clientWidth), [])
-  const { ref, height } = useResizeObserver<HTMLDivElement>(onResize)
+  const { handleChange, layout } = useGridLayout()
   const { widgets, removeWidget } = useWidgets()
 
+  const panels = useMemo(() => {
+    return widgets.map((widget) => {
+      const Panel = GridWidget.toPanel(widget)
+      return <Panel className="duration-300 ease-out" key={widget} />
+    })
+  }, [widgets])
+
+  if (!layout) return <></>
   return (
-    <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full sm">
+    <div className="ocean:bg-ocean-900 flex h-full w-full sm">
       <ReactGridLayout
-        style={{ height: '100%' }}
+        className="relative transition-all w-full h-full"
         draggableHandle="[data-draggable='true']"
-        rowHeight={isMaximized ? height : DEFAULT_ROW_HEIGHT}
-        cols={isMaximized ? 1 : DEFAULT_COLS}
-        className="relative transition-all "
         onLayoutChange={handleChange}
+        rowHeight={GRID_ROW_HEIGHT}
         containerPadding={[0, 0]}
+        cols={GRID_COLS}
         useCSSTransforms
-        layout={DEFAULT_LAYOUT}
-        width={width}
+        layout={layout}
       >
-        {widgets.map((key) => {
-          const Panel = GRID_WIDGETS[key]
-          const isHidden = isMaximized && maximizedPanel !== key
-          return (
-            <Panel
-              onClose={() => removeWidget(key).then(removeGridWidget)}
-              style={{ display: isHidden ? 'none' : 'flex' }}
-              className="duration-300 ease-out"
-              onMaximize={() => maximize(key)}
-              data-grid={WIDGET_PRESETS[key]}
-              onMinimize={() => minimize()}
-              key={key}
-            />
-          )
-        })}
+        {panels}
       </ReactGridLayout>
     </div>
   )

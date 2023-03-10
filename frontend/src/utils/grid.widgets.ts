@@ -41,4 +41,11 @@ export class GridWidget {
     const widgets = JSON.parse(raw)
     return widgets as GridWidgets[]
   }
+
+  public static storeWidgets(widgets: GridWidgets[]) {
+    if (!widgets) return false
+    const formatted = JSON.stringify(widgets)
+    localStorage.setItem(this.storageItem, formatted)
+    return true
+  }
 }

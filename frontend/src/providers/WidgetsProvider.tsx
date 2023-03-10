@@ -2,18 +2,13 @@ import { useTranslation } from '@tradex/languages'
 import { createContext, useContext, useState } from 'react'
 import { AddWidgetOverlay } from 'src/components/futures/widgets/AddWidgetOverlay'
 import { useDisclosure } from 'src/hooks/useDisclosure'
-import {
-  DEFAULT_GRID_WIDGETS,
-  getStoredWidgets,
-  GridWidgetKeys,
-  storeWidgets,
-} from 'src/utils/gridWidgets'
+import { GridWidget, GridWidgets } from 'src/utils/grid.widgets'
 
 interface WidgetsContext {
-  addWidgets(_widgets: GridWidgetKeys[]): void
-  removeWidget(widget: GridWidgetKeys): Promise<GridWidgetKeys | undefined>
-  hasWidget(_widgets: GridWidgetKeys): boolean
-  widgets: GridWidgetKeys[]
+  addWidgets(_widgets: GridWidgets[]): void
+  removeWidget(widget: GridWidgets): Promise<GridWidgets | undefined>
+  hasWidget(_widgets: GridWidgets): boolean
+  widgets: GridWidgets[]
 }
 const WidgetsContext = createContext<WidgetsContext>({
   removeWidget: async () => undefined,
@@ -24,27 +19,27 @@ const WidgetsContext = createContext<WidgetsContext>({
 
 export const useWidgets = () => useContext(WidgetsContext)
 export function WidgetsProvider({ children }: any) {
-  const { t } = useTranslation()
-  const modal = useDisclosure()
-  const [widgets, setWidgets] = useState(getStoredWidgets() || DEFAULT_GRID_WIDGETS)
+  const [widgets, setWidgets] = useState(
+    GridWidget.getStoredWidgets() || GridWidget.getDefaultWidgets(),
+  )
 
-  function addWidgets(w: GridWidgetKeys[]) {
+  function addWidgets(w: GridWidgets[]) {
     const _widgets = [...widgets]
     for (const newWidget of w) {
       if (!_widgets.includes(newWidget)) _widgets.push(newWidget)
     }
     setWidgets(_widgets)
-    storeWidgets(_widgets)
+    GridWidget.storeWidgets(_widgets)
   }
 
-  async function removeWidget(widget: GridWidgetKeys) {
+  async function removeWidget(widget: GridWidgets) {
     const _widgets = widgets.filter((w) => w !== widget)
     setWidgets(_widgets)
-    storeWidgets(_widgets)
+    GridWidget.storeWidgets(_widgets)
     return widget
   }
 
-  function hasWidget(_widget: GridWidgetKeys) {
+  function hasWidget(_widget: GridWidgets) {
     const _hasWidget = widgets.filter((w) => w === _widget).length === 1
     return _hasWidget
   }
@@ -53,16 +48,6 @@ export function WidgetsProvider({ children }: any) {
     <WidgetsContext.Provider value={{ hasWidget, widgets, addWidgets, removeWidget }}>
       {children}
       <AddWidgetOverlay />
-      {/* <div className="pointer-events-none fixed flex h-screen w-full items-end justify-end p-6">
-        <button
-          onClick={modal.onOpen}
-          className="btn btn-green-gradient pointer-events-auto gap-3 rounded-full px-8 py-4 shadow-xl"
-        >
-          {t('add widget')}
-          <PlusIcon className="fill-ocean-900" />
-        </button>
-        <AddWidgetModal isOpen={modal.isOpen} onClose={modal.onClose} />
-      </div> */}
     </WidgetsContext.Provider>
   )
 }
