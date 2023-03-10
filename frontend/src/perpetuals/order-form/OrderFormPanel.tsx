@@ -1,4 +1,4 @@
-import { cx, NumericInput, Panel, PanelProps, twMerge } from '@tradex/interface'
+import { cx, NumericInput, Panel, PanelProps, Skeleton } from '@tradex/interface'
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
 import { BigNumber, FixedNumber } from 'ethers'
@@ -318,15 +318,6 @@ const OrderType = {
   delayed: 1,
   delayedOffchain: 2,
 }
-
-const Skeleton = ({ className }: { className?: string }) => (
-  <div
-    className={twMerge(
-      'animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-400 h-3 w-full rounded',
-      className,
-    )}
-  />
-)
 
 const MarginDetails = memo(function MarginDetails({
   market,
