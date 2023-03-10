@@ -2,7 +2,7 @@ import { useTranslation } from '@tradex/languages'
 import { createContext, useContext, useState } from 'react'
 import { AddWidgetOverlay } from 'src/components/futures/widgets/AddWidgetOverlay'
 import { useDisclosure } from 'src/hooks/useDisclosure'
-import { GridWidget, GridWidgets } from 'src/utils/grid.widgets'
+import { GridWidget, GridWidgets } from 'src/utils/grid/grid.widgets'
 
 interface WidgetsContext {
   addWidgets(_widgets: GridWidgets[]): void
