@@ -8,24 +8,16 @@ import { GRID_WIDGETS } from 'src/utils/gridWidgets'
 
 const DEFAULT_COLS = 12
 const DEFAULT_ROW_HEIGHT = 145
-
 export function GridLayout() {
-  const {
-    handleChange,
-    isMaximized,
-    layout,
-    maximize,
-    maximizedPanel,
-    minimize,
-    removeGridWidget,
-  } = useGridLayout()
+  const { handleChange, isMaximized, maximize, maximizedPanel, minimize, removeGridWidget } =
+    useGridLayout()
   const [width, setWidth] = useState(0)
   const onResize = useCallback((e) => setWidth(e[0].target.clientWidth), [])
   const { ref, height } = useResizeObserver<HTMLDivElement>(onResize)
   const { widgets, removeWidget } = useWidgets()
 
   return (
-    <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full">
+    <div ref={ref} className="ocean:bg-ocean-900 flex h-full w-full sm">
       <ReactGridLayout
         style={{ height: '100%' }}
         draggableHandle="[data-draggable='true']"

@@ -513,7 +513,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
   })
 
   return (
-    <Panel ref={ref} name="Order Form" bodyProps={{ className: 'p-3' }} {...props}>
+    <Panel
+      ref={ref}
+      name="Order Form"
+      bodyProps={{ className: 'p-3 md:overflow-y-scroll overflow-x-hidden' }}
+      {...props}
+    >
       <TransferMarginButton asset={market?.asset} />
 
       <MarginDetails account={account} market={market?.address} />
