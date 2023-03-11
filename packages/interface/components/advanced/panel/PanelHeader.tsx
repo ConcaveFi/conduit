@@ -5,12 +5,13 @@ import { twMerge } from 'tailwind-merge'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { DivProps } from '../../../types/primitives'
 export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
-export interface PanelHeaderProps extends PanelHeaderAttributes, DivProps {
+export type PanelHeaderProps = {
   children?: ReactNode
   onMaximize?: VoidFunction
   onClose?: VoidFunction
   onMinimize?: VoidFunction
-}
+} & PanelHeaderAttributes &
+  DivProps
 export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
   ({ children, variant, onMaximize, onClose, onMinimize, className, ...props }, ref) => {
     const [isFull, setIsFull] = useState(false)
