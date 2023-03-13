@@ -585,7 +585,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       {...props}
     >
       <TransferMarginButton asset={market?.asset} />
-
       <MarginDetails account={account} market={market?.address} />
 
       <SideSelector />

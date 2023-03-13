@@ -20,8 +20,8 @@ function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: Market
           alt={`${asset} icon`}
           src={`/assets/tokens/${asset?.toLowerCase()}.png`}
           className="rounded-full"
-          width={30}
-          height={30}
+          width={24}
+          height={24}
         />
       }
     />

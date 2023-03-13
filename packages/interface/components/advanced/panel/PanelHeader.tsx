@@ -36,10 +36,10 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         {children}
         <div className="right-3 z-10 flex items-center gap-3">
           <button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
-            <ExpandIcon className="fill-light-400 ocean:fill-ocean-200 h-4 w-4" />
+            <ExpandIcon className="fill-light-400 ocean:fill-ocean-200 box-3" />
           </button>
           <button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
-            <CloseIcon className="fill-light-400 ocean:fill-ocean-200 h-3 w-3" />
+            <CloseIcon className="fill-light-400 ocean:fill-ocean-200 box-[0.65rem]" />
           </button>
         </div>
       </div>

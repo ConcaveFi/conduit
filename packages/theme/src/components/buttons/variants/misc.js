@@ -16,7 +16,7 @@ const bottomGlow = {
   borderColor: colors.light[500],
   color: colors.light[500],
   '.ocean &': {
-    backgroundImage: `linear-gradient(to bottom, #0000, #00D1FF50)`,
+    backgroundImage: `linear-gradient(180deg, rgba(0, 209, 255, 0) 23.23%, rgba(0, 209, 255, 0.15) 100%)`,
     color: colors.ocean[100],
     borderColor: colors.ocean[100],
   },
