@@ -32,11 +32,7 @@ import { toBigNumber } from 'src/utils/toBigNumber'
 import { useDebounce } from 'usehooks-ts'
 import { dn, format } from 'src/utils/format'
 import { Address, useAccount } from 'wagmi'
-import {
-  offchainPricesAtoms,
-  routeMarketPriceAtom,
-  useSkewAdjustedOffChainPrice,
-} from '../hooks/useOffchainPrice'
+import { routeMarketPriceAtom, useSkewAdjustedOffChainPrice } from '../hooks/useOffchainPrice'
 import { TradePreview, useTradePreview } from '../hooks/useTradePreview'
 import { TransferMarginButton } from './TransferMargin'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -561,13 +557,10 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       {...props}
     >
       <TransferMarginButton />
-
       <MarginDetails />
 
       <SideSelector />
-
       <OrderSizeInput />
-
       <LiquidationPrice />
 
       <DepositMarginToReduceRisk />

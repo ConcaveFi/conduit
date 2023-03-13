@@ -13,6 +13,11 @@ const Aeonik = localFont({
       style: 'normal',
     },
     {
+      path: '../../public/assets/fonts/Aeonik/Aeonik-Medium.otf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
       path: '../../public/assets/fonts/Aeonik/Aeonik-Bold.otf',
       weight: '700',
       style: 'normal',

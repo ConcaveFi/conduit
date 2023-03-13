@@ -29,7 +29,7 @@ interface TransferRowProps {
 
 function TransferRow(props: TransferRowProps) {
   return (
-    <tr className="odd:bg-ocean-900 odd:bg-opacity-50">
+    <tr className="odd:bg-ocean-900 odd:bg-opacity-50 text-xs font-medium">
       <td className="text-ocean-300 py-1 pl-4 capitalize">{props.action}</td>
       <td className={cx(props.action === 'withdraw' ? 'text-negative' : 'text-positive')}>
         ${props.amount}

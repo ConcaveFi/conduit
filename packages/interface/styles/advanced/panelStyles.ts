@@ -1,6 +1,8 @@
 import { cva } from 'class-variance-authority'
 
-const baseStyles = cva('flex px-3 justify-between items-center w-full min-h-[2.25rem] rounded-t-lg')
+const baseStyles = cva(
+  'flex px-3 justify-between font-medium items-center w-full min-h-[30px] rounded-t-lg',
+)
 export const panelHeaderStyles = cva(baseStyles(), {
   variants: {
     variant: {

@@ -16,13 +16,12 @@ export function LocationSelector() {
 
   return (
     <Menu className="centered flex ">
-      <Menu.Button>
+      <Menu.Button className="box-6">
         <Image
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
-          className="w-auto object-contain"
+          className="w-auto object-contain "
           alt="usa"
-          width={30}
-          height={15}
+          fill
         />
       </Menu.Button>
       <Menu.Items className="card card-translucent-glass w-14 flex-col p-2">

@@ -1,5 +1,5 @@
 import { Tab } from '@headlessui/react'
-import { Panel, PanelProps } from '@tradex/interface'
+import { cx, Panel, PanelProps } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 import { UserPositions } from 'src/perpetuals/positions/UserPositions'
@@ -19,7 +19,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
         {...props}
         variant="secondary"
         ref={ref}
-        headerProps={{ className: 'min-h-[60px]' }}
+        headerProps={{ className: 'min-h-[36px] p-0 pr-2' }}
         headerChild={<Tabs />}
       >
         <Tab.Panels>
@@ -44,18 +44,17 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
 const Tabs = () => {
   const { t } = useTranslation()
   return (
-    <Tab.List className={'centered flex h-full gap-2 py-2'}>
+    <Tab.List className={'centered flex h-full gap-2 px-1 '}>
       {TABS.map((tab, index) => {
         return (
-          <Tab key={index} className="outline-none">
-            {({ selected }) => (
-              <span
-                className={`btn h-full  px-6 py-[9px] outline-none ring-0
-                ${selected ? 'bg-ocean-400 text-ocean-200' : 'btn-underline.secondary'} `}
-              >
-                {t(tab)}
-              </span>
-            )}
+          <Tab key={index} className="outline-none h-full ">
+            {({ selected }) => {
+              const styles = cx(
+                'btn text-xs p-[5px_15px]  flex centered outline-none ring-0',
+                selected ? 'bg-ocean-400 rounded-md text-ocean-200' : 'btn-underline.secondary',
+              )
+              return <span className={styles}>{t(tab)}</span>
+            }}
           </Tab>
         )
       })}
