@@ -32,6 +32,8 @@ export const MarketList = function MarketList() {
   const market = useRouteMarket()
   const { data: markets } = useMarkets()
 
+  if (!market || !markets) return MenuButtonSkeleton
+
   return (
     <Menu className={'my-auto h-fit'}>
       <Menu.Button className="btn centered gap-6 outline-none">
@@ -116,4 +118,15 @@ const MarketButton = forwardRef<HTMLAnchorElement, MarketButton>(
       </Link>
     )
   },
+)
+
+const MenuButtonSkeleton = (
+  <div className="flex gap-2 centered">
+    <div className="box-[25px] rounded-full animate-skeleton skeleton-from-ocean-500 skeleton-to-ocean-200"></div>
+
+    <div className="flex flex-col gap-2 items-start">
+      <div className="w-10 animate-skeleton h-2 skeleton-from-ocean-500 skeleton-to-ocean-200"></div>
+      <div className="w-20 animate-skeleton h-2 skeleton-from-ocean-500 skeleton-to-ocean-200"></div>
+    </div>
+  </div>
 )
