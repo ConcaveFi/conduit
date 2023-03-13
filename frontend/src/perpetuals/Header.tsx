@@ -1,13 +1,13 @@
 import { OP_ADDRESS, SNX_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
 import { BalanceIcon } from '@tradex/icons'
-import { ItemInfo } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { FetchBalanceResult } from '@wagmi/core'
-import { format, from } from 'dnum'
+import { add, divide, format, from, multiply, sub } from 'dnum'
+import { formatBytes32String } from 'ethers/lib/utils'
 import Image from 'next/image'
-import { useChainLinkLatestRoundData } from 'perps-hooks'
+import { useChainLinkLatestRoundData, useMarketSettingsMaxMarketValue } from 'perps-hooks'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
-import { useRouteMarket } from './hooks/useMarket'
+import { useMarketSettings, useRouteMarket } from './hooks/useMarket'
 import { useOffchainPrice } from './hooks/useOffchainPrice'
 import { MarketList } from './MarketList'
 
@@ -38,8 +38,31 @@ export function StrategyHeader() {
   const ETHBalance = useBalance({ ...balanceConfig })
 
   const market = useRouteMarket()
-  const fundingRate = market ? format(market?.currentFundingRate) : '0'
-  const price = useOffchainPrice({ marketKey: market?.key, enabled: Boolean(market?.key) })
+  const marketSettings = useMarketSettings({ marketKey: market?.key })
+
+  // from(1) to avoid undefined for now
+  // TODO: statle handleling for loading states
+  const { marketSize = from(1), marketSkew = from(1) } = market || {}
+  const fundingRate = market ? format(market?.currentFundingRate, 6) : '0'
+  const indexPrice = useOffchainPrice({ marketKey: market?.key, enabled: Boolean(market?.key) })
+
+  const openInterest = {
+    long: divide(add(marketSize, marketSkew), 2),
+    short: divide(sub(marketSize, marketSkew), 2),
+  }
+  const openInterestPercent = {
+    long: divide(openInterest.long, marketSize),
+    short: divide(openInterest.short, marketSize),
+  }
+  const openInterestUsd = {
+    long: multiply(openInterest.long, market?.price || from(0)),
+    short: multiply(openInterest.short, market?.price || from(0)),
+  }
+
+  const limit = format(
+    multiply(marketSettings?.data?.maxMarketValue || from(0), market?.price || from(0)),
+    { compact: true },
+  )
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
@@ -48,7 +71,7 @@ export function StrategyHeader() {
       </div>
       <div className="bg-ocean-700 -order-1 flex min-h-[64px] w-full  flex-wrap items-center justify-around rounded-lg  md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <Info title={'Price index'}>
-          <span className="text-xs text-bright-text font-bold"> {format(price, 2)}</span>
+          <span className="text-xs text-bright-text font-bold"> ${format(indexPrice, 2)}</span>
         </Info>
         <div className="flex gap-2">
           <BalanceIcon />
@@ -63,10 +86,14 @@ export function StrategyHeader() {
           <span className="text-xs text-positive font-bold">{fundingRate || '0.0'}</span>
         </Info>
         <Info title={'Open interest (L)'}>
-          <span className="text-xs text-bright-text font-bold">$ 4.3M / $ 2.3M</span>
+          <span className="text-xs text-bright-text font-bold">
+            {`$${format(openInterestUsd.long, { compact: true })} / $${limit}`}
+          </span>
         </Info>
         <Info title={'Open interest (S)'}>
-          <span className="text-xs text-bright-text font-bold">$ 4.3M / $ 2.3M</span>
+          <span className="text-xs text-bright-text font-bold">
+            {`$${format(openInterestUsd.short, { compact: true })} / $${limit}`}
+          </span>
         </Info>
       </div>
       <div className="bg-ocean-700  flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg px-4 ">
