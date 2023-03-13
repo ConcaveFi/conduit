@@ -591,7 +591,8 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
       <OrderSizeInput assetSymbol={market?.asset} />
 
-      <LiquidationPrice />
+      {/* State is broke, redering component all the time. */}
+      {/* <LiquidationPrice /> */}
 
       <DepositMarginToReduceRisk />
 
