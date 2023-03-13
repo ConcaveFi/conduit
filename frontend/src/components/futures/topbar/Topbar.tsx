@@ -16,6 +16,7 @@ export function Topbar() {
   const { t } = useTranslation()
   const { address } = useAccount()
   const { data } = useBalance({ address })
+
   return (
     <div className="flex items-center justify-between px-4">
       <div className="flex items-center h-full gap-2">
@@ -64,15 +65,8 @@ export function Topbar() {
                   {chain?.name}
                   <ChevronIcon className="fill-ocean-200 h-3 w-3" />
                 </button>
-                <button className="btn" onClick={openAccountModal}>
-                  <div className="flex flex-col items-start">
-                    <span className="text-xs text-ocean-200">
-                      {truncateAddress(account?.address)}
-                    </span>
-                    <span className="text-xs font-bold text-bright-text">
-                      {format(data?.formatted || '0')} ETH
-                    </span>
-                  </div>
+                <button className="btn btn-underline text-xs" onClick={openAccountModal}>
+                  {truncateAddress(account?.address)}
                 </button>
               </>
             )

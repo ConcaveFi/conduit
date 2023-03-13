@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { useChainLinkLatestRoundData } from 'perps-hooks'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { useRouteMarket } from './hooks/useMarket'
+import { useOffchainPrice } from './hooks/useOffchainPrice'
 import { MarketList } from './MarketList'
 
 const OP_USD_FEED = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
@@ -37,6 +38,8 @@ export function StrategyHeader() {
   const ETHBalance = useBalance({ ...balanceConfig })
 
   const market = useRouteMarket()
+  const fundingRate = format(market.currentFundingRate, 6)
+  const price = useOffchainPrice({ marketKey: market?.key })
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
@@ -45,7 +48,7 @@ export function StrategyHeader() {
       </div>
       <div className="bg-ocean-700 -order-1 flex min-h-[64px] w-full  flex-wrap items-center justify-around rounded-lg  md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <Info title={'Price index'}>
-          <span className="text-xs text-bright-text font-bold"> $ 370.00</span>
+          <span className="text-xs text-bright-text font-bold"> {format(price, 2)}</span>
         </Info>
         <div className="flex gap-2">
           <BalanceIcon />
@@ -57,9 +60,7 @@ export function StrategyHeader() {
           <span className="text-xs text-negative font-bold"> -1.33%</span>
         </Info>
         <Info title={'1H Funding Rate'}>
-          <span className="text-xs text-positive font-bold">
-            {format(market.currentFundingRate, 6) || '0.0'}
-          </span>
+          <span className="text-xs text-positive font-bold">{fundingRate}</span>
         </Info>
         <Info title={'Open interest (L)'}>
           <span className="text-xs text-bright-text font-bold">$ 4.3M / $ 2.3M</span>
