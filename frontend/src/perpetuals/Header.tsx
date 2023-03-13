@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { useChainLinkLatestRoundData } from 'perps-hooks'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { useRouteMarket } from './hooks/useMarket'
+import { useOffchainPrice } from './hooks/useOffchainPrice'
 import { MarketList } from './MarketList'
 
 const OP_USD_FEED = '0x0d276fc14719f9292d5c1ea2198673d1f4269246'
@@ -36,7 +37,9 @@ export function StrategyHeader() {
   const SNXBalance = useBalance({ token: SNX_ADDRESS[chain?.id!], ...balanceConfig })
   const ETHBalance = useBalance({ ...balanceConfig })
 
-  const fundingRate = useRouteMarket({ select: (m) => format(m.currentFundingRate, 6) })
+  const market = useRouteMarket()
+  const fundingRate = market ? format(market?.currentFundingRate) : '0'
+  const price = useOffchainPrice({ marketKey: market?.key, enabled: Boolean(market?.key) })
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
@@ -45,7 +48,7 @@ export function StrategyHeader() {
       </div>
       <div className="bg-ocean-700 -order-1 flex min-h-[64px] w-full  flex-wrap items-center justify-around rounded-lg  md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <Info title={'Price index'}>
-          <span className="text-xs text-bright-text font-bold"> $ 370.00</span>
+          <span className="text-xs text-bright-text font-bold"> {format(price, 2)}</span>
         </Info>
         <div className="flex gap-2">
           <BalanceIcon />
