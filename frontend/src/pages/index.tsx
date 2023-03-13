@@ -12,7 +12,7 @@ import { format } from 'dnum'
 function Title() {
   const market = useRouteMarket()
 
-  const { data: price } = useSkewAdjustedOffChainPrice({
+  const price = useSkewAdjustedOffChainPrice({
     marketKey: market?.key,
     select: (p) => format(p, 2),
   })

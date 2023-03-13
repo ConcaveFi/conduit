@@ -24,7 +24,7 @@ const { connectors } = getDefaultWallets({
   chains,
 })
 
-const client = createClient({
+export const wagmiClient = createClient({
   autoConnect: true,
   connectors,
   provider,
@@ -33,7 +33,7 @@ const client = createClient({
 
 export function WagmiProvider({ children }: PropsWithChildren) {
   return (
-    <WagmiConfig client={client}>
+    <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider theme={darkTheme()} chains={chains}>
         {children}
       </RainbowKitProvider>

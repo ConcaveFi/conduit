@@ -23,12 +23,15 @@ const select = ({
     liquidationPrice: from([d.liqPrice, 18]),
   }
 }
+export type TradePreview = ReturnType<typeof select>
 
-export function useTradePreview({
+export function useTradePreview<
+  TSelect = ReadContractResult<typeof marketAbi, 'postTradeDetails'>,
+>({
   ...config
 }: Omit<
   UseContractReadConfig<typeof marketAbi, 'postTradeDetails', ReadContractResult>,
-  'abi' | 'functionName'
+  'abi' | 'functionName' | 'select'
 > & {
   chainId?: keyof typeof marketDataAddress
 } = {}) {

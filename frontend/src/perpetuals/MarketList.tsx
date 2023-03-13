@@ -10,7 +10,7 @@ import { handleSynth } from 'src/utils/handleTokenLogo'
 import { useSkewAdjustedOffChainPrice } from './hooks/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
-  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
+  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
@@ -69,7 +69,7 @@ function usePrevious<T>(state: T): T | undefined {
 
 const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
   const priceChange = 0
-  const { data: price } = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
+  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
   // const lastPrice = usePrevious(price)
   // const color = lastPrice.greaterThan(price) ? 'text-red-400' : 'text-green-400'
 

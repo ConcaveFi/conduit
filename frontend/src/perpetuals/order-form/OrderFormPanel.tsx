@@ -2,6 +2,7 @@ import { cx, NumericInput, Panel, PanelProps, Skeleton } from '@tradex/interface
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
 import {
+  abs,
   divide,
   Dnum,
   equal,
@@ -25,28 +26,27 @@ import { MarketKey } from 'perps-hooks/markets'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
-import { useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { MarketSummaries, useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
 import { toBigNumber } from 'src/utils/toBigNumber'
 import { useDebounce } from 'usehooks-ts'
 import { dn, format } from 'src/utils/format'
 import { Address, useAccount } from 'wagmi'
-import { useSkewAdjustedOffChainPrice } from '../hooks/useOffchainPrice'
-import { useTradePreview } from '../hooks/useTradePreview'
+import {
+  offchainPricesAtoms,
+  routeMarketPriceAtom,
+  useSkewAdjustedOffChainPrice,
+} from '../hooks/useOffchainPrice'
+import { TradePreview, useTradePreview } from '../hooks/useTradePreview'
 import { TransferMarginButton } from './TransferMargin'
 
-const SideSelector = memo(function SideSelector({
-  side,
-  onChange,
-}: {
-  side: 'long' | 'short'
-  onChange: (side: 'long' | 'short') => void
-}) {
+const SideSelector = memo(function SideSelector() {
   const { t } = useTranslation()
+  const [side, setSide] = useAtom(sideAtom)
   return (
     <div className="flex gap-4 font-mono">
       <button
-        onClick={() => onChange('long')}
+        onClick={() => setSide('long')}
         className={cx(
           `btn centered flex-1 rounded-lg py-2`,
           side === 'long'
@@ -57,7 +57,7 @@ const SideSelector = memo(function SideSelector({
         {t('long')}
       </button>
       <button
-        onClick={() => onChange('short')}
+        onClick={() => setSide('short')}
         className={cx(
           'centered btn flex-1 rounded-lg py-2',
           side === 'short'
@@ -71,17 +71,19 @@ const SideSelector = memo(function SideSelector({
   )
 })
 
+const selectAddress = (m) => m.address
 const OrderSizeInput = ({
-  onChange,
-  inputs,
+  // onChange,
+  // inputs,
   assetSymbol = '',
-  max = [0n, 18],
 }: {
-  onChange: (s: InputState) => void
-  inputs: ReturnType<typeof deriveInputs>
+  // onChange: (s: InputState) => void
+  // inputs: ReturnType<typeof deriveInputs>
   assetSymbol: string | undefined
-  max: Dnum | undefined
 }) => {
+  const onChange = useSetAtom(orderInputAtom)
+  const inputs = useAtomValue(orderDerivedValuesAtom)
+
   const [amountDenominator, toggleAmountDenominator] = useReducer(
     (s) => (s === 'usd' ? 'asset' : 'usd'),
     'usd',
@@ -89,7 +91,12 @@ const OrderSizeInput = ({
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
   const symbols = { usd: 'sUSD', asset: assetSymbol }
 
-  const isOverBuyingPower = !!inputs.usd && greaterThan(inputs.usd || 0, max)
+  const { data: isOverBuyingPower } = useBuyingPower({
+    select: useCallback(
+      (buyingPower) => !!inputs.usd && greaterThan(inputs.usd, buyingPower),
+      [inputs.usd],
+    ),
+  })
 
   const hasValue = greaterThan(inputs[other] || 0, 0)
 
@@ -255,26 +262,42 @@ const SizeSlider = memo(function SizeSlider({
 // }
 
 const riskLevelLabel = (value: number, max: number) => {
+  // if (!value || value < remainingMargin) return 'NONE'
   if (value <= max * 0.25) return 'LOW'
   if (value <= max * 0.75) return 'MEDIUM'
   return 'HIGH'
 }
 
-const LiquidationPrice = memo(function LiquidationPrice({
-  liquidationPrice,
-  isLoading,
-  max = 0,
-  sizeUsd,
-  onChange,
-}: {
-  isLoading: boolean
-  liquidationPrice: string | undefined
-  max: number | undefined
-  sizeUsd: number
-  onChange: (s: InputState) => void
-}) {
-  const color = useInterpolateLiquidationRiskColor(sizeUsd, max)
-  const riskLabel = riskLevelLabel(sizeUsd, max)
+function useDebouncedTradePreview({ sizeDelta }: { sizeDelta: Dnum }) {
+  const market = useRouteMarket()
+  const { address: account } = useAccount()
+
+  const marketPrice = useMarketPrice({ marketKey: market?.key })
+
+  const enabled = !!account && !!market && !!marketPrice && sizeDelta && !equal(sizeDelta, 0)
+
+  return useTradePreview({
+    address: market && market.address,
+    enabled,
+    args: enabled
+      ? [toBigNumber(sizeDelta), toBigNumber(marketPrice), OrderType.delayedOffchain, account]
+      : undefined,
+    keepPreviousData: true,
+  })
+}
+
+const selectToNumber = (buyingPower: Dnum) => (buyingPower ? toNumber(buyingPower, 2) : 0)
+const LiquidationPrice = memo(function LiquidationPrice() {
+  const { data: buyingPower = 0 } = useBuyingPower({ select: selectToNumber })
+
+  const sizeUsd = useAtomValue(selectAtom(orderDerivedValuesAtom, (v) => toNumber(v.usd, 2)))
+  const color = useInterpolateLiquidationRiskColor(sizeUsd, buyingPower)
+  const riskLabel = riskLevelLabel(sizeUsd, buyingPower)
+
+  const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
+  const { data: tradePreview, isLoading } = useDebouncedTradePreview({ sizeDelta })
+
+  const onChange = useSetAtom(orderInputAtom)
 
   return (
     <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
@@ -292,7 +315,7 @@ const LiquidationPrice = memo(function LiquidationPrice({
               className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
               placeholder="0.00"
               prefix="$"
-              value={liquidationPrice || ''}
+              value={format(tradePreview?.liquidationPrice)}
               decimalScale={2}
               onValueChange={({ value }, { source }) => {
                 // if (source === 'event') onChange({ value, type: amountDenominator })
@@ -303,10 +326,14 @@ const LiquidationPrice = memo(function LiquidationPrice({
             {riskLabel}
           </motion.span>
         </div>
-        <SizeSlider value={sizeUsd} max={max} onChange={onChange} disabled={!max} />
+        <SizeSlider value={sizeUsd} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
         <div className="flex justify-between font-mono">
-          <span className={cx('text-xs', max ? 'text-green-500' : 'text-ocean-300')}>$0</span>
-          {max && <span className="text-xs text-orange-500">$ {format(max)}</span>}
+          <span className={cx('text-xs', buyingPower ? 'text-green-500' : 'text-ocean-300')}>
+            $0
+          </span>
+          {!!buyingPower && (
+            <span className="text-xs text-orange-500">$ {format(buyingPower)}</span>
+          )}
         </div>
       </div>
     </div>
@@ -429,19 +456,25 @@ const TradeDetails = memo(function TradeDetails({
 
 const PlaceOrderButton = memo(function PlaceOrderButton({
   market,
-  sizeDelta,
-  buyingPower,
-}: {
+}: // sizeDelta,
+{
   market: Address | undefined
-  sizeDelta: Dnum
-  buyingPower: Dnum | undefined
+  // sizeDelta: Dnum
 }) {
-  const isOverBuyingPower = !!buyingPower && greaterThan(sizeDelta, buyingPower)
+  const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
 
-  const side = greaterThan(sizeDelta, 0) ? 'long' : 'short'
+  const { data: isOverBuyingPower } = useBuyingPower({
+    select: useCallback(
+      (buyingPower) => !!sizeDelta && greaterThan(abs(sizeDelta), buyingPower),
+      [sizeDelta],
+    ),
+  })
+
+  const side = useAtomValue(sideAtom)
+
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market,
-    enabled: !!market && !equal(sizeDelta, 0) && !!buyingPower && !isOverBuyingPower,
+    enabled: !!market && !equal(sizeDelta, 0) && !isOverBuyingPower,
     args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
@@ -477,6 +510,63 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
   )
 })
 
+function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSelect } = {}) {
+  const market = useRouteMarket({ select: selectAddress })
+  const { address: account } = useAccount()
+  return useMarketRemainingMargin({
+    address: market,
+    args: account && [account],
+    enabled: !!account && !!market,
+    select: useCallback(
+      (d) => {
+        const margin = dn([d.marginRemaining.toBigInt(), 18])
+        const buyingPower = multiply(margin, MAX_LEVERAGE)
+        return select ? select(buyingPower) : (buyingPower as TSelect)
+      },
+      [select],
+    ),
+  })
+}
+
+function DepositMarginToReduceRisk() {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
+      <Link
+        href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
+        className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
+      >
+        Deposit Margin
+      </Link>
+    </div>
+  )
+}
+
+const useMarketPrice = ({ marketKey }: { marketKey?: MarketKey }) => {
+  const marketPrice = useSkewAdjustedOffChainPrice({ marketKey })
+  // price updates all the time thru the websocket connection
+  const debouncedMarketPrice = useDebounce(marketPrice, 200)
+  return debouncedMarketPrice
+}
+
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import atomWithDebounce from 'src/utils/atom-utils'
+import { selectAtom } from 'jotai/vanilla/utils'
+
+const sideAtom = atom<'long' | 'short'>('long')
+const orderInputAtom = atom<InputState>({ value: '', type: 'usd' })
+const orderDerivedValuesAtom = atom((get) => {
+  const input = get(orderInputAtom)
+  const marketPrice = get(routeMarketPriceAtom)
+  return deriveInputs(input, marketPrice)
+})
+
+const sizeDeltaAtom = atomWithDebounce((get) => {
+  const side = get(sideAtom)
+  const assetInput = get(orderDerivedValuesAtom).asset
+  return side === 'long' ? assetInput : multiply(assetInput, -1)
+}, 150)
+
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function OrderFormPanel(
   props,
   ref,
@@ -485,41 +575,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
   const market = useRouteMarket()
 
-  const { data: marketPrice } = useSkewAdjustedOffChainPrice({ marketKey: market?.key })
-
-  const [input, setInput] = useState<InputState>()
-  const inputs = useMemo(() => deriveInputs(input, marketPrice), [marketPrice, input])
-
-  const [side, setSide] = useState<'long' | 'short'>('long')
-
-  const debouncedSize = useDebounce(inputs.asset, 150)
-  const sizeDelta = useMemo(() => {
-    const size = dn(debouncedSize)
-    return side === 'long' ? size : multiply(size, -1)
-  }, [debouncedSize, side])
-
   const { address: account } = useAccount()
-
-  const { data: buyingPower } = useMarketRemainingMargin({
-    address: market && market.address,
-    args: account && [account],
-    select: useCallback((d) => {
-      const margin = from([d.marginRemaining.toBigInt(), 18])
-      return multiply(margin, MAX_LEVERAGE)
-    }, []),
-  })
-
-  const tradePreview = useTradePreview({
-    address: market && market.address,
-    enabled: !!market && !!marketPrice && !equal(sizeDelta, 0),
-    args: marketPrice && [
-      toBigNumber(sizeDelta),
-      toBigNumber(marketPrice),
-      OrderType.delayedOffchain,
-      account!,
-    ],
-    keepPreviousData: true,
-  })
 
   return (
     <Panel
@@ -532,40 +588,21 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
       <MarginDetails account={account} market={market?.address} />
 
-      <SideSelector side={side} onChange={setSide} />
+      <SideSelector />
 
-      <OrderSizeInput
-        inputs={inputs}
-        onChange={setInput}
-        max={buyingPower}
-        assetSymbol={market?.asset}
-      />
+      <OrderSizeInput assetSymbol={market?.asset} />
 
-      <LiquidationPrice
-        liquidationPrice={format(tradePreview.data?.liquidationPrice)}
-        isLoading={tradePreview.isLoading}
-        sizeUsd={toNumber(dn(inputs.usd), 2)}
-        onChange={setInput}
-        max={buyingPower && toNumber(buyingPower, 2)}
-      />
+      <LiquidationPrice />
 
-      <div className="flex items-center justify-between">
-        <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
-        <Link
-          href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
-          className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
-        >
-          Deposit Margin
-        </Link>
-      </div>
+      <DepositMarginToReduceRisk />
 
-      <PlaceOrderButton market={market?.address} buyingPower={buyingPower} sizeDelta={sizeDelta} />
+      <PlaceOrderButton market={market?.address} />
 
-      <TradeDetails
+      {/* <TradeDetails
         marketKey={market?.key}
         fee={tradePreview.data?.fee}
         entryPrice={tradePreview.data?.entryPrice}
-      />
+      /> */}
     </Panel>
   )
 })

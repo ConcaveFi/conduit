@@ -21,7 +21,7 @@ export const dn = (value: string | Dnum) => {
   if (isDnum(value)) return value
   if (!value) return from([0n, 0])
   const [whole, fraction] = value.split('.')
-  const v = [whole || 0, fraction?.slice(0, 20) || 0].join('.')
+  const v = [whole || 0, fraction || 0].join('.')
   return from(v, 18)
 }
 
