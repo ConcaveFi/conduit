@@ -27,7 +27,7 @@ import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
 import { MarketSummaries, useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
-import { UrlModal } from 'src/utils/enum/urlModal'
+import { useQueryModal } from 'src/utils/enum/urlModal'
 import { toBigNumber } from 'src/utils/toBigNumber'
 import { useDebounce } from 'usehooks-ts'
 import { dn, format } from 'src/utils/format'
@@ -531,15 +531,16 @@ function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSel
 }
 
 function DepositMarginToReduceRisk() {
+  const { onOpen } = useQueryModal({ modalType: 'margin', type: 'transfer' })
   return (
     <div className="flex items-center justify-between">
       <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
-      <Link
-        href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
+      <button
+        onClick={() => onOpen}
         className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
       >
         Deposit Margin
-      </Link>
+      </button>
     </div>
   )
 }

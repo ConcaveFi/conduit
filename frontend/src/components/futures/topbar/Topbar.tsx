@@ -1,7 +1,11 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useModalState } from '@rainbow-me/rainbowkit/dist/components/RainbowKitProvider/ModalContext'
 import { ChevronIcon, NotificationIcon } from '@tradex/icons'
+import { Modal } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import Image from 'next/image'
+import { ExchangeCard } from 'src/components/swap/SwapCard'
+import { useQueryModal } from 'src/utils/enum/urlModal'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { LocationSelector } from './LocationSelector'
@@ -12,7 +16,9 @@ export function Topbar() {
   const { t } = useTranslation()
   const { address } = useAccount()
   const { data } = useBalance({ address })
-
+  const swapModal = useQueryModal({
+    modalType: 'swap',
+  })
   return (
     <div className="flex items-center justify-between px-4">
       <div className="flex items-center h-full gap-2">
@@ -31,7 +37,10 @@ export function Topbar() {
         <button className="btn btn-bottom-glow  centered  px-5 font-medium h-full text-xs rounded-none">
           {t('futures')}
         </button>
-        <button className="btn btn-underline centered px-5 font-medium h-full text-xs rounded-none">
+        <button
+          onClick={swapModal.onOpen}
+          className="btn btn-underline centered px-5 font-medium h-full text-xs rounded-none"
+        >
           Swap
         </button>
         <button className="btn btn-underline centered px-5 font-medium h-full text-xs  rounded-none">
@@ -69,6 +78,9 @@ export function Topbar() {
           }}
         </ConnectButton.Custom>
       </div>
+      <Modal isOpen={swapModal.isOpen} onClose={swapModal.onClose}>
+        <ExchangeCard />
+      </Modal>
     </div>
   )
 }

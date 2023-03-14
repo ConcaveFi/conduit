@@ -13,12 +13,10 @@ import { parseUnits } from 'ethers/lib/utils'
 
 type CoinBalance = Token & { balance: BigNumber }
 
-const useCurrencySelector = () => {
+export const useTokenList = () => {
   const chainId = useChainId()
-  const [search, setSearch] = useState('')
   const account = useAccount()
-
-  const { data: tokensData, ...tokensQuery } = useQuery(['tokens', chainId], async () => {
+  return useQuery(['tokens', chainId], async () => {
     const { tokens } = await new Exchange({ chainId }).listTokens()
 
     const userTokensPromise = await Promise.all(
@@ -35,6 +33,11 @@ const useCurrencySelector = () => {
     )
     return userTokensPromise.sort((a, b) => (a.balance.lt(b.balance) ? 1 : -1))
   })
+}
+
+const useCurrencySelector = () => {
+  const [search, setSearch] = useState('')
+  const { data: tokensData, ...tokensQuery } = useTokenList()
   const tokens = tokensData || []
 
   return {
