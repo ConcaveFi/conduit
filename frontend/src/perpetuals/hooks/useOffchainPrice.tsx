@@ -4,28 +4,60 @@ import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 import { MarketKey, Markets } from 'perps-hooks/markets'
 
 import { useNetwork } from 'wagmi'
-import { useMarkets, useMarketSettings } from './useMarket'
+import deepEqual from 'fast-deep-equal'
+import { routeMarketAtom, useMarkets, useMarketSettings } from './useMarket'
 import { wagmiClient } from 'src/app/[asset]/providers/WagmiProvider'
-import { add, divide, Dnum, multiply } from 'dnum'
+import { add, divide, Dnum, from, multiply } from 'dnum'
 import { atom, useAtomValue } from 'jotai'
 import { atomWithLocation } from 'jotai-location'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { Router } from 'next/router'
+import { atomFamily } from 'jotai/utils'
 
 const pyth = {
   mainnet: new EvmPriceServiceConnection('https://xc-mainnet.pyth.network'),
   testnet: new EvmPriceServiceConnection('https://xc-testnet.pyth.network'),
 }
-type PythNetwork = 'mainnet' | 'testnet'
-type PythId = (typeof Markets)[MarketKey]['pythIds'][PythNetwork]
+type PythNetwork = keyof typeof pyth
+
+const subscribeOffchainPrice =
+  (network: 'mainnet' | 'testnet', marketKey: MarketKey) =>
+  (onPriceChange: (price: Dnum) => void) => {
+    const id = Markets[marketKey].pythIds[network]
+    pyth[network].subscribePriceFeedUpdates([id], (feed) => {
+      const { price, expo } = feed.getPriceUnchecked()
+      const _price = divide(price, 10 ** Math.abs(expo), 18)
+      onPriceChange(_price)
+    })
+    return () => {
+      pyth[network].unsubscribePriceFeedUpdates([id])
+    }
+  }
+
+const createOffchainPriceAtom = ({
+  network,
+  marketKey,
+  initial = [0n, 0],
+}: {
+  network: PythNetwork
+  marketKey?: MarketKey
+  initial?: Dnum
+}) => {
+  const offchainPriceAtom = atom<Dnum>(initial)
+  if (marketKey) offchainPriceAtom.onMount = subscribeOffchainPrice(network, marketKey)
+  return offchainPriceAtom
+}
+
+const offchainPricesAtom = atomFamily(createOffchainPriceAtom, deepEqual)
 
 export function useOffchainPrice({ marketKey }: { marketKey?: MarketKey }) {
   const { chain } = useNetwork()
-  const pythNetwork = chain?.testnet ? 'testnet' : 'mainnet'
-  const marketPythId = marketKey && Markets[marketKey].pythIds[pythNetwork]
+  const network = chain?.testnet ? 'testnet' : 'mainnet'
+  const { data: price } = useMarkets({
+    select: (m) => m.find(({ key }) => key === marketKey)?.price,
+  })
 
-  const fallbackAtom = useMemo(() => atom([0n, 0] as Dnum), [])
-  return useAtomValue(marketPythId ? offchainPricesAtoms[pythNetwork][marketPythId] : fallbackAtom)
+  return useAtomValue(offchainPricesAtom({ network, marketKey, initial: price }))
 }
 
 export function useSkewAdjustedOffChainPrice<TSelect = Dnum>({
@@ -49,12 +81,6 @@ export function useSkewAdjustedOffChainPrice<TSelect = Dnum>({
   }, [marketSkew, price, select, skewScale])
 }
 
-const allMarketsKeys = Object.keys(Markets) as MarketKey[]
-const allMarketsPythIds = {
-  mainnet: allMarketsKeys.map((key) => Markets[key].pythIds.mainnet),
-  testnet: allMarketsKeys.map((key) => Markets[key].pythIds.testnet),
-}
-
 const connectedChainIdAtom = atom<number>(optimism.id)
 connectedChainIdAtom.onMount = (set) =>
   wagmiClient.subscribe(
@@ -62,52 +88,10 @@ connectedChainIdAtom.onMount = (set) =>
     ({ chainId }) => set(chainId || optimism.id),
   )
 
-const subscribeOffchainPrice =
-  (network: 'mainnet' | 'testnet', id: PythId) => (onPriceChange: (price: Dnum) => void) => {
-    pyth[network].subscribePriceFeedUpdates([id], (feed) => {
-      const { price, expo } = feed.getPriceUnchecked()
-      const _price = divide(price, 10 ** Math.abs(expo), 18)
-      onPriceChange(_price)
-    })
-    return () => {
-      pyth[network].unsubscribePriceFeedUpdates([id])
-    }
-  }
-
-const createOffchainPriceAtom = (network: 'mainnet' | 'testnet', id: PythId) => {
-  const offchainPriceAtom = atom<Dnum>([0n, 0])
-  // offchainPriceAtom.onMount = subscribeOffchainPrice(network, id)
-  return offchainPriceAtom
-}
-
-export const offchainPricesAtoms = {
-  mainnet: allMarketsPythIds.mainnet.reduce(
-    (acc, id) => ({ ...acc, [id]: createOffchainPriceAtom('mainnet', id) }),
-    {} as Record<PythId, ReturnType<typeof createOffchainPriceAtom>>,
-  ),
-  testnet: allMarketsPythIds.mainnet.reduce(
-    (acc, id) => ({ ...acc, [id]: createOffchainPriceAtom('testnet', id) }),
-    {} as Record<PythId, ReturnType<typeof createOffchainPriceAtom>>,
-  ),
-}
-
-const routeAtom = atomWithLocation({
-  subscribe: (callback) => {
-    Router.events.on('routeChangeComplete', callback)
-    window.addEventListener('hashchange', callback)
-    return () => {
-      Router.events.off('routeChangeComplete', callback)
-      window.removeEventListener('hashchange', callback)
-    }
-  },
-})
-
 export const routeMarketPriceAtom = atom<Dnum>((get) => {
-  const chainId = get(connectedChainIdAtom)
-  const network = chainId === optimismGoerli.id ? 'testnet' : 'mainnet'
-  const asset = get(routeAtom).searchParams?.get('asset') || 'sETH'
-  const pythId = Object.values(Markets).find((m) => m.asset === asset)?.pythIds[network]
-  if (!pythId) return [0n, 0]
-  const price = get(offchainPricesAtoms[network][pythId])
+  const market = get(routeMarketAtom)
+  const price = get(
+    offchainPricesAtom({ network: 'mainnet', marketKey: market.key, initial: market.price }),
+  )
   return price
 })

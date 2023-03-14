@@ -268,7 +268,7 @@ function useDebouncedTradePreview({ sizeDelta }: { sizeDelta: Dnum }) {
   const market = useRouteMarket()
   const { address: account } = useAccount()
 
-  const marketPrice = useMarketPrice({ marketKey: market?.key })
+  const marketPrice = useSkewAdjustedOffChainPrice({ marketKey: market?.key })
 
   const enabled = !!account && !!market && !!marketPrice && sizeDelta && !equal(sizeDelta, 0)
 
@@ -500,6 +500,21 @@ function PlaceOrderButton() {
   )
 }
 
+function DepositMarginToReduceRisk() {
+  const market = useRouteMarket()
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
+      <Link
+        href={`/${market.asset}?modal=${UrlModal.TRANSFER_MARGIN}`}
+        className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
+      >
+        Deposit Margin
+      </Link>
+    </div>
+  )
+}
+
 function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSelect } = {}) {
   const market = useRouteMarket()
   const { address: account } = useAccount()
@@ -516,27 +531,6 @@ function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSel
       [select],
     ),
   })
-}
-
-function DepositMarginToReduceRisk() {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
-      <Link
-        href={`?modal=${UrlModal.TRANSFER_MARGIN}`}
-        className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
-      >
-        Deposit Margin
-      </Link>
-    </div>
-  )
-}
-
-const useMarketPrice = ({ marketKey }: { marketKey?: MarketKey }) => {
-  const marketPrice = useSkewAdjustedOffChainPrice({ marketKey })
-  // price updates all the time thru the websocket connection
-  const debouncedMarketPrice = useDebounce(marketPrice, 200)
-  return debouncedMarketPrice
 }
 
 const sideAtom = atom<'long' | 'short'>('long')
