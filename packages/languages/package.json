@@ -11,7 +11,7 @@
     "typescript": "^4.9.5"
   },
   "scripts": {
-    "gen:keys": "cd src/scripts/ && ts-node genKeys.ts && prettier ../../types/languageKeys.ts -w ",
-    "teste": "prettier src/scripts/genKeys.ts -w"
+    "gen:keys": "cd scripts/ && ts-node genKeys.ts && prettier ../../types/languageKeys.ts -w ",
+    "teste": "prettier scripts/genKeys.ts -w"
   }
 }

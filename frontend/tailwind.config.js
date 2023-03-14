@@ -10,7 +10,7 @@ module.exports = {
     },
   },
   content: [
-    './src/**/*.{js,ts,jsx,tsx}',
+    './**/*.{js,ts,jsx,tsx}',
     '../packages/icons/components/**/*.tsx',
     '../packages/interface/components/**/*.tsx',
     '../packages/interface/styles/**/*.ts',
