@@ -117,6 +117,7 @@ const OrderSizeInput = ({
             >
               <NumericInput
                 data-overflow={isOverBuyingPower}
+                variant={'none'}
                 className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
                 value={format(inputs[amountDenominator], false)}
@@ -312,6 +313,7 @@ const LiquidationPrice = memo(function LiquidationPrice() {
           ) : (
             <NumericInput
               disabled
+              variant={'none'}
               className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
               placeholder="0.00"
               prefix="$"
@@ -483,7 +485,7 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
     return (
       <button
         disabled
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 font-bold h-11 rounded-lg shadow-lg"
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg font-bold shadow-lg"
       >
         Enter an amount
       </button>
@@ -493,7 +495,7 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
     return (
       <button
         disabled
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 font-bold h-11 rounded-lg shadow-lg"
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg font-bold shadow-lg"
       >
         Not enough margin
       </button>

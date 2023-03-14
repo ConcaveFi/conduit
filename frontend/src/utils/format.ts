@@ -1,4 +1,5 @@
 import { Dnum, format as dformat, from, isDnum } from 'dnum'
+import { BigNumberish, utils } from 'ethers'
 
 // export const safeFixedNumber = (value: string | FixedNumber) => {
 //   if (FixedNumber.isFixedNumber(value)) return value
@@ -30,6 +31,22 @@ export const format = (value: Dnum | number | string | undefined, digits: number
   if (typeof value === 'number') return formatNumber(value, digits || 2)
   if (typeof value === 'string') value = dn(value)
   return dformat(value, digits || undefined)
+}
+
+
+const fixParams = (params: { decimals?: number; places?: number }) => ({
+  places: params.places !== undefined ? params.places : 2,
+  decimals: params.decimals !== undefined ? params.decimals : 18,
+})
+const formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 4 })
+export const compactFormat = (bigNumber: BigNumberish, params: { decimals?: number } = {}) => {
+  if (!bigNumber) return 'Nan'
+  const { decimals } = fixParams(params)
+  const input = utils.formatUnits(bigNumber, decimals)
+  if (+input < 0.01 && +input > 0) {
+    return `<0.01`
+  }
+  return formatter.format(+input)
 }
 
 // export const formatUsd = (value: string, options?: Intl.NumberFormatOptions) =>
