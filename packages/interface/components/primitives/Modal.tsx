@@ -1,4 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { CloseIcon } from '@tradex/icons'
 import { Fragment } from 'react'
 import { DivProps } from '../../types/primitives'
 export interface ModalProps extends DivProps {
@@ -44,3 +45,14 @@ const Overlay = () => (
     <div className="ocean:bg-opacity-50 fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm" />
   </Transition.Child>
 )
+
+export const ModalHeader = ({ message, onClose }: { message: string; onClose?: () => void }) => {
+  return (
+    <div className="flex justify-between">
+      <p className="text-blue-blue text-lg">{message}</p>
+      <div className="flex cursor-pointer items-center">
+        <CloseIcon onClick={onClose} className="stroke-Blue/main-dim h-3 w-3" />
+      </div>
+    </div>
+  )
+}
