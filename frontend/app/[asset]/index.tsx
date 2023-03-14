@@ -13,7 +13,6 @@ export default function Home({ dehydratedState }: { dehydratedState: SuperJSONRe
   return (
     <Hydrate state={state}>
       <WidgetsProvider>
-        {/* <Title /> */}
         <StrategyHeader />
         <GridLayout />
       </WidgetsProvider>
