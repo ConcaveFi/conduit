@@ -14,6 +14,9 @@ const nextConfig = {
   //   defaultLocale: 'us',
   //   localeDetection: true,
   // },
+  async rewrites() {
+    return [{ source: '/', destination: '/sETH' }]
+  },
   experimental: {
     appDir: true,
     typedRoutes: true,
