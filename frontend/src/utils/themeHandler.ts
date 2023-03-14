@@ -10,7 +10,7 @@ export class Theme {
   private constructor() { }
   public static getStoredTheme(): Themes {
     const theme = typeof localStorage !== 'undefined' ? localStorage.getItem(THEME_ITEM) : DEFAULT_THEME
-    return theme as Themes
+    return (theme || DEFAULT_THEME) as Themes
   }
 
   public static switch(newTheme: Themes, prevTheme: Themes) {
