@@ -1,8 +1,6 @@
 import { DivProps, Panel } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
-// import { useRouterEvents } from 'src/hooks/useRouterEvents'
-import { useScriptLoader } from 'src/hooks/useScriptLoader'
 import { createTVwidget } from 'src/utils/createTVwidget'
 import { handleSynth } from 'src/utils/handleTokenLogo'
 import { findValueOnUrl } from 'src/utils/urlHandler'
