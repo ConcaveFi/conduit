@@ -16,7 +16,7 @@ export function keyBy<T>(array: T[], key: keyof T): Record<string, T> {
     };
   }, {});
 }
-export const CONDUIT_REFERRAL_ADDRESS = '0x8522093305253EfB2685241dc0C587CDD9B10e4B';
+export const CONDUIT_REFERRAL_ADDRESS = process.env.CONDUIT_REFERRAL_ADDRESS || '0x886148a6bd2c71db59ab3aad230af9f3254173ee';
 
 interface Provider { }
 export class OneInch implements Provider {
