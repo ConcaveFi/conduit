@@ -22,7 +22,7 @@ import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useEffect, useReducer } from 'react'
 import atomWithDebounce from 'utils/atom-utils'
 import { UrlModal } from 'utils/enum/urlModal'
-import { dn, format } from 'utils/format'
+import { format, safeStringDnum } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
 import {
@@ -328,7 +328,7 @@ const deriveInputs = (input?: InputState, price?: Dnum): Record<'usd' | 'asset',
   const { value, type } = input || {}
   if (!value || !type) return { usd: [0n, 0], asset: [0n, 0] }
   if (!price || equal(price, 0)) return { usd: [0n, 0], asset: [0n, 0], [type]: value }
-  const amount = dn(value)
+  const amount = safeStringDnum(value)
   return {
     usd: () => ({ usd: amount, asset: divide(amount, price, 18) }),
     asset: () => ({ usd: multiply(amount, price, 18), asset: amount }),
@@ -503,7 +503,7 @@ function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSel
     enabled: !!account && !!market,
     select: useCallback(
       (d) => {
-        const margin = dn([d.marginRemaining.toBigInt(), 18])
+        const margin = from([d.marginRemaining.toBigInt(), 18])
         const buyingPower = multiply(margin, MAX_LEVERAGE)
         return select ? select(buyingPower) : (buyingPower as TSelect)
       },

@@ -1,16 +1,16 @@
 import { ChevronIcon } from '@tradex/icons'
 import { ButtonProps, ItemInfo, Menu, Skeleton } from '@tradex/interface'
-import { format } from 'dnum'
 import Image from 'next/image'
 import Link from 'next/link'
 import { forwardRef, memo, useEffect, useRef } from 'react'
+import { format } from 'utils/format'
 import { handleSynth } from 'utils/handleTokenLogo'
 import { useMarkets, useRouteMarket } from '../lib/market/useMarket'
 import { MarketKey } from '../lib/price/pyth'
 import { useSkewAdjustedOffChainPrice } from '../lib/price/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
-  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
+  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 4) })
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
@@ -70,7 +70,7 @@ function usePrevious<T>(state: T): T | undefined {
 
 const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
   const priceChange = 0
-  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
+  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 4) })
   // const lastPrice = usePrevious(price)
   // const color = lastPrice.greaterThan(price) ? 'text-red-400' : 'text-green-400'
 
