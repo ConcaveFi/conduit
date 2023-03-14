@@ -123,20 +123,22 @@ const fetchMarketSettings = async ({
     signerOrProvider: provider,
   })
   const marketKeyHex = formatBytes32String(marketKey)
-  const [skewScale, minInitialMargin, minKeeperFee] = await Promise.all([
+  const [skewScale, minInitialMargin, minKeeperFee, maxMarketValue] = await Promise.all([
     marketSettings.skewScale(marketKeyHex),
     marketSettings.minInitialMargin(),
     marketSettings.minKeeperFee(),
+    marketSettings.maxMarketValue(marketKeyHex),
     // marketSettings.maxKeeperFee(),
     // marketSettings.liquidationBufferRatio(),
     // marketSettings.liquidationFeeRatio(),
     // marketSettings.liquidationFeeRatio(),
   ])
-  const s = valuesToBigInt({ skewScale, minInitialMargin, minKeeperFee })
+  const s = valuesToBigInt({ maxMarketValue, skewScale, minInitialMargin, minKeeperFee })
   return {
     skewScale: from([s.skewScale, 18]),
     minInitialMargin: from([s.minInitialMargin, 18]),
     minKeeperFee: from([s.minKeeperFee, 18]),
+    maxMarketValue: from([s.maxMarketValue, 18]),
   }
 }
 
