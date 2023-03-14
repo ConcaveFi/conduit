@@ -36,7 +36,7 @@ export function StrategyHeader() {
   const SNXBalance = useBalance({ token: SNX_ADDRESS[chain?.id!], ...balanceConfig })
   const ETHBalance = useBalance({ ...balanceConfig })
 
-  const fundingRate = useRouteMarket({ select: (m) => format(m.currentFundingRate, 6) })
+  const routeMarket = useRouteMarket()
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
@@ -47,7 +47,11 @@ export function StrategyHeader() {
         <ItemInfo info={'Price index'} value="$ 370.00" />
         <ItemInfo info={t('24h_volume')} value="$ 370,526,580" Icon={<BalanceIcon />} />
         <ItemInfo info={t('24h_change')} value="-1.33%" modifier="negative" />
-        <ItemInfo info={'1H Funding Rate'} value={fundingRate || '0.0'} modifier="positive" />
+        <ItemInfo
+          info={'1H Funding Rate'}
+          value={format(routeMarket.currentFundingRate, 4) || '0.0'}
+          modifier="positive"
+        />
         <ItemInfo info={'Open interest (L)'} value="$ 4.3M / $ 2.3M" />
         <ItemInfo info={'Open interest (S)'} value="$ 4.3M / $ 2.3M" />
       </div>

@@ -1,3 +1,5 @@
+'use client'
+
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, NotificationIcon } from '@tradex/icons'
 import { ItemInfo } from '@tradex/interface'
@@ -7,7 +9,7 @@ import { format } from 'src/utils/format'
 import { truncateAddress } from 'src/utils/truncateAddress'
 import { useAccount, useBalance } from 'wagmi'
 import { LocationSelector } from './LocationSelector'
-import { ThemeSelector } from './ThemeSelector'
+// import { ThemeSelector } from './ThemeSelector'
 
 export function Topbar() {
   const { isConnected } = useAccount()
@@ -37,7 +39,7 @@ export function Topbar() {
       </div>
       <div className="flex w-fit items-center gap-6">
         <LocationSelector />
-        <ThemeSelector />
+        {/* <ThemeSelector /> */}
 
         <NotificationIcon className="fill-ocean-200 h-5 w-5" />
         <ConnectButton.Custom>

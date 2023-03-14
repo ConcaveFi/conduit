@@ -24,9 +24,9 @@ import {
 } from 'perps-hooks'
 import { MarketKey } from 'perps-hooks/markets'
 import { parsePositionDetails } from 'perps-hooks/parsers'
-import { forwardRef, memo, useCallback, useEffect, useMemo, useReducer, useState } from 'react'
+import { forwardRef, memo, useCallback, useEffect, useReducer } from 'react'
 import { DEFAULT_PRICE_IMPACT_DELTA, MAX_LEVERAGE, TrackingCode } from 'src/constants/perps-config'
-import { MarketSummaries, useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
+import { useMarketSettings, useRouteMarket } from 'src/perpetuals/hooks/useMarket'
 import { UrlModal } from 'src/utils/enum/urlModal'
 import { toBigNumber } from 'src/utils/toBigNumber'
 import { useDebounce } from 'usehooks-ts'
@@ -39,8 +39,11 @@ import {
 } from '../hooks/useOffchainPrice'
 import { TradePreview, useTradePreview } from '../hooks/useTradePreview'
 import { TransferMarginButton } from './TransferMargin'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import atomWithDebounce from 'src/utils/atom-utils'
+import { selectAtom } from 'jotai/vanilla/utils'
 
-const SideSelector = memo(function SideSelector() {
+function SideSelector() {
   const { t } = useTranslation()
   const [side, setSide] = useAtom(sideAtom)
   return (
@@ -69,18 +72,11 @@ const SideSelector = memo(function SideSelector() {
       </button>
     </div>
   )
-})
+}
 
 const selectAddress = (m) => m.address
-const OrderSizeInput = ({
-  // onChange,
-  // inputs,
-  assetSymbol = '',
-}: {
-  // onChange: (s: InputState) => void
-  // inputs: ReturnType<typeof deriveInputs>
-  assetSymbol: string | undefined
-}) => {
+const OrderSizeInput = () => {
+  const routeMarket = useRouteMarket()
   const onChange = useSetAtom(orderInputAtom)
   const inputs = useAtomValue(orderDerivedValuesAtom)
 
@@ -89,7 +85,7 @@ const OrderSizeInput = ({
     'usd',
   )
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
-  const symbols = { usd: 'sUSD', asset: assetSymbol }
+  const symbols = { usd: 'sUSD', asset: routeMarket.asset }
 
   const { data: isOverBuyingPower } = useBuyingPower({
     select: useCallback(
@@ -178,7 +174,7 @@ const useInterpolateLiquidationRiskColor = (value: number, max: number) => {
   return useTransform(v, [max, max / 2, 0], ['#f87171', '#facc15', '#4ade80'])
 }
 
-const SizeSlider = memo(function SizeSlider({
+function SizeSlider({
   value,
   max,
   onChange,
@@ -226,7 +222,7 @@ const SizeSlider = memo(function SizeSlider({
       </Slider.Thumb>
     </Slider.Root>
   )
-})
+}
 
 // function _liquidationPremium(positionSize, currentPrice) {
 //   // note: this is the same as fillPrice() where the skew is 0.
@@ -287,15 +283,17 @@ function useDebouncedTradePreview({ sizeDelta }: { sizeDelta: Dnum }) {
 }
 
 const selectToNumber = (buyingPower: Dnum) => (buyingPower ? toNumber(buyingPower, 2) : 0)
-const LiquidationPrice = memo(function LiquidationPrice() {
+function LiquidationPrice() {
   const { data: buyingPower = 0 } = useBuyingPower({ select: selectToNumber })
 
-  const sizeUsd = useAtomValue(selectAtom(orderDerivedValuesAtom, (v) => toNumber(v.usd, 2)))
+  const a = useAtomValue(orderDerivedValuesAtom)
+  const sizeUsd = toNumber(a.usd, 2)
+
   const color = useInterpolateLiquidationRiskColor(sizeUsd, buyingPower)
   const riskLabel = riskLevelLabel(sizeUsd, buyingPower)
 
   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
-  const { data: tradePreview, isLoading } = useDebouncedTradePreview({ sizeDelta })
+  // const { data: tradePreview, isLoading } = useDebouncedTradePreview({ sizeDelta })
 
   const onChange = useSetAtom(orderInputAtom)
 
@@ -307,7 +305,7 @@ const LiquidationPrice = memo(function LiquidationPrice() {
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
-          {sizeUsd > 0 && isLoading ? (
+          {/* {sizeUsd > 0 && isLoading ? (
             <Skeleton className="mb-1 h-5 w-24" />
           ) : (
             <NumericInput
@@ -321,7 +319,7 @@ const LiquidationPrice = memo(function LiquidationPrice() {
                 // if (source === 'event') onChange({ value, type: amountDenominator })
               }}
             />
-          )}
+          )} */}
           <motion.span style={{ color }} className="font-bold">
             {riskLabel}
           </motion.span>
@@ -338,7 +336,7 @@ const LiquidationPrice = memo(function LiquidationPrice() {
       </div>
     </div>
   )
-})
+}
 
 type InputState = { value: string; type: 'usd' | 'asset' }
 const deriveInputs = (input?: InputState, price?: Dnum): Record<'usd' | 'asset', Dnum> => {
@@ -358,15 +356,12 @@ const OrderType = {
   delayedOffchain: 2,
 }
 
-const MarginDetails = memo(function MarginDetails({
-  market,
-  account,
-}: {
-  market: Address | undefined
-  account: Address | undefined
-}) {
+function MarginDetails() {
+  const market = useRouteMarket()
+  const { address: account } = useAccount()
+
   const { data: details } = useMarketDataPositionDetails({
-    args: !!market && !!account ? [market, account] : undefined,
+    args: !!market.address && !!account ? [market.address, account] : undefined,
     enabled: !!market && !!account,
     select: (p) => {
       const details = parsePositionDetails(p)
@@ -420,9 +415,9 @@ const MarginDetails = memo(function MarginDetails({
       </div>
     </div>
   )
-})
+}
 
-const TradeDetails = memo(function TradeDetails({
+function TradeDetails({
   marketKey,
   fee,
   entryPrice,
@@ -452,15 +447,10 @@ const TradeDetails = memo(function TradeDetails({
       </li>
     </ul>
   )
-})
+}
 
-const PlaceOrderButton = memo(function PlaceOrderButton({
-  market,
-}: // sizeDelta,
-{
-  market: Address | undefined
-  // sizeDelta: Dnum
-}) {
+function PlaceOrderButton() {
+  const market = useRouteMarket()
   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
 
   const { data: isOverBuyingPower } = useBuyingPower({
@@ -473,8 +463,8 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
   const side = useAtomValue(sideAtom)
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    address: market,
-    enabled: !!market && !equal(sizeDelta, 0) && !isOverBuyingPower,
+    address: market.address,
+    enabled: !equal(sizeDelta, 0) && !isOverBuyingPower,
     args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TrackingCode],
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
@@ -508,13 +498,13 @@ const PlaceOrderButton = memo(function PlaceOrderButton({
       Place {side}
     </button>
   )
-})
+}
 
 function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSelect } = {}) {
-  const market = useRouteMarket({ select: selectAddress })
+  const market = useRouteMarket()
   const { address: account } = useAccount()
   return useMarketRemainingMargin({
-    address: market,
+    address: market.address,
     args: account && [account],
     enabled: !!account && !!market,
     select: useCallback(
@@ -549,14 +539,11 @@ const useMarketPrice = ({ marketKey }: { marketKey?: MarketKey }) => {
   return debouncedMarketPrice
 }
 
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import atomWithDebounce from 'src/utils/atom-utils'
-import { selectAtom } from 'jotai/vanilla/utils'
-
 const sideAtom = atom<'long' | 'short'>('long')
 const orderInputAtom = atom<InputState>({ value: '', type: 'usd' })
 const orderDerivedValuesAtom = atom((get) => {
   const input = get(orderInputAtom)
+  if (!input.value) return { usd: from([0n, 0]), asset: from([0n, 0]) }
   const marketPrice = get(routeMarketPriceAtom)
   return deriveInputs(input, marketPrice)
 })
@@ -564,6 +551,7 @@ const orderDerivedValuesAtom = atom((get) => {
 const sizeDeltaAtom = atomWithDebounce((get) => {
   const side = get(sideAtom)
   const assetInput = get(orderDerivedValuesAtom).asset
+  if (!assetInput) return from([0n, 0])
   return side === 'long' ? assetInput : multiply(assetInput, -1)
 }, 150)
 
@@ -571,12 +559,6 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
   props,
   ref,
 ) {
-  const { t } = useTranslation()
-
-  const market = useRouteMarket()
-
-  const { address: account } = useAccount()
-
   return (
     <Panel
       ref={ref}
@@ -584,19 +566,19 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       bodyProps={{ className: 'p-3 md:overflow-y-scroll overflow-x-hidden' }}
       {...props}
     >
-      <TransferMarginButton asset={market?.asset} />
+      <TransferMarginButton />
 
-      <MarginDetails account={account} market={market?.address} />
+      <MarginDetails />
 
       <SideSelector />
 
-      <OrderSizeInput assetSymbol={market?.asset} />
+      <OrderSizeInput />
 
       <LiquidationPrice />
 
       <DepositMarginToReduceRisk />
 
-      <PlaceOrderButton market={market?.address} />
+      <PlaceOrderButton />
 
       {/* <TradeDetails
         marketKey={market?.key}

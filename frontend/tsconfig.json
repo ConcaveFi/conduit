@@ -14,5 +14,6 @@
     ".",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["dist", "build", "node_modules"],
+  "plugins": [{ "name": "next" }]
 }

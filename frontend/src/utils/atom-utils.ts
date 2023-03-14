@@ -9,7 +9,7 @@ export default function atomWithDebounce<T>(
 
   // DO NOT EXPORT currentValueAtom as using this atom to set state can cause
   // inconsistent state between currentValueAtom and debouncedValueAtom
-  const _currentValueAtom = atom<T, [T], T>(initialValue, (get, set, v) => set(v))
+  const _currentValueAtom = atom(initialValue, (get, set, v) => v)
   const isDebouncingAtom = atom(false)
 
   const debouncedValueAtom = atom(initialValue, (get, set, update: SetStateAction<T>) => {

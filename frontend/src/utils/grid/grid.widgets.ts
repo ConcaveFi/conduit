@@ -33,6 +33,7 @@ export class GridWidget {
   }
 
   public static getStoredWidgets() {
+    if (typeof localStorage === 'undefined') return
     const raw = localStorage.getItem(this.storageItem)
     if (!raw) return
 

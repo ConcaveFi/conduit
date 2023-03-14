@@ -32,8 +32,6 @@ export const MarketList = function MarketList() {
   const market = useRouteMarket()
   const { data: markets } = useMarkets()
 
-  if (!market || !markets) return null
-
   return (
     <Menu className={'my-auto h-fit'}>
       <Menu.Button className="btn centered gap-6 outline-none">
@@ -41,11 +39,12 @@ export const MarketList = function MarketList() {
         <ChevronIcon />
       </Menu.Button>
       <Menu.Items className="card card-translucent-glass left-10 h-[500px] w-[360px] origin-top-left overflow-y-auto rounded-tl-sm p-2">
-        {markets.map(({ key, asset }) => (
-          <Menu.Item key={key}>
-            <MarketButton asset={asset} marketKey={key} />
-          </Menu.Item>
-        ))}
+        {markets &&
+          markets.map(({ key, asset }) => (
+            <Menu.Item key={key}>
+              <MarketButton asset={asset} marketKey={key} />
+            </Menu.Item>
+          ))}
       </Menu.Items>
     </Menu>
   )
@@ -88,10 +87,12 @@ const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
 })
 
 const MarketButton = forwardRef<HTMLAnchorElement, MarketButton>(
-  ({ asset, marketKey, percent, ...props }, ref) => {
+  ({ asset, marketKey, ...props }, ref) => {
     return (
       <Link
-        href={`?asset=${asset}`}
+        href={`/${asset}`}
+        replace
+        shallow
         ref={ref}
         className={
           'btn gap-6 h-fit justify-between even:bg-light-400 ocean:even:bg-ocean-600 p-2 px-3 rounded-lg'

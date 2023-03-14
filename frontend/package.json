@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "wagmi-gen": "wagmi generate -c ./perps-hooks/wagmi.config.ts",
-    "dev": "yarn run wagmi-gen && next dev",
-    "build": "yarn run wagmi-gen && next build",
+    "dev": "next dev",
+    "build": "pnpm wagmi-gen && next build",
     "start": "next start",
     "lint": "next lint"
   },

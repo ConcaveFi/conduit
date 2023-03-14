@@ -2,7 +2,7 @@ import { DivProps } from '@tradex/interface'
 import { useMemo } from 'react'
 import RGL, { WidthProvider } from 'react-grid-layout'
 import { useGridLayout } from 'src/hooks/useGridLayout'
-import { useWidgets } from 'src/providers/WidgetsProvider'
+import { useWidgets } from 'src/app/[asset]/providers/WidgetsProvider'
 import { GridWidget } from 'src/utils/grid/grid.widgets'
 
 const ReactGridLayout = WidthProvider(RGL)
@@ -16,11 +16,12 @@ export function GridLayout() {
   const panels = useMemo(() => {
     return widgets.map((widget) => {
       const Panel = GridWidget.toPanel(widget) as React.FC<DivProps>
-      return <Panel className="duration-300 ease-out" key={widget} />
+      return <Panel key={widget} />
     })
   }, [widgets])
 
   if (!layout) return <></>
+
   return (
     <div className="ocean:bg-ocean-900 flex h-full w-full sm">
       <ReactGridLayout

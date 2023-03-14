@@ -1,7 +1,7 @@
 import { cx, Modal, ModalProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useReducer } from 'react'
-import { useWidgets } from 'src/providers/WidgetsProvider'
+import { useWidgets } from 'src/app/[asset]/providers/WidgetsProvider'
 import { GridWidget, GridWidgets } from 'src/utils/grid/grid.widgets'
 function reducer(state: string[], action: string) {
   if (action === 'wipe') return []

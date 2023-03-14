@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { useRouter } from 'next/router'
+// import { use } from 'next/navigation'
 import { LanguageKeys } from '../../types/languageKeys'
 import { getLanguageByLocale } from '../utils/handleLocale'
 
 export function useTranslation() {
-  const router = useRouter()
-  const locale = router.locale
+  // const router = u()
+  const locale = undefined // router.locale
 
   const { data } = useQuery([locale], async () => getLanguageByLocale(locale))
 

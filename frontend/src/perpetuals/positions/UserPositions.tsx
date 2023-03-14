@@ -9,7 +9,7 @@ import {
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode } from 'src/constants/perps-config'
 import { useRouteMarket } from 'src/perpetuals/hooks/useMarket'
-import { useIsHydrated } from 'src/providers/IsHydratedProvider'
+import { useIsHydrated } from 'src/app/[asset]/providers/IsHydratedProvider'
 import { toBigNumber } from 'src/utils/toBigNumber'
 import { useAccount } from 'wagmi'
 

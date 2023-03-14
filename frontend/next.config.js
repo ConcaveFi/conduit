@@ -9,10 +9,15 @@ const nextConfig = {
     '@tradex/contracts',
     '@tradex/languages',
   ],
-  i18n: {
-    locales: ['br', 'us', 'ja', 'ch', 'ru', 'ko', 'es', 'pt', 'ar', 'de'],
-    defaultLocale: 'us',
-    localeDetection: true,
+  // i18n: {
+  //   locales: ['br', 'us', 'ja', 'ch', 'ru', 'ko', 'es', 'pt', 'ar', 'de'],
+  //   defaultLocale: 'us',
+  //   localeDetection: true,
+  // },
+  experimental: {
+    appDir: true,
+    typedRoutes: true,
+    // swcPlugins: [['next-superjson-plugin', {}]],
   },
 }
 

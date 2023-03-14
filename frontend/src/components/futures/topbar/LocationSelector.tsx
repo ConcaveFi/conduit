@@ -1,17 +1,17 @@
 import { Menu } from '@tradex/interface'
 import { storeLocale } from '@tradex/languages'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 import { LOCALE_NAME, SUPPORTED_LOCALES } from 'src/utils/locale'
 
 export function LocationSelector() {
-  const router = useRouter()
-  const { asPath, pathname, query } = router
-  const locale = router.locale as string
+  // const router = useRouter()
+  // const locale = router.locale as string
+  const locale = 'us'
 
   function handleClick(locale: string) {
     storeLocale(locale)
-    router.push({ query, pathname }, asPath, { locale })
+    // router.replace({ query, pathname }, asPath, { locale })
   }
 
   return (

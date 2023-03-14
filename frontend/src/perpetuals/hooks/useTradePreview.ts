@@ -4,7 +4,7 @@ import { useContractRead, UseContractReadConfig } from 'ngmi/useContractRead'
 import { marketDataAddress } from 'perps-hooks'
 import { marketAbi } from 'perps-hooks/abis'
 import { valuesToBigInt } from 'perps-hooks/parsers'
-import { SupportedChainId } from 'src/providers/WagmiProvider'
+import { SupportedChainId } from 'src/app/[asset]/providers/WagmiProvider'
 
 import { useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
