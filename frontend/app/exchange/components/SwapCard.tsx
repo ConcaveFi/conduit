@@ -1,3 +1,5 @@
+'use client'
+
 import { Currency, CurrencyAmount, ETH_ADDRESS, Exchange } from '@tradex/core'
 import { CloseIcon, Spinner } from '@tradex/icons'
 import { Card, Modal } from '@tradex/interface'
