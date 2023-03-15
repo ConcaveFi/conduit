@@ -68,7 +68,7 @@ function usePrevious<T>(state: T): T | undefined {
   return ref.current
 }
 
-const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
+export const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
   const priceChange = 0
   const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 4) })
   // const lastPrice = usePrevious(price)

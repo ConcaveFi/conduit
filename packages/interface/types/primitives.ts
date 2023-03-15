@@ -13,10 +13,11 @@ export type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 >
-export type PrimitiveInputProps = DetailedHTMLProps<
-  InputHTMLAttributes<HTMLInputElement>,
+export type PrimitiveInputProps = React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 >
+
 
 export type PrimitiveTableProps = DetailedHTMLProps<
   TableHTMLAttributes<HTMLTableElement>,

@@ -102,6 +102,7 @@ const OrderSizeInput = () => {
             >
               <NumericInput
                 data-overflow={isOverBuyingPower}
+                variant={'none'}
                 className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
                 value={format(inputs[amountDenominator], undefined)}
@@ -295,6 +296,7 @@ function LiquidationPrice() {
           ) : (
             <NumericInput
               disabled
+              variant={'none'}
               className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
               placeholder="0.00"
               prefix="$"
@@ -489,7 +491,7 @@ function DepositMarginToReduceRisk() {
         className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
       >
         Deposit Margin
-      </Link>
+      </button>
     </div>
   )
 }

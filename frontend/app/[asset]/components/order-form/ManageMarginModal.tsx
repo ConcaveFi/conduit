@@ -85,20 +85,22 @@ function SUSDInput(props: { value?: number; onValueChange?: (e?: number) => void
       </div>
 
       {/* input section */}
-      <div className="bg-ocean-900 flex h-12 w-full items-center justify-between rounded-full px-4">
-        <NumericInput
-          value={props.value}
-          onValueChange={(e) => props?.onValueChange?.(e.floatValue)}
-          className="placeholder:text-ocean-400 w-full bg-transparent text-white"
-          placeholder="0.0"
-        />
-        <button
-          onClick={() => props.onValueChange?.(numBalance)}
-          className="text-ocean-300 text-xs hover:underline"
-        >
-          MAX
-        </button>
-      </div>
+      <NumericInput
+        value={props.value}
+        onValueChange={(e) => props?.onValueChange?.(e.floatValue)}
+        className="placeholder:text-ocean-400 w-full bg-transparent text-white"
+        placeholder="0.0"
+        right={() => {
+          return (
+            <button
+              onClick={() => props.onValueChange?.(numBalance)}
+              className="text-ocean-300 text-xs hover:underline"
+            >
+              MAX
+            </button>
+          )
+        }}
+      />
     </div>
   )
 }
