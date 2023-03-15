@@ -15,7 +15,10 @@ export const safeStringDnum = (value: string) => {
   return from(v, 18)
 }
 
-export const format = (value: Dnum | number | string | undefined, digits: number = 2) => {
+export const format = (
+  value: Dnum | number | string | undefined,
+  digits: number | undefined = 2,
+) => {
   if (!value) value = [0n, 0]
   if (typeof value === 'number') return formatNumber(value, digits || 2)
   if (typeof value === 'string') value = safeStringDnum(value)

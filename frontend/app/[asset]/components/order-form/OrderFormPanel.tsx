@@ -104,7 +104,7 @@ const OrderSizeInput = () => {
                 data-overflow={isOverBuyingPower}
                 className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
-                value={format(inputs[amountDenominator], false)}
+                value={format(inputs[amountDenominator], undefined)}
                 onValueChange={({ value }, { source }) => {
                   if (source === 'event') onChange({ value, type: amountDenominator })
                 }}
