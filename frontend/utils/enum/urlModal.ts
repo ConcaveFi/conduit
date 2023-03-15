@@ -1,46 +1,53 @@
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { atom, useAtom } from 'jotai'
+import { atomWithLocation } from 'jotai-location'
+import { atomFamily } from 'jotai/utils'
+import { Router } from 'next/router'
+import { useMemo } from 'react'
 
-type WidgetModal = {
-  modalType: `add_widget`
-}
+type QueryModal =
+  | { modalType: `add_widget`; type: never }
+  | { modalType: `swap`; type: never }
+  | { modalType: `margin`; type: 'withdraw' | 'transfer' }
 
-type SwapModal = {
-  modalType: `swap`
-}
+const locationAtom = atomWithLocation({
+  replace: true,
+  subscribe: (callback) => {
+    Router.events.on('routeChangeComplete', callback)
+    window.addEventListener('hashchange', callback)
+    return () => {
+      Router.events.off('routeChangeComplete', callback)
+      window.removeEventListener('hashchange', callback)
+    }
+  },
+})
+const modalAtomFamily = atomFamily(({ modalType, type }: QueryModal) =>
+  atom(
+    (get) => {
+      const searchParams = get(locationAtom).searchParams
+      return searchParams?.get('modalType') === modalType
+    },
+    (get, set, v: 'open' | 'close') => {
+      const searchParams = get(locationAtom).searchParams
+      searchParams?.delete('modalType')
+      searchParams?.delete('type')
+      if (v === 'open') {
+        searchParams?.append('modalType', modalType)
+        searchParams?.append('type', type)
+      }
+      set(locationAtom, { searchParams })
+      return v === 'open'
+    },
+  ),
+)
 
-type Margin = {
-  modalType: `margin`
-  type: 'withdraw' | 'transfer'
-}
-
-type QueryModal = WidgetModal | SwapModal | Margin
-
-export const useQueryModal = <T extends QueryModal>({ modalType, ...others }: T) => {
-  const router = useRouter()
-  const query = useSearchParams()
-  const isOpen = modalType === query?.get('modalType')
-  const keys = Object.keys({ modalType, ...others } || {})
-
-  const pathname = usePathname()
-
-  const onOpen = () => {
-    console.log('open', modalType)
-    const newQuery = Object.entries({ ...others, modalType } || {}).reduce(
-      (prev, [key, value]) => {
-        if (!keys.includes(key)) return prev
-        return { ...prev, [key]: value }
-      },
-      { modalType },
-    )
-    router.replace(`${pathname}?modalType=${newQuery.modalType}`)
-  }
-
-  const onClose = () => {
-    // const newQuery = Object.entries(query || {}).reduce((prev, [key, value]) => {
-    //   if (keys.includes(key)) return prev
-    //   return { ...prev, [key]: value }
-    // }, {})
-    router.replace(`${pathname}`)
-  }
-  return { isOpen, onClose, query, onOpen }
+export const useQueryModal = (type: QueryModal) => {
+  const [isOpen, setState] = useAtom(modalAtomFamily(type))
+  return useMemo(
+    () => ({
+      isOpen,
+      onClose: () => setState('close'),
+      onOpen: () => setState('open'),
+    }),
+    [isOpen, setState],
+  )
 }
