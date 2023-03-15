@@ -16,6 +16,5 @@
     "incremental": false,
     "noImplicitAny": false
   },
-  "plugins": [{ "name": "next" }],
   "exclude": ["node_modules"]
 }

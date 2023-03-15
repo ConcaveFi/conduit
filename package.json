@@ -10,8 +10,8 @@
     "gen:lng-keys": "cd packages/languages && yarn gen:keys "
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^13.2.3",
-    "eslint-config-next": "^13.2.3",
+    "@next/eslint-plugin-next": "^13.2.4",
+    "eslint-config-next": "^13.2.4",
     "prettier": "^2.8.4",
     "prettier-plugin-organize-imports": "^3.2.2",
     "prettier-plugin-tailwindcss": "^0.2.4",
@@ -19,5 +19,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "eslint-config-turbo": "^0.0.9"
   }
 }

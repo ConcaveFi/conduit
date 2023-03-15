@@ -1,5 +1,5 @@
-import { OneInch } from './1inch';
-import { BigNumber, Signer } from 'ethers';
+import { BigNumber, Signer } from 'ethers'
+import { OneInch } from './1inch'
 
 type Coin = {
   symbol: string
@@ -14,7 +14,7 @@ export type Token = Coin & {
 export const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 export type Native = Coin & { address: typeof ETH_ADDRESS }
 export type Currency = Token | Native
-export type CurrencyAmount = Currency & { value: BigNumber, formattedValue?: string }
+export type CurrencyAmount = Currency & { value: BigNumber; formattedValue?: string }
 
 export class Exchange {
   constructor({ chainId }: { chainId: number }) {
@@ -26,30 +26,50 @@ export class Exchange {
     return this.oneInch.fetchTokenList()
   }
 
-  public async buildSwapArgs({ baseCurrency, quoteCurrency, signer }: { baseCurrency: CurrencyAmount, quoteCurrency: Currency, signer: Signer }) {
+  public async buildSwapArgs({
+    baseCurrency,
+    quoteCurrency,
+    signer,
+  }: {
+    baseCurrency: CurrencyAmount
+    quoteCurrency: Currency
+    signer: Signer
+  }) {
     const address = signer.getAddress()
-    const txProvider = await this.getTxProvider(baseCurrency.symbol, quoteCurrency.symbol);
+    const txProvider = await this.getTxProvider(baseCurrency.symbol, quoteCurrency.symbol)
     if (txProvider === '1inch') {
       const swapData = this.oneInch.fetchSwapData(quoteCurrency, baseCurrency, await address)
-      return swapData;
+      return swapData
     }
     throw { message: 'txProvider not found' }
   }
 
-  public async fetchSpender({ baseCurrency, quoteCurrency }: { baseCurrency: CurrencyAmount, quoteCurrency: Currency }) {
-    const txProvider = await this.getTxProvider(baseCurrency.symbol, quoteCurrency.symbol);
+  public async fetchSpender({
+    baseCurrency,
+    quoteCurrency,
+  }: {
+    baseCurrency: CurrencyAmount
+    quoteCurrency: Currency
+  }) {
+    const txProvider = await this.getTxProvider(baseCurrency.symbol, quoteCurrency.symbol)
     if (txProvider === '1inch') {
-      const spender = await this.oneInch.fetchApproveAddress();
+      const spender = await this.oneInch.fetchApproveAddress()
       return spender
     }
     throw { message: 'txProvider not found' }
   }
 
-  public async quote({ baseCurrency, quoteCurrency }: { baseCurrency: CurrencyAmount, quoteCurrency: Currency }) {
-    const txProvider = await this.getTxProvider(baseCurrency.symbol, quoteCurrency.symbol);
+  public async quote({
+    baseCurrency,
+    quoteCurrency,
+  }: {
+    baseCurrency: CurrencyAmount
+    quoteCurrency: Currency
+  }) {
+    const txProvider = await this.getTxProvider(baseCurrency.symbol, quoteCurrency.symbol)
     if (txProvider === '1inch') {
-      const estimatedAmount = await this.oneInch.quote({ baseCurrency, quoteCurrency });
-      return { ...estimatedAmount } satisfies CurrencyAmount;
+      const estimatedAmount = await this.oneInch.quote({ baseCurrency, quoteCurrency })
+      return { ...estimatedAmount } satisfies CurrencyAmount
     }
     throw { message: 'txProvider not found' }
   }
@@ -58,7 +78,7 @@ export class Exchange {
     // TODO: synthetix
     const oneInchTokens = await this.oneInch.fetchTokenList()
     const tokensMap = oneInchTokens.tokensMap
-    if (tokensMap[baseCurrencyKey] && tokensMap[quoteCurrencyKey]) return '1inch';
-    return "synthswap"
+    if (tokensMap[baseCurrencyKey] && tokensMap[quoteCurrencyKey]) return '1inch'
+    return 'synthswap'
   }
 }

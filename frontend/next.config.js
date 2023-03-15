@@ -9,10 +9,21 @@ const nextConfig = {
     '@tradex/contracts',
     '@tradex/languages',
   ],
-  i18n: {
-    locales: ['br', 'us', 'ja', 'ch', 'ru', 'ko', 'es', 'pt', 'ar', 'de'],
-    defaultLocale: 'us',
-    localeDetection: true,
+  // i18n: {
+  //   locales: ['br', 'us', 'ja', 'ch', 'ru', 'ko', 'es', 'pt', 'ar', 'de'],
+  //   defaultLocale: 'us',
+  //   localeDetection: true,
+  // },
+  async rewrites() {
+    return [{ source: '/', destination: '/sETH' }]
+  },
+  experimental: {
+    appDir: true,
+    typedRoutes: true,
+    // swcPlugins: [
+    //   ['@swc-jotai/react-refresh', {}],
+    //   ['next-superjson-plugin', {}],
+    // ],
   },
 }
 
