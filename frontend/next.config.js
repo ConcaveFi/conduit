@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   transpilePackages: [
     '@tradex/core',
     '@tradex/icons',
@@ -20,7 +19,10 @@ const nextConfig = {
   experimental: {
     appDir: true,
     typedRoutes: true,
-    // swcPlugins: [['next-superjson-plugin', {}]],
+    // swcPlugins: [
+    //   ['@swc-jotai/react-refresh', {}],
+    //   ['next-superjson-plugin', {}],
+    // ],
   },
 }
 

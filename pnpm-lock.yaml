@@ -55,7 +55,6 @@ importers:
       jotai-tanstack-query: ^0.6.0
       multicall-provider: ^0.1.20
       next: ^13.2.4
-      next-superjson-plugin: ^0.5.6
       postcss: ^8.4.21
       react: 18.2.0
       react-dom: 18.2.0
@@ -102,7 +101,6 @@ importers:
       jotai-tanstack-query: 0.6.0_2gc2f2eoau7d5tg24enjnj6mjy
       multicall-provider: 0.1.20_lh25osyrdykw73pkr7puwqzska
       next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
-      next-superjson-plugin: 0.5.6_75m7oggamdjnfhhmgkdxdhs2c4
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-error-boundary: 3.1.4_react@18.2.0
@@ -5639,12 +5637,6 @@ packages:
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
 
-  /hoist-non-react-statics/3.3.2:
-    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
-    dependencies:
-      react-is: 16.13.1
-    dev: false
-
   /htmlparser2/6.1.0:
     resolution: {integrity: sha512-gyyPk6rgonLFEDGoeRgQNaEUvdJ4ktTmmUh/h2t7s+M8oPpIPxgNACWa+6ESR57kXstwqPiCut0V8NRpcwgU7A==}
     dependencies:
@@ -6660,17 +6652,6 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
     dev: true
-
-  /next-superjson-plugin/0.5.6_75m7oggamdjnfhhmgkdxdhs2c4:
-    resolution: {integrity: sha512-vokzkgtr3axon5uXobhXJWN6/YlPOHdcAb/BeR+d0rXA3h1b5h98A+V0TgMUf+vcy9RvBqte/ppaJfkOwi4NGA==}
-    peerDependencies:
-      next: ^13
-      superjson: ^1
-    dependencies:
-      hoist-non-react-statics: 3.3.2
-      next: 13.2.4_6m24vuloj5ihw4zc5lbsktc4fu
-      superjson: 1.12.2
-    dev: false
 
   /next/13.2.4_6m24vuloj5ihw4zc5lbsktc4fu:
     resolution: {integrity: sha512-g1I30317cThkEpvzfXujf0O4wtaQHtDCLhlivwlTJ885Ld+eOgcz7r3TGQzeU+cSRoNHtD8tsJgzxVdYojFssw==}

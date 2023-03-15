@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 import { MarketKey, PythIdsByMarketKey } from './pyth'
 
-import { wagmiClient } from 'app/[asset]/providers/WagmiProvider'
+import { wagmiClient } from 'app/providers/WagmiProvider'
 import { add, divide, Dnum, multiply } from 'dnum'
 import deepEqual from 'fast-deep-equal'
 import { atom, useAtomValue } from 'jotai'

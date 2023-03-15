@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Provider } from '@wagmi/core'
+import { SupportedChainId } from 'app/providers/WagmiProvider'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
-import { SupportedChainId } from 'app/[asset]/providers/WagmiProvider'
 import { atom, useAtomValue } from 'jotai'
 import { marketDataAddress } from 'perps-hooks'
 

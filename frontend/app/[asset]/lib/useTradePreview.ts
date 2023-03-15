@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, getContract, ReadContractResult } from '@wagmi/core'
-import { SupportedChainId } from 'app/[asset]/providers/WagmiProvider'
+import { SupportedChainId } from 'app/providers/WagmiProvider'
 import { Dnum, equal, from } from 'dnum'
 import { marketAbi } from 'perps-hooks/abis'
 import { market as marketContract } from 'perps-hooks/contracts'

@@ -1,6 +1,6 @@
 import { getContract, Provider, ReadContractResult } from '@wagmi/core'
+import { SupportedChainId } from 'app/providers/wagmi-config'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
-import { SupportedChainId } from 'app/[asset]/providers/wagmi-config'
 import { divide, from } from 'dnum'
 import { formatBytes32String, parseBytes32String } from 'ethers/lib/utils'
 import { marketData, marketSettings } from 'perps-hooks/contracts'

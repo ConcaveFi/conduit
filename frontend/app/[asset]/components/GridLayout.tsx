@@ -3,7 +3,7 @@ import { useGridLayout } from 'hooks/useGridLayout'
 import { useMemo } from 'react'
 import RGL, { WidthProvider } from 'react-grid-layout'
 import { GridWidget } from 'utils/grid/grid.widgets'
-import { useWidgets } from '../providers/WidgetsProvider'
+import { useWidgets } from '../../providers/WidgetsProvider'
 
 const ReactGridLayout = WidthProvider(RGL)
 const GRID_COLS = 12

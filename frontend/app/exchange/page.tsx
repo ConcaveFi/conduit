@@ -9,3 +9,8 @@ export default async function Exchange({ params }) {
     </div>
   )
 }
+
+export const metadata = {
+  title: 'Exchange | Conduit',
+  description: '', // TODO
+}

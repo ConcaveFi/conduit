@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
 import { GridWidget, GridWidgets } from 'utils/grid/grid.widgets'
-import { AddWidgetOverlay } from '../components/widgets/AddWidgetOverlay'
+import { AddWidgetOverlay } from '../[asset]/components/widgets/AddWidgetOverlay'
 
 interface WidgetsContext {
   addWidgets(_widgets: GridWidgets[]): void

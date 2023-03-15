@@ -4,6 +4,7 @@ import 'tailwindcss/tailwind.css'
 import '../global.css'
 
 import localFont from 'next/font/local'
+import AppProviders from './providers'
 
 const Aeonik = localFont({
   src: [
@@ -44,11 +45,13 @@ const AeonikMono = localFont({
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html
-      className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${Aeonik.variable} ${AeonikMono.variable}`}
-    >
-      <body className="w-full">{children}</body>
-    </html>
+    <AppProviders>
+      <html
+        className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${Aeonik.variable} ${AeonikMono.variable}`}
+      >
+        <body className="w-full">{children}</body>
+      </html>
+    </AppProviders>
   )
 }
 

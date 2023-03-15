@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "wagmi-gen": "wagmi generate -c ./perps-hooks/wagmi.config.ts",
-    "dev": "next dev",
+    "dev": "pnpm wagmi-gen && next dev",
     "build": "pnpm wagmi-gen && next build",
     "start": "next start",
     "lint": "next lint"
@@ -25,9 +25,9 @@
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "@typescript-eslint/typescript-estree": "^5.54.1",
+    "@vercel/og": "^0.3.0",
     "@wagmi/core": "^0.10.1",
     "abitype": "^0.7.1",
-    "@vercel/og": "^0.3.0",
     "date-fns": "^2.29.3",
     "dnum": "^2.5.0",
     "effect": "2.0.0-next.13",
@@ -41,7 +41,6 @@
     "jotai-tanstack-query": "^0.6.0",
     "multicall-provider": "^0.1.20",
     "next": "^13.2.4",
-    "next-superjson-plugin": "^0.5.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-error-boundary": "^3.1.4",

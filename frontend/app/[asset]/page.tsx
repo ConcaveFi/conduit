@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { cache } from 'react'
 import { serialize } from 'superjson'
 import Home from '.'
+import { provider } from '../providers/wagmi-config'
 import HydrateAtoms from './HydrateAtoms'
 import {
   fetchMarkets,
@@ -12,9 +13,6 @@ import {
   marketsQueryKey,
   MarketSummaries,
 } from './lib/market/markets'
-import { provider } from './providers/wagmi-config'
-
-export const revalidate = 60 // seconds
 
 const chainId = optimism.id // always mainnet on server
 const mainnetProvider = provider({ chainId })

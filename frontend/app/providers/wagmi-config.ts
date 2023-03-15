@@ -14,4 +14,4 @@ export const {
   [alchemyProvider({ apiKey: 'Kng1p_dEJaldM51_qK6aqP9YvBY0cVxf' })],
 )
 
-export const provider = multicallProvider(_provider)
+export const provider = multicallProvider(_provider, { timeWindow: 1 })
