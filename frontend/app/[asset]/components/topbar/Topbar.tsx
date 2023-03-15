@@ -2,7 +2,9 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, NotificationIcon } from '@tradex/icons'
+import { Modal } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
+import { ExchangeCard } from 'app/exchange/components/SwapCard'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import Image from 'next/image'
 import { useQueryModal } from 'utils/enum/urlModal'
@@ -77,6 +79,9 @@ export function Topbar() {
         <NotificationIcon className="fill-ocean-200 box-4" />
         <ConnectedAccount />
       </div>
+      <Modal isOpen={swapModal.isOpen} onClose={swapModal.onClose}>
+        <ExchangeCard />
+      </Modal>
     </div>
   )
 }
