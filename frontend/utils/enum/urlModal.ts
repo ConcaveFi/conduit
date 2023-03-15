@@ -1,3 +1,4 @@
+import deepEqual from 'fast-deep-equal'
 import { atom, useAtom } from 'jotai'
 import { atomWithLocation } from 'jotai-location'
 import { atomFamily } from 'jotai/utils'
@@ -20,28 +21,30 @@ const locationAtom = atomWithLocation({
     }
   },
 })
-const modalAtomFamily = atomFamily(({ modalType, ...otherProps }: QueryModal) =>
-  atom(
-    (get) => {
-      const searchParams = get(locationAtom).searchParams
-      return searchParams?.get('modalType') === modalType
-    },
-    (get, set, v: 'open' | 'close') => {
-      const searchParams = get(locationAtom).searchParams
-      searchParams?.delete('modalType')
-      Object.keys(otherProps).forEach((key) => {
-        searchParams?.delete(key)
-      })
-      if (v === 'open') {
-        searchParams?.append('modalType', modalType)
-        Object.entries(otherProps).forEach(([key, value]) => {
-          searchParams?.append(key, value)
+const modalAtomFamily = atomFamily(
+  ({ modalType, ...otherProps }: QueryModal) =>
+    atom(
+      (get) => {
+        const searchParams = get(locationAtom).searchParams
+        return searchParams?.get('modalType') === modalType
+      },
+      (get, set, v: 'open' | 'close') => {
+        const searchParams = get(locationAtom).searchParams
+        searchParams?.delete('modalType')
+        Object.keys(otherProps).forEach((key) => {
+          searchParams?.delete(key)
         })
-      }
-      set(locationAtom, { searchParams })
-      return v === 'open'
-    },
-  ),
+        if (v === 'open') {
+          searchParams?.append('modalType', modalType)
+          Object.entries(otherProps).forEach(([key, value]) => {
+            searchParams?.append(key, value)
+          })
+        }
+        set(locationAtom, { searchParams })
+        return v === 'open'
+      },
+    ),
+  deepEqual,
 )
 
 export const useQueryModal = (type: QueryModal) => {
