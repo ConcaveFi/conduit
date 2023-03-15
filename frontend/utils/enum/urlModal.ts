@@ -5,8 +5,8 @@ import { Router } from 'next/router'
 import { useMemo } from 'react'
 
 type QueryModal =
-  | { modalType: `add_widget`; type: never }
-  | { modalType: `swap`; type: never }
+  | { modalType: `add_widget` }
+  | { modalType: `swap` }
   | { modalType: `margin`; type: 'withdraw' | 'transfer' }
 
 const locationAtom = atomWithLocation({
@@ -20,7 +20,7 @@ const locationAtom = atomWithLocation({
     }
   },
 })
-const modalAtomFamily = atomFamily(({ modalType, type }: QueryModal) =>
+const modalAtomFamily = atomFamily(({ modalType, ...otherProps }: QueryModal) =>
   atom(
     (get) => {
       const searchParams = get(locationAtom).searchParams
@@ -29,10 +29,14 @@ const modalAtomFamily = atomFamily(({ modalType, type }: QueryModal) =>
     (get, set, v: 'open' | 'close') => {
       const searchParams = get(locationAtom).searchParams
       searchParams?.delete('modalType')
-      searchParams?.delete('type')
+      Object.keys(otherProps).forEach((key) => {
+        searchParams?.delete(key)
+      })
       if (v === 'open') {
         searchParams?.append('modalType', modalType)
-        searchParams?.append('type', type)
+        Object.entries(otherProps).forEach(([key, value]) => {
+          searchParams?.append(key, value)
+        })
       }
       set(locationAtom, { searchParams })
       return v === 'open'

@@ -5,6 +5,7 @@ import { ChevronIcon, NotificationIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import Image from 'next/image'
+import { useQueryModal } from 'utils/enum/urlModal'
 import { truncateAddress } from 'utils/truncateAddress'
 import { LocationSelector } from './LocationSelector'
 // import { ThemeSelector } from './ThemeSelector'
@@ -39,6 +40,7 @@ function ConnectedAccount() {
 
 export function Topbar() {
   const { t } = useTranslation()
+  const swapModal = useQueryModal({ modalType: 'swap' })
 
   return (
     <div className="flex items-center justify-between px-4">
@@ -58,7 +60,10 @@ export function Topbar() {
         <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 text-xs font-medium">
           {t('futures')}
         </button>
-        <button className="btn btn-underline centered h-full rounded-none px-5 text-xs font-medium">
+        <button
+          onClick={swapModal.onOpen}
+          className="btn btn-underline centered h-full rounded-none px-5 text-xs font-medium"
+        >
           Swap
         </button>
         <button className="btn btn-underline centered h-full rounded-none px-5 text-xs  font-medium">
