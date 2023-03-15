@@ -5,9 +5,9 @@ import { Avatar, Card, ImageIcon, Input, Modal, ModalHeader } from '@tradex/inte
 import { fetchBalance } from '@wagmi/core'
 import { BigNumber } from 'ethers'
 import { parseUnits } from 'ethers/lib/utils'
+import { useDisclosure } from 'hooks/useDisclosure'
 import { useEffect, useState } from 'react'
-import { useDisclosure } from 'src/hooks/useDisclosure'
-import { compactFormat } from 'src/utils/format'
+import { compactFormat } from 'utils/format'
 import { useAccount, useBalance, useChainId } from 'wagmi'
 import { useCoingeckoPrice } from './useCoingeckoPrice'
 

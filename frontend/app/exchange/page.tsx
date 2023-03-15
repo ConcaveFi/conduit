@@ -1,6 +1,6 @@
-import { ExchangeCard } from 'src/components/swap/Index'
+import { ExchangeCard } from './components/SwapCard'
 
-const exchangePage = () => {
+export default async function Exchange({ params }) {
   return (
     <div className=" flex w-full flex-col ">
       <div className="skeleton flex h-full w-full flex-col items-center justify-center gap-4 p-4">
@@ -9,4 +9,3 @@ const exchangePage = () => {
     </div>
   )
 }
-export default exchangePage

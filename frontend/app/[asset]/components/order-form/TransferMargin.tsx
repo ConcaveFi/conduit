@@ -3,8 +3,6 @@ import { useTranslation } from '@tradex/languages'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { BigNumber } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils.js'
-import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
 import {
   useMarketTransferMargin,
   usePrepareMarketTransferMargin,
@@ -12,7 +10,7 @@ import {
 } from 'perps-hooks'
 import { useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
-import { UrlModal } from 'utils/enum/urlModal'
+import { useQueryModal } from 'utils/enum/urlModal'
 import { format } from 'utils/format'
 import { useAccount } from 'wagmi'
 import { ManageMarginModal } from './ManageMarginModal'
@@ -109,27 +107,18 @@ function TransferMargin() {
 export const TransferMarginButton = function TransferMarginButton() {
   const { t } = useTranslation()
   const market = useRouteMarket()
-  const router = useRouter()
 
-  const query = useSearchParams()
-  const supValues = [UrlModal.TRANSFER_MARGIN, UrlModal.WITHDRAW]
-  const asset = (query ? query.get('modal') : '') as UrlModal
-  const isOpen = supValues.includes(asset)
-
-  function handleClose() {
-    router.replace(`/${market.asset}`)
-  }
+  const { isOpen, onClose, onOpen } = useQueryModal({ modalType: 'margin', type: 'transfer' })
 
   return (
     <>
-      <Link
-        href={`/${market.asset}?modal=${UrlModal.TRANSFER_MARGIN}`}
-        shallow
+      <button
+        onClick={onOpen}
         className="text-light-400 bg-ocean-300 flex w-full items-center justify-center rounded-lg py-3 text-center text-sm font-medium"
       >
         Deposit Margin to {market.asset}/sUSD
-      </Link>
-      <ManageMarginModal isOpen={isOpen} onClose={handleClose} />
+      </button>
+      <ManageMarginModal isOpen={isOpen} onClose={onClose} />
     </>
   )
 }

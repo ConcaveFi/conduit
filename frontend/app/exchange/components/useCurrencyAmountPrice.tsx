@@ -1,7 +1,7 @@
 import { CurrencyAmount } from '@tradex/core'
 import { parseUnits } from 'ethers/lib/utils'
 import { useEffect, useState } from 'react'
-import { compactFormat } from 'src/utils/format'
+import { compactFormat } from 'utils/format'
 import { useCoingeckoPrice } from './useCoingeckoPrice'
 
 export const useCurrencyAmountPrice = ({ currencyAmount }: { currencyAmount: CurrencyAmount }) => {
