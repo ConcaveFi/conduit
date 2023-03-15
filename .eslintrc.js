@@ -1,12 +1,7 @@
 module.exports = {
   root: true,
-  extends: ['next/core-web-vitals', 'turbo', 'prettier'],
+  extends: ['next/core-web-vitals', 'turbo'],
   ignorePatterns: ['node_modules'],
-  parserOptions: {
-    babelOptions: {
-      presets: [require.resolve('next/babel')],
-    },
-  },
   rules: {
     'react/display-name': 'off',
   },
