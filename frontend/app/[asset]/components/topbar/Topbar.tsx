@@ -3,17 +3,42 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, NotificationIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
+import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import Image from 'next/image'
 import { truncateAddress } from 'utils/truncateAddress'
-import { useAccount, useBalance } from 'wagmi'
 import { LocationSelector } from './LocationSelector'
 // import { ThemeSelector } from './ThemeSelector'
 
+function ConnectedAccount() {
+  const isHydrated = useIsHydrated() // TODO
+  return (
+    <ConnectButton.Custom>
+      {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
+        if (!account || !isHydrated) {
+          return (
+            <button onClick={openConnectModal} className="btn btn-green-gradient py-2">
+              Connect wallet
+            </button>
+          )
+        }
+        return (
+          <>
+            <button onClick={openChainModal} className="btn btn-underline centered gap-2 text-xs">
+              {chain?.name}
+              <ChevronIcon className="fill-ocean-200 h-3 w-3" />
+            </button>
+            <button className="btn btn-underline text-xs" onClick={openAccountModal}>
+              {truncateAddress(account?.address)}
+            </button>
+          </>
+        )
+      }}
+    </ConnectButton.Custom>
+  )
+}
+
 export function Topbar() {
-  const { isConnected } = useAccount()
   const { t } = useTranslation()
-  const { address } = useAccount()
-  const { data } = useBalance({ address })
 
   return (
     <div className="flex items-center justify-between px-4">
@@ -45,31 +70,7 @@ export function Topbar() {
         {/* <ThemeSelector /> */}
 
         <NotificationIcon className="fill-ocean-200 box-4" />
-        <ConnectButton.Custom>
-          {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
-            if (!isConnected) {
-              return (
-                <button onClick={openConnectModal} className="btn btn-green-gradient py-2">
-                  Connect wallet
-                </button>
-              )
-            }
-            return (
-              <>
-                <button
-                  onClick={openChainModal}
-                  className="btn btn-underline centered gap-2 text-xs"
-                >
-                  {chain?.name}
-                  <ChevronIcon className="fill-ocean-200 h-3 w-3" />
-                </button>
-                <button className="btn btn-underline text-xs" onClick={openAccountModal}>
-                  {truncateAddress(account?.address)}
-                </button>
-              </>
-            )
-          }}
-        </ConnectButton.Custom>
+        <ConnectedAccount />
       </div>
     </div>
   )
