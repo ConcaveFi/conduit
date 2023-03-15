@@ -1,8 +1,9 @@
 import { ChevronIcon } from '@tradex/icons'
-import { ButtonProps, ItemInfo, Menu, Skeleton } from '@tradex/interface'
+import { ButtonProps, ItemInfo, Menu, Skeleton, twMerge } from '@tradex/interface'
+import { divide, lessThan, multiply, subtract } from 'dnum'
 import Image from 'next/image'
 import Link from 'next/link'
-import { forwardRef, memo, useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useRef } from 'react'
 import { format } from 'utils/format'
 import { handleSynth } from 'utils/handleTokenLogo'
 import { useMarkets, useRouteMarket } from '../lib/market/useMarket'
@@ -10,7 +11,7 @@ import { MarketKey } from '../lib/price/pyth'
 import { useSkewAdjustedOffChainPrice } from '../lib/price/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
-  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 4) })
+  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
@@ -64,29 +65,32 @@ function usePrevious<T>(state: T): T | undefined {
   const ref = useRef<T>()
   useEffect(() => {
     ref.current = state
-  })
+  }, [state])
   return ref.current
 }
 
-export const Price = memo(function Price({ marketKey }: { marketKey: MarketKey }) {
-  const priceChange = 0
-  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 4) })
-  // const lastPrice = usePrevious(price)
-  // const color = lastPrice.greaterThan(price) ? 'text-red-400' : 'text-green-400'
+export function Price({ marketKey }: { marketKey: MarketKey }) {
+  const price = useSkewAdjustedOffChainPrice({ marketKey })
+  const lastPrice = usePrevious(price)
+  const priceChange =
+    price && lastPrice && multiply(divide(subtract(price, lastPrice), lastPrice), 100)
+  const color = priceChange && lessThan(priceChange, 0) ? 'text-red-400' : 'text-green-400'
 
   return (
     <div className="flex flex-col items-end">
-      <span className="text-ocean-200 whitespace-nowrap text-[10px] font-medium">
-        % {priceChange}
+      <span className={twMerge('text-ocean-200 whitespace-nowrap text-[10px] font-medium', color)}>
+        {format(priceChange, 2)}%
       </span>
       {!price ? (
         <Skeleton className="w-10" />
       ) : (
-        <span className="whitespace-nowrap text-sm font-semibold text-white">{price}</span>
+        <span className="whitespace-nowrap text-sm font-semibold text-white">
+          {format(price, 2)}
+        </span>
       )}
     </div>
   )
-})
+}
 
 const MarketButton = forwardRef<HTMLAnchorElement, MarketButton>(
   ({ asset, marketKey, ...props }, ref) => {
