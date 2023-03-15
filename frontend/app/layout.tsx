@@ -45,13 +45,13 @@ const AeonikMono = localFont({
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <AppProviders>
-      <html
-        className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${Aeonik.variable} ${AeonikMono.variable}`}
-      >
-        <body className="w-full">{children}</body>
-      </html>
-    </AppProviders>
+    <html
+      className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${Aeonik.variable} ${AeonikMono.variable}`}
+    >
+      <body className="w-full">
+        <AppProviders>{children}</AppProviders>
+      </body>
+    </html>
   )
 }
 

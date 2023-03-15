@@ -10,6 +10,9 @@ import { StrategyHeader } from './components/Header'
 export default function Home({ dehydratedState }: { dehydratedState: SuperJSONResult }) {
   const state = deserialize(dehydratedState)
 
+  // const a = useIsHydrated()
+  // if (!a) return null
+
   return (
     <Hydrate state={state}>
       <WidgetsProvider>

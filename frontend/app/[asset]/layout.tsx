@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react'
 import { Topbar } from './components/topbar/Topbar'
 import { PageTitleWithPrice } from './PageTitleWithPrice'
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default function Layout({ children }: PropsWithChildren) {
   return (
     <>
       <PageTitleWithPrice />

@@ -6,10 +6,13 @@ importers:
     specifiers:
       '@next/eslint-plugin-next': ^13.2.4
       eslint-config-next: ^13.2.4
+      eslint-config-turbo: ^0.0.9
       prettier: ^2.8.4
       prettier-plugin-organize-imports: ^3.2.2
       prettier-plugin-tailwindcss: ^0.2.4
       turbo: ^1.8.3
+    dependencies:
+      eslint-config-turbo: 0.0.9_eslint@8.36.0
     devDependencies:
       '@next/eslint-plugin-next': 13.2.4
       eslint-config-next: 13.2.4_vgl77cfdswitgr47lm5swmv43m
@@ -4561,6 +4564,15 @@ packages:
       - eslint-import-resolver-webpack
       - supports-color
 
+  /eslint-config-turbo/0.0.9_eslint@8.36.0:
+    resolution: {integrity: sha512-j1cTdx3tRmKo0csyfQKhpuT8dynK9oddbK5nmrShoMpXI2qMbxHLYH7MWAid4FmJN8rYympy3VKw5U63Yazycg==}
+    peerDependencies:
+      eslint: '>6.6.0'
+    dependencies:
+      eslint: 8.36.0
+      eslint-plugin-turbo: 0.0.9_eslint@8.36.0
+    dev: false
+
   /eslint-import-resolver-node/0.3.7:
     resolution: {integrity: sha512-gozW2blMLJCeFpBwugLTGyvVjNoeo1knonXAcatC6bjPBZitotxdWf7Gimr25N4c0AAOo4eOUfaG82IJPDpqCA==}
     dependencies:
@@ -4701,6 +4713,14 @@ packages:
       resolve: 2.0.0-next.4
       semver: 6.3.0
       string.prototype.matchall: 4.0.8
+
+  /eslint-plugin-turbo/0.0.9_eslint@8.36.0:
+    resolution: {integrity: sha512-fEsuSnYU3GLtT+s66mUuzDL1LaSieIx5uk3tPO0ToGv7hI2XzOfP24aPkQItTBGl7kq2JaVkRzPwcnfz8hkp0w==}
+    peerDependencies:
+      eslint: '>6.6.0'
+    dependencies:
+      eslint: 8.36.0
+    dev: false
 
   /eslint-scope/7.1.1:
     resolution: {integrity: sha512-QKQM/UXpIiHcLqJ5AOyIW7XZmzjkzQXYE54n1++wb0u9V/abW3l9uQnxX8Z5Xd18xyKIMTUAyQ0k1e8pz6LUrw==}

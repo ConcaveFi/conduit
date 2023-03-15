@@ -1,5 +1,4 @@
-import { useRouter } from 'next/router'
-import { useQuery } from 'wagmi'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 type WidgetModal = {
   modalType: `add_widget`
@@ -18,9 +17,11 @@ type QueryModal = WidgetModal | SwapModal | Margin
 
 export const useQueryModal = <T extends QueryModal>({ modalType, ...others }: T) => {
   const router = useRouter()
-  const { data: query, ...state } = useQueryParams<T>({})
-  const isOpen = modalType === query?.modalType
+  const query = useSearchParams()
+  const isOpen = modalType === query?.get('modalType')
   const keys = Object.keys({ modalType, ...others } || {})
+
+  const pathname = usePathname()
 
   const onOpen = () => {
     console.log('open', modalType)
@@ -31,23 +32,15 @@ export const useQueryModal = <T extends QueryModal>({ modalType, ...others }: T)
       },
       { modalType },
     )
-    router.push({ query: newQuery })
+    router.replace(`${pathname}?modalType=${newQuery.modalType}`)
   }
 
   const onClose = () => {
-    const newQuery = Object.entries(query || {}).reduce((prev, [key, value]) => {
-      if (keys.includes(key)) return prev
-      return { ...prev, [key]: value }
-    }, {})
-    router.push({ query: newQuery })
+    // const newQuery = Object.entries(query || {}).reduce((prev, [key, value]) => {
+    //   if (keys.includes(key)) return prev
+    //   return { ...prev, [key]: value }
+    // }, {})
+    router.replace(`${pathname}`)
   }
   return { isOpen, onClose, query, onOpen }
-}
-
-export const useQueryParams = <T>(def?: Partial<T>) => {
-  const router = useRouter()
-  const query = router.isReady ? router.query : def || {}
-  return useQuery(['queryParams', JSON.stringify(query)], async () => query || ({} as Partial<T>), {
-    enabled: router.isReady,
-  })
 }
