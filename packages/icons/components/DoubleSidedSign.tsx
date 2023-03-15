@@ -7,7 +7,7 @@ export function DoubleSidedSign({ className, ...props }: SVGProps<SVGSVGElement>
       height="16"
       viewBox="0 0 18 16"
       xmlns="http://www.w3.org/2000/svg"
-      className={className || 'fill-ocean-100 w-8 h-8'}
+      className={className || 'fill-ocean-100 h-8 w-8'}
       {...props}
     >
       <path

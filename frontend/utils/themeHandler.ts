@@ -7,9 +7,10 @@ export const THEME_ITEM = 'theme'
 export const DEFAULT_THEME = Themes.OCEAN
 
 export class Theme {
-  private constructor() { }
+  private constructor() {}
   public static getStoredTheme(): Themes {
-    const theme = typeof localStorage !== 'undefined' ? localStorage.getItem(THEME_ITEM) : DEFAULT_THEME
+    const theme =
+      typeof localStorage !== 'undefined' ? localStorage.getItem(THEME_ITEM) : DEFAULT_THEME
     return (theme || DEFAULT_THEME) as Themes
   }
 

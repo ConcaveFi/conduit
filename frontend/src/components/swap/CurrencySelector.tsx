@@ -2,14 +2,14 @@ import { useQuery } from '@tanstack/react-query'
 import { Currency, ETH_ADDRESS, Exchange, Token } from '@tradex/core'
 import { ChevronIcon, SearchIcon, Spinner } from '@tradex/icons'
 import { Avatar, Card, ImageIcon, Input, Modal, ModalHeader } from '@tradex/interface'
-import { useEffect, useState } from 'react'
-import { useDisclosure } from 'src/hooks/useDisclosure'
-import { useAccount, useBalance, useChainId } from 'wagmi'
 import { fetchBalance } from '@wagmi/core'
 import { BigNumber } from 'ethers'
-import { compactFormat } from 'src/utils/format'
-import { useCoingeckoPrice } from './useCoingeckoPrice'
 import { parseUnits } from 'ethers/lib/utils'
+import { useEffect, useState } from 'react'
+import { useDisclosure } from 'src/hooks/useDisclosure'
+import { compactFormat } from 'src/utils/format'
+import { useAccount, useBalance, useChainId } from 'wagmi'
+import { useCoingeckoPrice } from './useCoingeckoPrice'
 
 type CoinBalance = Token & { balance: BigNumber }
 
@@ -92,7 +92,7 @@ export function CurrencySelector({
             <ChevronIcon className="fill-ocean-200 h-3 w-3" />
           </div>
         </div>
-        <div className="text-Blue/main-dim text-sm flex w-full justify-between px-2">
+        <div className="text-Blue/main-dim flex w-full justify-between px-2 text-sm">
           Balance
           <div className="text-blue-blue text-sm">
             {compactFormat(balance || BigNumber.from(0))}
@@ -137,10 +137,10 @@ const SelectTokenCard = ({
         <p className="text-blue-blue text-md">Tokens</p>
         <p className="text-blue-blue text-md">Holdings</p>
       </div>
-      <div className=" flex flex-col h-96 overflow-y-auto">
+      <div className=" flex h-96 flex-col overflow-y-auto">
         {isLoading && (
           <div className="flex h-full items-center justify-center">
-            <Spinner className={'w-8 h-8'} />
+            <Spinner className={'h-8 w-8'} />
           </div>
         )}
         {tokens.map((c, i) => (
@@ -190,7 +190,7 @@ const TokenItem = ({
         <span className="text-sm font-medium leading-4 text-white">
           {compactFormat(token.balance, token)}
         </span>
-        <span className="text-blue-blue mt-1 rounded-md text-2xs	leading-3 ">$ {compactValue}</span>
+        <span className="text-blue-blue text-2xs mt-1 rounded-md	leading-3 ">$ {compactValue}</span>
       </div>
     </div>
   )

@@ -1,6 +1,5 @@
 import { DoubleSidedSign } from '@tradex/icons'
 import { Avatar } from '@tradex/interface'
-import React from 'react'
 
 export const SwapDivisor = ({ onClick }: { onClick: () => void }) => {
   return (

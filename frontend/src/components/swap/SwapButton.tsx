@@ -1,5 +1,4 @@
 import { Spinner } from '@tradex/icons'
-import React from 'react'
 import { useIsMounted } from 'usehooks-ts'
 import { useAccount } from 'wagmi'
 import { useSwap } from './SwapCard'

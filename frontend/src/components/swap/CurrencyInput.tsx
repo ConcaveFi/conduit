@@ -43,7 +43,7 @@ export const SwapInput = ({
 } & InputProps) => {
   const price = useCurrencyAmountPrice({ currencyAmount: inputProps.currency })
   return (
-    <div className="flex gap-2 items-end">
+    <div className="flex items-end gap-2">
       <div className="flex w-full flex-col  ">
         <span className="text-blue-blue ml-3 mb-1 text-sm ">{label} </span>
         <NumericInput

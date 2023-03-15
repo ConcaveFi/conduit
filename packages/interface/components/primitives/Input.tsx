@@ -1,8 +1,8 @@
 import { VariantProps } from 'class-variance-authority'
-import { inputStyles } from '../../styles/primitives/inputStyles'
-import { PrimitiveInputProps } from '../../types/primitives'
 import { NumericFormat, NumericFormatProps } from 'react-number-format'
 import { twMerge } from 'tailwind-merge'
+import { inputStyles } from '../../styles/primitives/inputStyles'
+import { PrimitiveInputProps } from '../../types/primitives'
 
 export type InputAttributes = VariantProps<typeof inputStyles> & {
   left?: (prop: { className?: string }) => JSX.Element

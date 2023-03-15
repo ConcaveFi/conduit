@@ -11,7 +11,6 @@ import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { abs, divide, Dnum, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import Link from 'next/link'
 import {
   useMarketDataPositionDetails,
   useMarketRemainingMargin,
@@ -21,7 +20,7 @@ import {
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useEffect, useReducer } from 'react'
 import atomWithDebounce from 'utils/atom-utils'
-import { UrlModal } from 'utils/enum/urlModal'
+import { useQueryModal } from 'utils/enum/urlModal'
 import { format, safeStringDnum } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
@@ -482,12 +481,12 @@ function PlaceOrderButton() {
 }
 
 function DepositMarginToReduceRisk() {
-  const market = useRouteMarket()
+  const { onOpen } = useQueryModal({ modalType: 'margin', type: 'transfer' })
   return (
     <div className="flex items-center justify-between">
       <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
-      <Link
-        href={`/${market.asset}?modal=${UrlModal.TRANSFER_MARGIN}`}
+      <button
+        onClick={onOpen}
         className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
       >
         Deposit Margin

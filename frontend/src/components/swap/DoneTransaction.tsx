@@ -1,5 +1,5 @@
 import { CheckIcon } from '@tradex/icons'
-import { Card, ModalHeader, Avatar } from '@tradex/interface'
+import { Avatar, Card, ModalHeader } from '@tradex/interface'
 import { ethers } from 'ethers'
 
 export const DoneTransaction = ({
