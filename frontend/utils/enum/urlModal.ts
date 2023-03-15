@@ -1,46 +1,60 @@
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import deepEqual from 'fast-deep-equal'
+import { atom, useAtom } from 'jotai'
+import { atomWithLocation } from 'jotai-location'
+import { atomFamily } from 'jotai/utils'
+import { Router } from 'next/router'
+import { useMemo } from 'react'
 
-type WidgetModal = {
-  modalType: `add_widget`
-}
+type QueryModal =
+  | { modalType: `add_widget` }
+  | { modalType: `swap` }
+  | { modalType: `margin`; type: 'withdraw' | 'transfer' }
 
-type SwapModal = {
-  modalType: `swap`
-}
-
-type Margin = {
-  modalType: `margin`
-  type: 'withdraw' | 'transfer'
-}
-
-type QueryModal = WidgetModal | SwapModal | Margin
-
-export const useQueryModal = <T extends QueryModal>({ modalType, ...others }: T) => {
-  const router = useRouter()
-  const query = useSearchParams()
-  const isOpen = modalType === query?.get('modalType')
-  const keys = Object.keys({ modalType, ...others } || {})
-
-  const pathname = usePathname()
-
-  const onOpen = () => {
-    console.log('open', modalType)
-    const newQuery = Object.entries({ ...others, modalType } || {}).reduce(
-      (prev, [key, value]) => {
-        if (!keys.includes(key)) return prev
-        return { ...prev, [key]: value }
+const locationAtom = atomWithLocation({
+  replace: true,
+  subscribe: (callback) => {
+    Router.events.on('routeChangeComplete', callback)
+    window.addEventListener('hashchange', callback)
+    return () => {
+      Router.events.off('routeChangeComplete', callback)
+      window.removeEventListener('hashchange', callback)
+    }
+  },
+})
+const modalAtomFamily = atomFamily(
+  ({ modalType, ...otherProps }: QueryModal) =>
+    atom(
+      (get) => {
+        const searchParams = get(locationAtom).searchParams
+        return searchParams?.get('modalType') === modalType
       },
-      { modalType },
-    )
-    router.replace(`${pathname}?modalType=${newQuery.modalType}`)
-  }
+      (get, set, v: 'open' | 'close') => {
+        const searchParams = get(locationAtom).searchParams
+        searchParams?.delete('modalType')
+        Object.keys(otherProps).forEach((key) => {
+          searchParams?.delete(key)
+        })
+        if (v === 'open') {
+          searchParams?.append('modalType', modalType)
+          Object.entries(otherProps).forEach(([key, value]) => {
+            searchParams?.append(key, value)
+          })
+        }
+        set(locationAtom, { searchParams })
+        return v === 'open'
+      },
+    ),
+  deepEqual,
+)
 
-  const onClose = () => {
-    // const newQuery = Object.entries(query || {}).reduce((prev, [key, value]) => {
-    //   if (keys.includes(key)) return prev
-    //   return { ...prev, [key]: value }
-    // }, {})
-    router.replace(`${pathname}`)
-  }
-  return { isOpen, onClose, query, onOpen }
+export const useQueryModal = (type: QueryModal) => {
+  const [isOpen, setState] = useAtom(modalAtomFamily(type))
+  return useMemo(
+    () => ({
+      isOpen,
+      onClose: () => setState('close'),
+      onOpen: () => setState('open'),
+    }),
+    [isOpen, setState],
+  )
 }

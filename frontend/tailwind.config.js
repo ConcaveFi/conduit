@@ -20,12 +20,12 @@ module.exports = {
       },
       fontSize: {
         '2xs': '0.625rem', // 10 px
-        '3xs': '0.5rem' // 8 px
-      }
+        '3xs': '0.5rem', // 8 px
+      },
     },
   },
   content: [
-    './**/*.{js,ts,jsx,tsx}',
+    './**/*.tsx',
     '../packages/icons/components/**/*.tsx',
     '../packages/interface/components/**/*.tsx',
     '../packages/interface/styles/**/*.ts',

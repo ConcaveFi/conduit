@@ -10,10 +10,11 @@ export function PageTitleWithPrice() {
 
   const price = useSkewAdjustedOffChainPrice({
     marketKey: market?.key,
-    select: (p) => format(p, 4),
+    select: (p) => format(p, 2),
   })
 
   useEffect(() => {
+    if (!market.asset || !price) return
     document.title = `${market.asset} - $ ${price} | Conduit`
   }, [price, market.asset])
 
