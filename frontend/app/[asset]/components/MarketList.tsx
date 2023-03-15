@@ -94,7 +94,6 @@ const MarketButton = forwardRef<HTMLAnchorElement, MarketButton>(
       <Link
         href={`/${asset}`}
         replace
-        shallow
         ref={ref}
         className={
           'btn even:bg-light-400 ocean:even:bg-ocean-600 h-fit justify-between gap-6 rounded-lg p-2 px-3'
