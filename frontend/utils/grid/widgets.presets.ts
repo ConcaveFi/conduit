@@ -1,5 +1,5 @@
-import { Breakpoints } from '../contants/breakpoints'
 import { Layout } from 'react-grid-layout'
+import { Breakpoints } from '../contants/breakpoints'
 import { GridWidgets } from './grid.widgets'
 
 const X_EXTRA_LARGE_LAYOUT: WidgetPreset = {

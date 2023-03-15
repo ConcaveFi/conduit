@@ -1,4 +1,4 @@
-import { atom, SetStateAction, Getter } from 'jotai'
+import { atom, Getter, SetStateAction } from 'jotai'
 
 export default function atomWithDebounce<T>(
   initialValue: (get: Getter) => T,

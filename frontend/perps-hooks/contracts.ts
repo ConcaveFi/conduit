@@ -1,4 +1,4 @@
-import { optimismGoerli, optimism } from '@wagmi/core/chains'
+import { optimism, optimismGoerli } from '@wagmi/core/chains'
 import {
   chainLinkFeedAbi,
   marketAbi,
