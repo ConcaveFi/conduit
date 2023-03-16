@@ -1,5 +1,4 @@
 import { optimism } from '@wagmi/core/chains'
-import { notFound } from 'next/navigation'
 import { serialize } from 'superjson'
 import { WidgetsProvider } from '../providers/WidgetsProvider'
 import { GridLayout } from './components/GridLayout'
@@ -23,7 +22,7 @@ const marketByAsset = (markets: MarketSummaries, asset: string) =>
 
 export default async function Page({ params }) {
   const market = await getRouteMarket(params.asset)
-  if (!market) return notFound()
+  if (!market) throw 'wtf'
 
   const queryClient = getQueryClient()
   await queryClient.prefetchQuery(marketSettingsQueryKey(market.key, optimism.id), () =>
