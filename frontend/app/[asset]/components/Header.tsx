@@ -1,3 +1,5 @@
+'use client'
+
 import { OP_ADDRESS, SNX_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
 import { BalanceIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
@@ -99,12 +101,11 @@ function IndexPrice() {
 export function StrategyHeader() {
   const { t } = useTranslation()
   const { chain } = useNetwork()
-  const { address } = useAccount()
 
   const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
 
   const market = useRouteMarket()
-  const marketSettings = useMarketSettings({ marketKey: market?.key })
+  const { data: marketSettings } = useMarketSettings({ marketKey: market?.key })
 
   // from(1) to avoid undefined for now
   // TODO: statle handleling for loading states
@@ -125,7 +126,7 @@ export function StrategyHeader() {
   }
 
   const limit = format(
-    multiply(marketSettings?.data?.maxMarketValue || from(0), market?.price || from(0)),
+    multiply(marketSettings?.maxMarketValue || from(0), market?.price || from(0)),
     { compact: true },
   )
 

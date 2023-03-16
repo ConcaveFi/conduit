@@ -1,3 +1,5 @@
+'use client'
+
 import { createContext, useContext, useState } from 'react'
 import { GridWidget, GridWidgets } from 'utils/grid/grid.widgets'
 import { AddWidgetOverlay } from '../[asset]/components/widgets/AddWidgetOverlay'
