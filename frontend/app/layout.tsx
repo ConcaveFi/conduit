@@ -6,7 +6,7 @@ import '../global.css'
 import localFont from 'next/font/local'
 import AppProviders from './providers'
 
-const Aeonik = localFont({
+const sans = localFont({
   src: [
     {
       path: '../public/assets/fonts/Aeonik/Aeonik-Regular.otf',
@@ -24,10 +24,10 @@ const Aeonik = localFont({
       style: 'normal',
     },
   ],
-  variable: '--font-aeonik',
+  variable: '--font-sans',
 })
 
-const AeonikMono = localFont({
+const mono = localFont({
   src: [
     {
       path: '../public/assets/fonts/Aeonik-Mono/AeonikMono-Regular.otf',
@@ -40,13 +40,13 @@ const AeonikMono = localFont({
       style: 'normal',
     },
   ],
-  variable: '--font-aeonik-mono',
+  variable: '--font-mono',
 })
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html
-      className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${Aeonik.variable} ${AeonikMono.variable}`}
+      className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
     >
       <body className="w-full">
         <AppProviders>{children}</AppProviders>

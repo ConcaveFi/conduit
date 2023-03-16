@@ -30,9 +30,6 @@ export function useMarkets<TSelectData = MarketSummaries>({
   const provider = useProvider<Provider>({ chainId })
 
   return useQuery(marketsQueryKey(chainId), async () => fetchMarkets({ chainId, provider }), {
-    // refetchInterval: 2500,
-    // refetchIntervalInBackground: true,
-    staleTime: 2000,
     select,
   })
 }

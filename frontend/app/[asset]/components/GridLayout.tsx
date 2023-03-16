@@ -1,3 +1,5 @@
+'use client'
+
 import { DivProps } from '@tradex/interface'
 import { useGridLayout } from 'hooks/useGridLayout'
 import { useMemo } from 'react'

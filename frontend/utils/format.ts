@@ -10,6 +10,7 @@ export const formatNumber = (value: number, digits: number) => {
   return f.format(value)
 }
 
+/* Used for user inputs */
 export const safeStringDnum = (value: string) => {
   if (!value) return from([0n, 0])
   const [whole, fraction] = value.split('.')
@@ -19,12 +20,13 @@ export const safeStringDnum = (value: string) => {
 
 export const format = (
   value: Dnum | number | string | undefined,
-  digits: number | undefined = 2,
+  opts: number | { digits?: number; trailingZeros?: boolean; compact?: boolean } = 2,
 ) => {
   if (!value) value = [0n, 0]
-  if (typeof value === 'number') return formatNumber(value, digits || 2)
+  const _opts = typeof opts === 'number' ? { digits: opts, trailingZeros: true } : opts
+  if (typeof value === 'number') return formatNumber(value, _opts?.digits || 2)
   if (typeof value === 'string') value = safeStringDnum(value)
-  return dformat(value, { digits, trailingZeros: true })
+  return dformat(value, _opts)
 }
 
 const fixParams = (params: { decimals?: number; places?: number }) => ({

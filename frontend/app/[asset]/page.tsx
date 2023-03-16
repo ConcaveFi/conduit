@@ -1,7 +1,9 @@
 import { optimism } from '@wagmi/core/chains'
 import { notFound } from 'next/navigation'
 import { serialize } from 'superjson'
-import Home from '.'
+import { WidgetsProvider } from '../providers/WidgetsProvider'
+import { GridLayout } from './components/GridLayout'
+import { StrategyHeader } from './components/Header'
 import { HydrateAtoms, JotaiProvider } from './HydrateProviders'
 import { fetchMarketSettings, marketSettingsQueryKey, MarketSummaries } from './lib/market/markets'
 import { getAllMarkets, getProvider, getQueryClient } from './server-only'
@@ -40,7 +42,10 @@ export default async function Page({ params }) {
   return (
     <JotaiProvider>
       <HydrateAtoms routeMarket={serializedRouteMarket} />
-      <Home />
+      <StrategyHeader />
+      <WidgetsProvider>
+        <GridLayout />
+      </WidgetsProvider>
     </JotaiProvider>
   )
 }

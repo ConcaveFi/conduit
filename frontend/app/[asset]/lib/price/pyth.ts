@@ -93,4 +93,20 @@ export const PythIdsByMarketKey = {
   },
 } as const
 
-export type MarketKey = keyof typeof PythIdsByMarketKey
+export const PythIds = {
+  OP: {
+    mainnet: '0x385f64d993f7b77d8182ed5003d97c60aa3361f3cecfe711544d2d59165e9bdf',
+    testnet: '0x71334dcd37620ce3c33e3bafef04cc80dec083042e49b734315b36d1aad7991f',
+  },
+  ETH: {
+    mainnet: '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace',
+    testnet: '0xca80ba6dc32e08d06f1aa886011eed1d77c77be9eb761cc10d72b7d0a2fd57a6',
+  },
+}
+
+export type PythNetwork = 'mainnet' | 'testnet'
+export type PythId =
+  | (typeof PythIdsByMarketKey)[MarketKey][PythNetwork]
+  | (typeof PythIds)[keyof typeof PythIds][PythNetwork]
+
+export type MarketKey = keyof typeof PythIdsByMarketKey // (?)

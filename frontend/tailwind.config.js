@@ -15,8 +15,8 @@ module.exports = {
         'Blue/block-bg50': '#0B1640',
       },
       fontFamily: {
-        sans: `var(--font-aeonik)`,
-        mono: `var(--font-aeonik-mono)`,
+        sans: `var(--font-sans)`,
+        mono: `var(--font-mono)`,
       },
       fontSize: {
         '2xs': '0.625rem', // 10 px
