@@ -63,18 +63,17 @@ export function useTradePreview<TSelect = TradePreview>({
       },
     ],
     async () => {
-      if (!account || !market || !marketPrice || !sizeDelta) return
       const result = await getContract({
-        address: market,
+        address: market!,
         abi: marketContract.abi,
         signerOrProvider: provider,
       }).postTradeDetails(
-        toBigNumber(sizeDelta),
-        toBigNumber(marketPrice),
+        toBigNumber(sizeDelta!),
+        toBigNumber(marketPrice!),
         OrderType.delayedOffchain,
-        account,
+        account!,
       )
-      return parseTradePreview(result)
+      return parseTradePreview(result) as TradePreview
     },
     {
       select,

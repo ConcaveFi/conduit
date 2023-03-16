@@ -4,11 +4,7 @@ import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
 import { Address, getContract, Provider } from '@wagmi/core'
 import { SupportedChainId } from 'app/providers/wagmi-config'
-import {
-  DEFAULT_PRICE_IMPACT_DELTA,
-  MAX_LEVERAGE,
-  TrackingCode,
-} from 'app/[asset]/constants/perps-config'
+import { MAX_LEVERAGE } from 'app/[asset]/constants/perps-config'
 import { useMarketSettings, useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { divide, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
@@ -16,17 +12,12 @@ import { formatBytes32String } from 'ethers/lib/utils.js'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { selectAtom } from 'jotai/utils'
-import {
-  useMarketSubmitOffchainDelayedOrderWithTracking,
-  usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
-} from 'perps-hooks'
 import { marketData } from 'perps-hooks/contracts'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useEffect, useReducer } from 'react'
 import atomWithDebounce from 'utils/atom-utils'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { format, safeStringDnum } from 'utils/format'
-import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 import { routeMarketPriceAtom } from '../../lib/price/useOffchainPrice'
@@ -392,19 +383,19 @@ function TradeDetails() {
   )
 }
 
-function ConfirmOrderModal() {
-  const market = useRouteMarket()
-  const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
+// function ConfirmOrderModal() {
+//   const market = useRouteMarket()
+//   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
 
-  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    address: market.address,
-    enabled: !equal(sizeDelta, 0) && !isOverBuyingPower,
-    args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TrackingCode],
-  })
-  const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
+//   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+//     address: market.address,
+//     enabled: !equal(sizeDelta, 0) && !isOverBuyingPower,
+//     args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TrackingCode],
+//   })
+//   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
-  return
-}
+//   return
+// }
 
 function usePlaceOrderButton() {
   const inputs = useAtomValue(orderDerivedValuesAtom)
@@ -427,10 +418,13 @@ function usePlaceOrderButton() {
 function PlaceOrderButton() {
   const props = usePlaceOrderButton()
   return (
-    <button
-      className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 font-bold text-white shadow-lg"
-      {...props}
-    />
+    <>
+      <button
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 font-bold text-white shadow-lg"
+        {...props}
+      />
+      {/* <ConfirmOrderModal /> */}
+    </>
   )
 }
 
