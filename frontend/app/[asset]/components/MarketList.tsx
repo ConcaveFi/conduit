@@ -8,10 +8,10 @@ import { format } from 'utils/format'
 import { handleSynth } from 'utils/handleTokenLogo'
 import { useMarkets, useRouteMarket } from '../lib/market/useMarket'
 import { MarketKey } from '../lib/price/pyth'
-import { useSkewAdjustedOffChainPrice } from '../lib/price/useOffchainPrice'
+import { useMarketPrice } from '../lib/price/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
-  const price = useSkewAdjustedOffChainPrice({ marketKey, select: (p) => format(p, 2) })
+  const price = useMarketPrice({ marketKey, select: (p) => format(p, 2) })
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
@@ -70,7 +70,7 @@ function usePrevious<T>(state: T): T | undefined {
 }
 
 export function Price({ marketKey }: { marketKey: MarketKey }) {
-  const price = useSkewAdjustedOffChainPrice({ marketKey })
+  const price = useMarketPrice({ marketKey })
   const lastPrice = usePrevious(price)
   const priceChange =
     price && lastPrice && multiply(divide(subtract(price, lastPrice), lastPrice), 100)

@@ -1,6 +1,9 @@
+import { useQuery } from '@tanstack/react-query'
 import { cx, NumericInput, Panel, PanelProps, Skeleton } from '@tradex/interface'
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
+import { Address, getContract, Provider } from '@wagmi/core'
+import { SupportedChainId } from 'app/providers/wagmi-config'
 import {
   DEFAULT_PRICE_IMPACT_DELTA,
   MAX_LEVERAGE,
@@ -8,27 +11,25 @@ import {
 } from 'app/[asset]/constants/perps-config'
 import { useMarketSettings, useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
-import { abs, divide, Dnum, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
+import { divide, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
+import { formatBytes32String } from 'ethers/lib/utils.js'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { selectAtom } from 'jotai/utils'
 import {
-  useMarketDataPositionDetails,
-  useMarketRemainingMargin,
   useMarketSubmitOffchainDelayedOrderWithTracking,
   usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
+import { marketData } from 'perps-hooks/contracts'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useEffect, useReducer } from 'react'
 import atomWithDebounce from 'utils/atom-utils'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { format, safeStringDnum } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
-import { useAccount } from 'wagmi'
-import {
-  routeMarketPriceAtom,
-  useSkewAdjustedOffChainPrice,
-} from '../../lib/price/useOffchainPrice'
-import { useTradePreview } from '../../lib/useTradePreview'
+import { useAccount, useNetwork, useProvider } from 'wagmi'
+import { optimism } from 'wagmi/chains'
+import { routeMarketPriceAtom } from '../../lib/price/useOffchainPrice'
 import { TransferMarginButton } from './TransferMargin'
 
 function SideSelector() {
@@ -62,11 +63,8 @@ function SideSelector() {
   )
 }
 
-const selectAddress = (m) => m.address
 const OrderSizeInput = () => {
   const routeMarket = useRouteMarket()
-  const onChange = useSetAtom(orderInputAtom)
-  const inputs = useAtomValue(orderDerivedValuesAtom)
 
   const [amountDenominator, toggleAmountDenominator] = useReducer(
     (s) => (s === 'usd' ? 'asset' : 'usd'),
@@ -75,12 +73,13 @@ const OrderSizeInput = () => {
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
   const symbols = { usd: 'sUSD', asset: routeMarket.asset }
 
-  const { data: isOverBuyingPower } = useBuyingPower({
-    select: useCallback(
-      (buyingPower) => !!inputs.usd && greaterThan(inputs.usd, buyingPower),
-      [inputs.usd],
-    ),
-  })
+  const onChange = useSetAtom(orderInputAtom)
+  const inputs = useAtomValue(orderDerivedValuesAtom)
+  const value = inputs[amountDenominator]
+
+  const { data: isOverBuyingPower } = useMarginDetails(
+    ({ buyingPower }) => !!inputs.usd && greaterThan(inputs.usd, buyingPower),
+  )
 
   const hasValue = greaterThan(inputs[other] || 0, 0)
 
@@ -104,7 +103,7 @@ const OrderSizeInput = () => {
                 variant={'none'}
                 className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
-                value={format(inputs[amountDenominator], undefined)}
+                value={value ? format(value, { trailingZeros: false }) : ''}
                 onValueChange={({ value }, { source }) => {
                   if (source === 'event') onChange({ value, type: amountDenominator })
                 }}
@@ -188,7 +187,7 @@ function SizeSlider({
 
   return (
     <Slider.Root
-      disabled={disabled}
+      disabled={!max || disabled}
       value={[value > max ? max : value]}
       step={0.5}
       max={max}
@@ -204,7 +203,8 @@ function SizeSlider({
       <Slider.Thumb asChild>
         <motion.span
           className={cx(
-            'box-4 bg-ocean-800 block rounded-full border-2 outline-none transition-all duration-300 ease-out will-change-transform hover:scale-110',
+            'box-4 bg-ocean-800 block rounded-full border-2 outline-none transition-all duration-300 ease-out will-change-transform',
+            'focus:transition-none',
           )}
           style={{ borderColor: disabled ? 'rgb(62 83 137)' : borderColor }}
         />
@@ -213,39 +213,6 @@ function SizeSlider({
   )
 }
 
-// function _liquidationPremium(positionSize, currentPrice) {
-//   // note: this is the same as fillPrice() where the skew is 0.
-//   const notional = _abs(_notionalValue(positionSize, currentPrice));
-
-//   return
-//       _abs(positionSize).divideDecimal(_skewScale(_marketKey())).multiplyDecimal(notional).multiplyDecimal(
-//           _liquidationPremiumMultiplier(_marketKey())
-//       );
-// }
-
-// function _liquidationFee(positionSize, price) {
-//   // size * price * fee-ratio
-//   const proportionalFee = _abs(positionSize).multiplyDecimal(price).multiplyDecimal(_liquidationFeeRatio());
-//   const maxFee = _maxKeeperFee();
-//   const cappedProportionalFee = proportionalFee > maxFee ? maxFee : proportionalFee;
-//   const minFee = _minKeeperFee();
-
-//   return cappedProportionalFee > minFee ? cappedProportionalFee : minFee; // not using _max() helper because it's for signed ints
-// }
-
-// function _liquidationMargin(positionSize, price) {
-//   const liquidationBuffer = _abs(positionSize).multiplyDecimal(price).multiplyDecimal(_liquidationBufferRatio());
-//   return liquidationBuffer.add(_liquidationFee(positionSize, price));
-// }
-
-// const liquidationPrice = (position, currentPrice) => {
-//     (position.lastPrice
-//       .add(_liquidationMargin(position.size, currentPrice))
-//       .sub(position.margin.sub(_liquidationPremium(position.size, currentPrice)))
-//       .divideDecimal(position.size))
-//       .sub(_netFundingPerUnit(position.lastFundingIndex, currentPrice));
-// }
-
 const riskLevelLabel = (value: number, max: number) => {
   // if (!value || value < remainingMargin) return 'NONE'
   if (value <= max * 0.25) return 'LOW'
@@ -253,35 +220,51 @@ const riskLevelLabel = (value: number, max: number) => {
   return 'HIGH'
 }
 
-function useDebouncedTradePreview({ sizeDelta }: { sizeDelta: Dnum }) {
-  const market = useRouteMarket()
-  const { address: account } = useAccount()
+function LiquidationSlider() {
+  const { data: buyingPower = 0 } = useMarginDetails((details) => toNumber(details.buyingPower, 2))
 
-  const marketPrice = useSkewAdjustedOffChainPrice({ marketKey: market?.key })
+  const sizeUsd = useAtomValue(orderSizeUsdAtom)
 
-  return useTradePreview({
-    market: market.address,
-    sizeDelta,
-    marketPrice,
-    account,
-  })
+  const onChange = useSetAtom(orderInputAtom)
+
+  return (
+    <>
+      <SizeSlider value={sizeUsd} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
+      <div className="flex justify-between font-mono">
+        <span className={cx('text-xs', buyingPower ? 'text-green-500' : 'text-ocean-300')}>$0</span>
+        {!!buyingPower && <span className="text-xs text-orange-500">$ {format(buyingPower)}</span>}
+      </div>
+    </>
+  )
 }
 
-const selectToNumber = (buyingPower: Dnum) => (buyingPower ? toNumber(buyingPower, 2) : 0)
-function LiquidationPrice() {
-  const { data: buyingPower = 0 } = useBuyingPower({ select: selectToNumber })
+function LiquidationPriceRisk() {
+  const { data: buyingPower = 0 } = useMarginDetails((details) => toNumber(details.buyingPower, 2))
 
-  const a = useAtomValue(orderDerivedValuesAtom)
-  const sizeUsd = toNumber(a.usd, 2)
+  const sizeUsd = useAtomValue(orderSizeUsdAtom)
 
   const color = useInterpolateLiquidationRiskColor(sizeUsd, buyingPower)
   const riskLabel = riskLevelLabel(sizeUsd, buyingPower)
 
-  const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
-  // const { data: tradePreview, isLoading } = useDebouncedTradePreview({ sizeDelta })
+  const isLoading = false
 
-  const onChange = useSetAtom(orderInputAtom)
+  return (
+    <>
+      {sizeUsd > 0 && isLoading ? (
+        <Skeleton className="mb-1 h-5 w-24" />
+      ) : (
+        <span className="min-w-0 overflow-ellipsis font-mono text-xl text-white outline-none">
+          ${0}
+        </span>
+      )}
+      <motion.span style={{ color }} className="font-bold">
+        {riskLabel}
+      </motion.span>
+    </>
+  )
+}
 
+function LiquidationPrice() {
   return (
     <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
@@ -290,71 +273,53 @@ function LiquidationPrice() {
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
-          {/* {sizeUsd > 0 && isLoading ? (
-            <Skeleton className="mb-1 h-5 w-24" />
-          ) : (
-            <NumericInput
-              disabled
-              variant={'none'}
-              className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
-              placeholder="0.00"
-              prefix="$"
-              value={format(tradePreview?.liquidationPrice)}
-              decimalScale={2}
-              onValueChange={({ value }, { source }) => {
-                // if (source === 'event') onChange({ value, type: amountDenominator })
-              }}
-            />
-          )} */}
-          <motion.span style={{ color }} className="font-bold">
-            {riskLabel}
-          </motion.span>
+          <LiquidationPriceRisk />
         </div>
-        <SizeSlider value={sizeUsd} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
-        <div className="flex justify-between font-mono">
-          <span className={cx('text-xs', buyingPower ? 'text-green-500' : 'text-ocean-300')}>
-            $0
-          </span>
-          {!!buyingPower && (
-            <span className="text-xs text-orange-500">$ {format(buyingPower)}</span>
-          )}
-        </div>
+        <LiquidationSlider />
       </div>
     </div>
   )
 }
 
-type InputState = { value: string; type: 'usd' | 'asset' }
-const deriveInputs = (input?: InputState, price?: Dnum): Record<'usd' | 'asset', Dnum> => {
-  const { value, type } = input || {}
-  if (!value || !type) return { usd: [0n, 0], asset: [0n, 0] }
-  if (!price || equal(price, 0)) return { usd: [0n, 0], asset: [0n, 0], [type]: value }
-  const amount = safeStringDnum(value)
+const fetchMarginDetails = async (
+  account: Address | undefined,
+  chainId: SupportedChainId,
+  provider: Provider,
+  marketKey: MarketKey,
+) => {
+  if (!account) throw 'not connected'
+  const position = await getContract({
+    address: marketData.address[chainId],
+    abi: marketData.abi,
+    signerOrProvider: provider,
+  }).positionDetailsForMarketKey(formatBytes32String(marketKey), account)
+  const details = parsePositionDetails(position)
+  const buyingPower = multiply(details.remainingMargin, MAX_LEVERAGE)
   return {
-    usd: () => ({ usd: amount, asset: divide(amount, price, 18) }),
-    asset: () => ({ usd: multiply(amount, price, 18), asset: amount }),
-  }[type]()
+    buyingPower,
+    available: subtract(buyingPower, details.notionalValue),
+    notionalValue: details.notionalValue,
+    remainingMargin: details.remainingMargin,
+  }
 }
+type MarginDetails = Awaited<ReturnType<typeof fetchMarginDetails>>
+function useMarginDetails<TSelect = MarginDetails>(select?: (m: MarginDetails) => TSelect) {
+  const { chain } = useNetwork()
+  const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
 
-function MarginDetails() {
   const market = useRouteMarket()
   const { address: account } = useAccount()
 
-  const { data: details } = useMarketDataPositionDetails({
-    args: !!market.address && !!account ? [market.address, account] : undefined,
-    enabled: !!market && !!account,
-    select: (p) => {
-      const details = parsePositionDetails(p)
-      const buyingPower = multiply(details.remainingMargin, MAX_LEVERAGE)
-      return {
-        buyingPower,
-        available: subtract(buyingPower, details.notionalValue),
-        notionalValue: details.notionalValue,
-        remainingMargin: details.remainingMargin,
-      }
-    },
-  })
+  const provider = useProvider({ chainId })
+  return useQuery(
+    ['market position details', market.key, account, chainId],
+    () => fetchMarginDetails(account, chainId, provider, market.key),
+    { select, enabled: !!account },
+  )
+}
 
+function MarginDetails() {
+  const { data: details, isLoading } = useMarginDetails()
   const { notionalValue, remainingMargin, available, buyingPower } = details || {}
 
   return (
@@ -362,7 +327,7 @@ function MarginDetails() {
       <div className="flex justify-between gap-4">
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
           <span className="text-ocean-200">Deposited</span>
-          {!remainingMargin ? (
+          {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-white">$ {format(remainingMargin)}</span>
@@ -370,7 +335,7 @@ function MarginDetails() {
         </div>
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
           <span className="text-ocean-200">Buying power</span>
-          {!buyingPower ? (
+          {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
@@ -378,7 +343,7 @@ function MarginDetails() {
         </div>
         <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
           <span className="text-ocean-200">In position</span>
-          {!notionalValue ? (
+          {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-red-400">$ {format(notionalValue)}</span>
@@ -387,7 +352,7 @@ function MarginDetails() {
       </div>
       <div className="bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
         <span className="text-ocean-200">Available</span>
-        {!available ? (
+        {isLoading ? (
           <Skeleton />
         ) : (
           <span className="font-mono text-white">$ {format(available)}</span>
@@ -397,50 +362,39 @@ function MarginDetails() {
   )
 }
 
-function TradeDetails({
-  marketKey,
-  fee,
-  entryPrice,
-}: {
-  marketKey: MarketKey | undefined
-  fee: Dnum | undefined
-  entryPrice: Dnum | undefined
-}) {
+function ExecutionFee({ marketKey }: { marketKey: MarketKey | undefined }) {
   const { data: executionFee } = useMarketSettings({
     marketKey,
     select: (settings) => settings.minKeeperFee,
   })
+  return (
+    <li className="flex w-full justify-between px-2 py-0.5">
+      <span>Execution Fee:</span>
+      {executionFee && <span>$ {format(executionFee)}</span>}
+    </li>
+  )
+}
 
+function TradeDetails() {
+  const market = useRouteMarket()
   return (
     <ul className="text-ocean-200 text-xs">
       <li className="bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
         <span>Entry price:</span>
-        {entryPrice && <span>$ {format(entryPrice)}</span>}
+        {/* {entryPrice && <span>$ {format(entryPrice)}</span>} */}
       </li>
-      <li className="flex w-full justify-between px-2 py-0.5">
-        <span>Execution Fee:</span>
-        {executionFee && <span>$ {format(executionFee)}</span>}
-      </li>
+      <ExecutionFee marketKey={market.key} />
       <li className="bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
         <span>Trade Fee: </span>
-        {fee && <span>$ {format(fee)}</span>}
+        {/* {fee && <span>$ {format(fee)}</span>} */}
       </li>
     </ul>
   )
 }
 
-function PlaceOrderButton() {
+function ConfirmOrderModal() {
   const market = useRouteMarket()
   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
-
-  const { data: isOverBuyingPower } = useBuyingPower({
-    select: useCallback(
-      (buyingPower) => !!sizeDelta && greaterThan(abs(sizeDelta), buyingPower),
-      [sizeDelta],
-    ),
-  })
-
-  const side = useAtomValue(sideAtom)
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market.address,
@@ -449,34 +403,34 @@ function PlaceOrderButton() {
   })
   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
-  if (equal(sizeDelta, 0))
-    return (
-      <button
-        disabled
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg font-bold shadow-lg"
-      >
-        Enter an amount
-      </button>
-    )
+  return
+}
 
-  if (isOverBuyingPower)
-    return (
-      <button
-        disabled
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg font-bold shadow-lg"
-      >
-        Not enough margin
-      </button>
-    )
+function usePlaceOrderButton() {
+  const inputs = useAtomValue(orderDerivedValuesAtom)
 
+  const { data: isOverBuyingPower } = useMarginDetails(
+    ({ buyingPower }) => !!inputs.usd && greaterThan(inputs.usd, buyingPower),
+  )
+
+  const side = useAtomValue(sideAtom)
+
+  let label = `Place ${side}`
+  if (!inputs.usd || equal(inputs.usd, 0)) label = 'Enter an amount'
+  if (isOverBuyingPower) label = 'Not enough margin'
+
+  return {
+    disabled: !inputs.usd || equal(inputs.usd, 0) || isOverBuyingPower,
+    children: label,
+  }
+}
+function PlaceOrderButton() {
+  const props = usePlaceOrderButton()
   return (
     <button
-      // onClick={submitOrder}
-      // disabled={!submitOrder}
       className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 font-bold text-white shadow-lg"
-    >
-      Place {side}
-    </button>
+      {...props}
+    />
   )
 }
 
@@ -495,38 +449,32 @@ function DepositMarginToReduceRisk() {
   )
 }
 
-function useBuyingPower<TSelect = Dnum>({ select }: { select?: (b: Dnum) => TSelect } = {}) {
-  const market = useRouteMarket()
-  const { address: account } = useAccount()
-  return useMarketRemainingMargin({
-    address: market.address,
-    args: account && [account],
-    enabled: !!account && !!market,
-    select: useCallback(
-      (d) => {
-        const margin = from([d.marginRemaining.toBigInt(), 18])
-        const buyingPower = multiply(margin, MAX_LEVERAGE)
-        return select ? select(buyingPower) : (buyingPower as TSelect)
-      },
-      [select],
-    ),
-  })
-}
+type InputState = { value: string; type: 'usd' | 'asset' }
 
 const sideAtom = atom<'long' | 'short'>('long')
 const orderInputAtom = atom<InputState>({ value: '', type: 'usd' })
 const orderDerivedValuesAtom = atom((get) => {
-  const input = get(orderInputAtom)
-  if (!input.value) return { usd: from([0n, 0]), asset: from([0n, 0]) }
-  const marketPrice = get(routeMarketPriceAtom)
-  return deriveInputs(input, marketPrice)
+  const { value, type } = get(orderInputAtom)
+  if (!value) return { usd: '', asset: '' } as const
+
+  const price = get(routeMarketPriceAtom)
+
+  const amount = safeStringDnum(value)
+  if (!price || equal(price, 0)) return { usd: '', asset: '', [type]: amount } as const
+  return {
+    usd: () => ({ usd: amount, asset: divide(amount, price, 18) }),
+    asset: () => ({ usd: multiply(amount, price, 18), asset: amount }),
+  }[type]()
 })
+const orderSizeUsdAtom = selectAtom(orderDerivedValuesAtom, ({ usd }) =>
+  toNumber(usd || [0n, 0], 2),
+)
 
 const sizeDeltaAtom = atomWithDebounce((get) => {
   const side = get(sideAtom)
   const assetInput = get(orderDerivedValuesAtom).asset
   if (!assetInput) return from([0n, 0])
-  return side === 'long' ? assetInput : multiply(assetInput, -1)
+  return from(side === 'long' ? assetInput : multiply(assetInput, -1))
 }, 150)
 
 export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function OrderFormPanel(

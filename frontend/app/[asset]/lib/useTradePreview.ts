@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, getContract, ReadContractResult } from '@wagmi/core'
 import { SupportedChainId } from 'app/providers/WagmiProvider'
-import { Dnum, equal, from } from 'dnum'
+import { Dnum, equal, from, toJSON } from 'dnum'
 import { marketAbi } from 'perps-hooks/abis'
 import { market as marketContract } from 'perps-hooks/contracts'
 import { valuesToBigInt } from 'perps-hooks/parsers'
@@ -32,16 +32,18 @@ const OrderType = {
   delayedOffchain: 2,
 }
 
-export function useTradePreview({
+export function useTradePreview<TSelect = TradePreview>({
   sizeDelta,
   marketPrice,
   account,
   market,
+  select,
 }: {
   market?: Address
   sizeDelta?: Dnum
   marketPrice?: Dnum
   account?: Address
+  select?: (t: TradePreview) => TSelect
 }) {
   const { chain } = useNetwork()
   const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
@@ -51,7 +53,15 @@ export function useTradePreview({
   const enabled = Boolean(account && market && marketPrice && sizeDelta && !equal(sizeDelta, 0))
 
   return useQuery(
-    ['postTradeDetails', { sizeDelta, marketPrice, account, orderType: OrderType.delayedOffchain }],
+    [
+      'postTradeDetails',
+      {
+        sizeDelta: sizeDelta && toJSON(sizeDelta),
+        marketPrice: marketPrice && toJSON(marketPrice),
+        account,
+        orderType: OrderType.delayedOffchain,
+      },
+    ],
     async () => {
       if (!account || !market || !marketPrice || !sizeDelta) return
       const result = await getContract({
@@ -67,6 +77,7 @@ export function useTradePreview({
       return parseTradePreview(result)
     },
     {
+      select,
       enabled,
       keepPreviousData: true,
     },

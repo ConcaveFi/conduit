@@ -3,12 +3,12 @@
 import { useEffect } from 'react'
 import { format } from 'utils/format'
 import { useRouteMarket } from './lib/market/useMarket'
-import { useSkewAdjustedOffChainPrice } from './lib/price/useOffchainPrice'
+import { useMarketPrice } from './lib/price/useOffchainPrice'
 
 export function PageTitleWithPrice() {
   const market = useRouteMarket()
 
-  const price = useSkewAdjustedOffChainPrice({
+  const price = useMarketPrice({
     marketKey: market?.key,
     select: (p) => format(p, 2),
   })
