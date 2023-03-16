@@ -23,8 +23,8 @@ const formatBalance = (b: FetchBalanceResult | undefined) =>
 
 function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   return (
-    <div className="flex flex-col items-start">
-      <span className="text-ocean-200 whitespace-nowrap text-xs">{title}</span>
+    <div className="flex flex-col items-start font-mono">
+      <span className="text-ocean-200 whitespace-nowrap font-sans text-xs">{title}</span>
       {children}
     </div>
   )
@@ -32,12 +32,12 @@ function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
 
 function PythPriceFeed({ id }: { id: PythId }) {
   const price = useAtomValue(offchainPricesAtom({ network: 'mainnet', id }))
-  return <>- {format(price, 2)}</>
+  return <span className="font-mono">- {format(price, 2)}</span>
 }
 function ChainlinkPriceFeed({ feed }: { feed: ChainLinkFeed }) {
   const { data: price } = useChainLink(feed)
   if (!price) return null
-  return <>- {format(price, 2)}</>
+  return <span className="font-mono">- {format(price, 2)}</span>
 }
 
 function TokenBalance({

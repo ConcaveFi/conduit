@@ -72,12 +72,13 @@ function usePrevious<T>(state: T): T | undefined {
 export function Price({ marketKey }: { marketKey: MarketKey }) {
   const price = useMarketPrice({ marketKey })
   const lastPrice = usePrevious(price)
+  // kkkkkkkkk lets get the 24hr price for that
   const priceChange =
     price && lastPrice && multiply(divide(subtract(price, lastPrice), lastPrice), 100)
   const color = priceChange && lessThan(priceChange, 0) ? 'text-red-400' : 'text-green-400'
 
   return (
-    <div className="flex flex-col items-end">
+    <div className="flex flex-col items-end font-mono">
       <span className={twMerge('text-ocean-200 whitespace-nowrap text-[10px] font-medium', color)}>
         {format(priceChange, 2)}%
       </span>
