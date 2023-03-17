@@ -43,7 +43,6 @@ function ConnectedAccount() {
 export function Topbar() {
   const { t } = useTranslation()
   const swapModal = useQueryModal({ modalType: 'swap' })
-
   return (
     <div className="flex items-center justify-between px-4">
       <div className="flex h-full items-center gap-2">
