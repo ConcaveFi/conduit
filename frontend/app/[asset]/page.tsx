@@ -2,12 +2,11 @@ import { optimism } from '@wagmi/core/chains'
 import { notFound } from 'next/navigation'
 import { serialize } from 'superjson'
 import { WidgetsProvider } from '../providers/WidgetsProvider'
+import { HydrateAtoms, JotaiProvider } from './HydrateProviders'
 import { GridLayout } from './components/GridLayout'
 import { StrategyHeader } from './components/Header'
-import { HydrateAtoms, JotaiProvider } from './HydrateProviders'
-import { fetchMarketSettings, marketSettingsQueryKey, MarketSummaries } from './lib/market/markets'
+import { MarketSummaries, fetchMarketSettings, marketSettingsQueryKey } from './lib/market/markets'
 import { getAllMarkets, getProvider, getQueryClient } from './server-only'
-
 export async function generateStaticParams() {
   const markets = await getAllMarkets(optimism.id)
   return markets.map((m) => ({ asset: m.asset }))
