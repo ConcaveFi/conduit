@@ -7,6 +7,7 @@ import { useHydrateAtoms } from 'jotai/utils'
 import { PropsWithChildren, useLayoutEffect, useState } from 'react'
 import { Theme } from 'utils/themeHandler'
 import { IsHydratedProvider } from './IsHydratedProvider'
+import { ThemeProvider } from './ThemeProvider'
 import { WagmiProvider } from './WagmiProvider'
 
 export default function AppProviders({ children }: PropsWithChildren) {
@@ -23,7 +24,9 @@ export default function AppProviders({ children }: PropsWithChildren) {
     <IsHydratedProvider>
       <WagmiProvider>
         {/* <TranslationProvider> */}
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>{children}</ThemeProvider>
+        </QueryClientProvider>
         {/* </TranslationProvider> */}
       </WagmiProvider>
     </IsHydratedProvider>

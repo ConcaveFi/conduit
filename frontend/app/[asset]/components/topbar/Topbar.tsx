@@ -12,6 +12,7 @@ import { useQueryModal } from 'utils/enum/urlModal'
 import { Themes } from 'utils/themeHandler'
 import { truncateAddress } from 'utils/truncateAddress'
 import { LocationSelector } from './LocationSelector'
+import { ThemeSelector } from './ThemeSelector'
 // import { ThemeSelector } from './ThemeSelector'
 
 function ConnectedAccount() {
@@ -78,7 +79,7 @@ export function Topbar() {
       </div>
       <div className="flex w-fit items-center gap-3 ">
         <LocationSelector />
-        {/* <ThemeSelector /> */}
+        <ThemeSelector />
 
         <NotificationIcon className="fill-ocean-200 box-4" />
         <ConnectedAccount />
