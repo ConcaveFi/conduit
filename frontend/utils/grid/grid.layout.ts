@@ -1,5 +1,5 @@
 import { Layout } from 'react-grid-layout'
-import { Breakpoints } from '../contants/breakpoints'
+import type { Breakpoints } from '../contants/breakpoints'
 
 export const GRID_LAYOUT_ITEM = 'grid.layout'
 export class GridLayout {

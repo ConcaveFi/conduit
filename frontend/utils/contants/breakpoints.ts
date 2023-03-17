@@ -1,3 +1,24 @@
+import { atom } from "jotai";
+
+export const innerWidthAtom = atom(0)
+innerWidthAtom.onMount = (set) => {
+  if (typeof window === 'undefined') return
+  set(window.innerWidth)
+  const resizeListener = () => set(window.innerWidth)
+  window.addEventListener('resize', resizeListener)
+  return () => window.removeEventListener('resize', resizeListener)
+}
+
+const createBreakpointAtom = <T extends { [key: string]: number }>(breakpoints: T, defaultValue: keyof T) => {
+  const sortedBreakpoints = Object.entries(breakpoints).sort(([, a], [, b]) => a - b)
+  const breakpointAtom = atom((get) => {
+    const w = get(innerWidthAtom)
+    const [label] = sortedBreakpoints.find(([, limit]) => (w < limit)) || [defaultValue]
+    return label as keyof T
+  })
+  return breakpointAtom
+}
+
 /**
  * @description
  *  BREAKPOINTS it's a variable that match all `@media` variants of tailwind.
@@ -9,11 +30,13 @@
  * - xl = `@media` (min-width: 1280px)
  * - 2xl = `@media` (min-width: 1536px)
  * */
-export const BREAKPOINTS = {
+
+const breakpoints = {
   sm: 640,
   md: 768,
   lg: 1024,
   xl: 1280,
   '2xl': 1536,
-} as const
-export type Breakpoints = keyof typeof BREAKPOINTS
+}
+export const breakpointAtom = createBreakpointAtom(breakpoints, 'lg')
+export type Breakpoints = keyof typeof breakpoints
