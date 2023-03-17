@@ -1,6 +1,6 @@
 'use client'
 
-import { BorderArrow, ChevronIcon, SearchIcon } from '@tradex/icons'
+import { ChevronIcon, SearchIcon } from '@tradex/icons'
 import { cx } from '@tradex/interface'
 import * as dn from 'dnum'
 import { useMemo, useState } from 'react'
@@ -67,9 +67,7 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
       {/* Pagination */}
       <div className="my-4 flex justify-between px-4">
         <div className="flex gap-2">
-          <button onClick={() => handlePagination(1)}>
-            <BorderArrow className="box-4 rotate-180" />
-          </button>
+          {/* <BorderArrow className="box-4 rotate-180" /> */}
           <button onClick={() => handlePagination(pagination - 1)}>
             <ChevronIcon className="box-4 fill-ocean-300 rotate-90" />{' '}
           </button>
@@ -81,9 +79,7 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
           <button onClick={() => handlePagination(pagination + 1)}>
             <ChevronIcon className="box-4 fill-ocean-300 -rotate-90" />
           </button>
-          <button onClick={() => handlePagination(totalPages)}>
-            <BorderArrow className="box-4 " />
-          </button>
+          {/*  <BorderArrow className="box-4 " /> */}
         </div>
       </div>
     </div>
