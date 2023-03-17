@@ -6,9 +6,7 @@ import { Modal } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { ExchangeCard } from 'app/exchange/components/SwapCard'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
-import { useAtomValue } from 'jotai'
 import Image from 'next/image'
-import { breakpointAtom } from 'utils/contants/breakpoints'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { truncateAddress } from 'utils/truncateAddress'
 import { LocationSelector } from './LocationSelector'
@@ -45,7 +43,6 @@ function ConnectedAccount() {
 export function Topbar() {
   const { t } = useTranslation()
   const swapModal = useQueryModal({ modalType: 'swap' })
-  const breakpoint = useAtomValue(breakpointAtom)
   return (
     <div className="flex items-center justify-between px-4">
       <div className="flex h-full items-center gap-2">

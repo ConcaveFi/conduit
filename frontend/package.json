@@ -26,7 +26,7 @@
     "@types/react-dom": "18.0.11",
     "@typescript-eslint/typescript-estree": "^5.54.1",
     "@vercel/og": "^0.3.0",
-    "@wagmi/core": "^0.10.1",
+    "@wagmi/core": "^0.10.2",
     "abitype": "^0.7.1",
     "date-fns": "^2.29.3",
     "dnum": "^2.5.0",
@@ -52,7 +52,7 @@
     "superjson": "^1.12.2",
     "typescript": "5.0.2",
     "usehooks-ts": "^2.9.1",
-    "wagmi": "^0.12.1"
+    "wagmi": "^0.12.2"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.4.2",
