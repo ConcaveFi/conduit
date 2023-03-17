@@ -24,7 +24,7 @@ const formatBalance = (b: FetchBalanceResult | undefined) =>
 function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   return (
     <div className="flex flex-col items-start font-mono">
-      <span className="text-dark-accent ocean:text-blue-accent whitespace-nowrap font-sans text-xs">
+      <span className="text-silver ocean:text-ocean-200 whitespace-nowrap font-sans text-xs">
         {title}
       </span>
       {children}
