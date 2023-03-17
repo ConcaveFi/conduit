@@ -6,8 +6,10 @@ import { Modal } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { ExchangeCard } from 'app/exchange/components/SwapCard'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
+import Cookies from 'js-cookie'
 import Image from 'next/image'
 import { useQueryModal } from 'utils/enum/urlModal'
+import { Themes } from 'utils/themeHandler'
 import { truncateAddress } from 'utils/truncateAddress'
 import { LocationSelector } from './LocationSelector'
 // import { ThemeSelector } from './ThemeSelector'
@@ -55,7 +57,10 @@ export function Topbar() {
           height={10}
         />
 
-        <button className="btn btn-underline centered ml-6 h-full rounded-none px-5 text-xs font-medium">
+        <button
+          onClick={() => Cookies.set('theme', Themes.OCEAN)}
+          className="btn btn-underline centered ml-6 h-full rounded-none px-5 text-xs font-medium"
+        >
           {t('dashboard')}
         </button>
         <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 text-xs font-medium">

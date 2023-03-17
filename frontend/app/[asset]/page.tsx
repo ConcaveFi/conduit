@@ -4,10 +4,9 @@ import { serialize } from 'superjson'
 import { WidgetsProvider } from '../providers/WidgetsProvider'
 import { GridLayout } from './components/GridLayout'
 import { StrategyHeader } from './components/Header'
-import ReactQueryHydrate, { HydrateAtoms, JotaiProvider } from './HydrateProviders'
+import { HydrateAtoms, JotaiProvider, ReactQueryHydrate } from './HydrateProviders'
 import { fetchMarketSettings, marketSettingsQueryKey, MarketSummaries } from './lib/market/markets'
 import { getAllMarkets, getProvider, getQueryClient } from './server-only'
-
 export async function generateStaticParams() {
   const markets = await getAllMarkets(optimism.id)
   return markets.map((m) => ({ asset: m.asset }))

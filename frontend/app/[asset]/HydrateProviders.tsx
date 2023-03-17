@@ -24,7 +24,7 @@ export function HydrateAtoms({ routeMarket: s_routeMarket }: { routeMarket: Supe
 
 export { Provider as JotaiProvider } from 'jotai'
 
-export default function ReactQueryHydrate({
+export function ReactQueryHydrate({
   dehydratedState,
   children,
 }: PropsWithChildren<{ dehydratedState: SuperJSONResult }>) {
