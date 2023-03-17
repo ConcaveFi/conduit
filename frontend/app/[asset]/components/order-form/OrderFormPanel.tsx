@@ -7,6 +7,7 @@ import { SupportedChainId } from 'app/providers/wagmi-config'
 import { MAX_LEVERAGE } from 'app/[asset]/constants/perps-config'
 import { useMarketSettings, useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
+import { useCurrentTradePreview } from 'app/[asset]/lib/useTradePreview'
 import { divide, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
@@ -15,12 +16,13 @@ import { selectAtom } from 'jotai/utils'
 import { marketData } from 'perps-hooks/contracts'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { forwardRef, useCallback, useEffect, useReducer } from 'react'
+import NumberEasing from 'react-number-easing'
 import atomWithDebounce from 'utils/atom-utils'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { format, safeStringDnum } from 'utils/format'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { optimism } from 'wagmi/chains'
-import { routeMarketPriceAtom } from '../../lib/price/useOffchainPrice'
+import { routeMarketIndexPriceAtom } from '../../lib/price/useOffchainPrice'
 import { TransferMarginButton } from './TransferMargin'
 
 function SideSelector() {
@@ -204,8 +206,8 @@ function SizeSlider({
   )
 }
 
-const riskLevelLabel = (value: number, max: number) => {
-  // if (!value || value < remainingMargin) return 'NONE'
+const riskLevelLabel = (value: number, max: number, remainingMargin: number) => {
+  if (!value || value < remainingMargin) return 'NONE'
   if (value <= max * 0.25) return 'LOW'
   if (value <= max * 0.75) return 'MEDIUM'
   return 'HIGH'
@@ -229,33 +231,57 @@ function LiquidationSlider() {
   )
 }
 
+function LiquidationPrice() {
+  const { data } = useCurrentTradePreview()
+  // if (isFetching) return <Skeleton className="mb-1 h-5 w-24" />
+  return (
+    <span
+      className={cx(
+        'min-w-0 overflow-ellipsis font-mono text-xl outline-none',
+        !data || equal(data.liquidationPrice, 0) ? 'text-ocean-300' : 'text-white',
+      )}
+    >
+      $
+      <NumberEasing
+        value={data ? toNumber(data.liquidationPrice, 2) : 0}
+        decimals={2}
+        speed={500}
+        ease="quintInOut"
+      />
+      {/* {data ? format(data.liquidationPrice, 2) : '0.00'} */}
+    </span>
+  )
+}
+
 function LiquidationPriceRisk() {
-  const { data: buyingPower = 0 } = useMarginDetails((details) => toNumber(details.buyingPower, 2))
+  const { data: marginDetails } = useMarginDetails((details) => ({
+    buyingPower: toNumber(details.buyingPower, 2),
+    remainingMargin: toNumber(details.remainingMargin, 2),
+  }))
 
   const sizeUsd = useAtomValue(orderSizeUsdAtom)
 
-  const color = useInterpolateLiquidationRiskColor(sizeUsd, buyingPower)
-  const riskLabel = riskLevelLabel(sizeUsd, buyingPower)
-
-  const isLoading = false
+  const color = useInterpolateLiquidationRiskColor(sizeUsd, marginDetails?.buyingPower || 0)
+  const riskLabel = riskLevelLabel(
+    sizeUsd,
+    marginDetails?.buyingPower || 0,
+    marginDetails?.remainingMargin || 0,
+  )
 
   return (
     <>
-      {sizeUsd > 0 && isLoading ? (
-        <Skeleton className="mb-1 h-5 w-24" />
-      ) : (
-        <span className="min-w-0 overflow-ellipsis font-mono text-xl text-white outline-none">
-          ${0}
-        </span>
-      )}
-      <motion.span style={{ color }} className="font-bold">
+      <LiquidationPrice />
+      <motion.span
+        style={{ color: riskLabel === 'NONE' ? 'rgb(62 83 137)' : color }}
+        className="text-ocean-300 font-bold"
+      >
         {riskLabel}
       </motion.span>
     </>
   )
 }
 
-function LiquidationPrice() {
+function LiquidationInfo() {
   return (
     <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
@@ -383,46 +409,44 @@ function TradeDetails() {
   )
 }
 
-// function ConfirmOrderModal() {
+// function ConfirmOrderDialog() {
 //   const market = useRouteMarket()
 //   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
 
 //   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
 //     address: market.address,
 //     enabled: !equal(sizeDelta, 0) && !isOverBuyingPower,
-//     args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TrackingCode],
+//     args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TRACKING_CODE],
 //   })
 //   const { write: submitOrder } = useMarketSubmitOffchainDelayedOrderWithTracking(config)
 
-//   return
+//   return <div>
+
+//   </div>
+
 // }
 
-function usePlaceOrderButton() {
-  const inputs = useAtomValue(orderDerivedValuesAtom)
+function PlaceOrderButton() {
+  const sizeUsd = useAtomValue(orderSizeUsdAtom)
 
   const { data: isOverBuyingPower } = useMarginDetails(
-    ({ buyingPower }) => !!inputs.usd && greaterThan(inputs.usd, buyingPower),
+    ({ buyingPower }) => !!sizeUsd && greaterThan(sizeUsd, buyingPower),
   )
 
   const side = useAtomValue(sideAtom)
 
   let label = `Place ${side}`
-  if (!inputs.usd || equal(inputs.usd, 0)) label = 'Enter an amount'
+  if (!sizeUsd || equal(sizeUsd, 0)) label = 'Enter an amount'
   if (isOverBuyingPower) label = 'Not enough margin'
 
-  return {
-    disabled: !inputs.usd || equal(inputs.usd, 0) || isOverBuyingPower,
-    children: label,
-  }
-}
-function PlaceOrderButton() {
-  const props = usePlaceOrderButton()
   return (
     <>
       <button
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 font-bold text-white shadow-lg"
-        {...props}
-      />
+        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
+        disabled={!sizeUsd || equal(sizeUsd, 0) || isOverBuyingPower}
+      >
+        {label}
+      </button>
       {/* <ConfirmOrderModal /> */}
     </>
   )
@@ -446,12 +470,12 @@ function DepositMarginToReduceRisk() {
 type InputState = { value: string; type: 'usd' | 'asset' }
 
 const sideAtom = atom<'long' | 'short'>('long')
-const orderInputAtom = atom<InputState>({ value: '', type: 'usd' })
-const orderDerivedValuesAtom = atom((get) => {
+export const orderInputAtom = atom<InputState>({ value: '', type: 'usd' })
+export const orderDerivedValuesAtom = atom((get) => {
   const { value, type } = get(orderInputAtom)
   if (!value) return { usd: '', asset: '' } as const
 
-  const price = get(routeMarketPriceAtom)
+  const price = get(routeMarketIndexPriceAtom)
 
   const amount = safeStringDnum(value)
   if (!price || equal(price, 0)) return { usd: '', asset: '', [type]: amount } as const
@@ -460,11 +484,11 @@ const orderDerivedValuesAtom = atom((get) => {
     asset: () => ({ usd: multiply(amount, price, 18), asset: amount }),
   }[type]()
 })
-const orderSizeUsdAtom = selectAtom(orderDerivedValuesAtom, ({ usd }) =>
+export const orderSizeUsdAtom = selectAtom(orderDerivedValuesAtom, ({ usd }) =>
   toNumber(usd || [0n, 0], 2),
 )
 
-const sizeDeltaAtom = atomWithDebounce((get) => {
+export const sizeDeltaAtom = atomWithDebounce((get) => {
   const side = get(sideAtom)
   const assetInput = get(orderDerivedValuesAtom).asset
   if (!assetInput) return from([0n, 0])
@@ -487,7 +511,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
       <SideSelector />
       <OrderSizeInput />
-      <LiquidationPrice />
+      <LiquidationInfo />
 
       <DepositMarginToReduceRisk />
 

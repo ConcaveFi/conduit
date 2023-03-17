@@ -3,13 +3,13 @@ import { useMemo } from 'react'
 import { EvmPriceServiceConnection } from '@pythnetwork/pyth-evm-js'
 import { MarketKey, PythId, PythIdsByMarketKey, PythNetwork } from './pyth'
 
-import { wagmiClient } from 'app/providers/WagmiProvider'
 import { add, divide, Dnum, multiply } from 'dnum'
 import deepEqual from 'fast-deep-equal'
 import { atom, useAtomValue } from 'jotai'
 import { atomFamily } from 'jotai/utils'
 import { useNetwork } from 'wagmi'
-import { optimism, optimismGoerli } from 'wagmi/chains'
+import { optimismGoerli } from 'wagmi/chains'
+import { connectedChainAtom } from '../jotai-wagmi'
 import { routeMarketAtom, useMarkets, useMarketSettings } from '../market/useMarket'
 
 const pyth = {
@@ -73,17 +73,10 @@ export function useMarketPrice<TSelect = Dnum>({
   }, [marketSkew, price, select, skewScale])
 }
 
-const connectedChainIdAtom = atom<number>(optimism.id)
-connectedChainIdAtom.onMount = (set) =>
-  wagmiClient.subscribe(
-    ({ data, chains }) => ({ chainId: data?.chain?.id, chains }),
-    ({ chainId }) => set(chainId || optimism.id),
-  )
-
-export const routeMarketPriceAtom = atom<Dnum>((get) => {
+export const routeMarketIndexPriceAtom = atom<Dnum>((get) => {
   const market = get(routeMarketAtom)
-  const chainId = get(connectedChainIdAtom)
-  const network = chainId === optimismGoerli.id ? 'testnet' : 'mainnet'
+  const chain = get(connectedChainAtom)
+  const network = chain?.id === optimismGoerli.id ? 'testnet' : 'mainnet'
   const price = get(
     offchainPricesAtom({
       network,

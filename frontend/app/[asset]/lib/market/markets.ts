@@ -85,10 +85,11 @@ export const fetchMarketSettings = async ({
     settings.minInitialMargin(),
     settings.minKeeperFee(),
     settings.maxMarketValue(marketKeyHex),
-    // marketSettings.maxKeeperFee(),
-    // marketSettings.liquidationBufferRatio(),
-    // marketSettings.liquidationFeeRatio(),
-    // marketSettings.liquidationFeeRatio(),
+    // settings.liquidationPremium
+    // settings.maxKeeperFee(),
+    // settings.minKeeperFee(),
+    // settings.liquidationBufferRatio(),
+    // settings.liquidationFeeRatio(),
   ])
   const s = valuesToBigInt({ skewScale, minInitialMargin, minKeeperFee, maxMarketValue })
   return {

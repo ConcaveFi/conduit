@@ -42,7 +42,7 @@ if (positionHistory && tradePreview) {
 import { from } from 'dnum'
 import { formatBytes32String } from 'ethers/lib/utils'
 
-export const TrackingCode = formatBytes32String('Conduit')
+export const TRACKING_CODE = formatBytes32String('Conduit')
 
 export const DEFAULT_PRICE_IMPACT_DELTA = from(0.5, 18)
 

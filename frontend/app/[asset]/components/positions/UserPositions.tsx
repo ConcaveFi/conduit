@@ -1,7 +1,7 @@
 import { cx } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
-import { DEFAULT_PRICE_IMPACT_DELTA, TrackingCode } from 'app/[asset]/constants/perps-config'
+import { DEFAULT_PRICE_IMPACT_DELTA, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { abs, divide, equal, format, from, greaterThan } from 'dnum'
 import {
@@ -14,6 +14,7 @@ import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
 
 export function UserPositions() {
+  return null
   const { address } = useAccount()
   const market = useRouteMarket()
   const { t } = useTranslation()
@@ -29,7 +30,7 @@ export function UserPositions() {
     args: position && [
       // BigNumber.from(position.size).mul(-1),
       toBigNumber(DEFAULT_PRICE_IMPACT_DELTA),
-      TrackingCode,
+      TRACKING_CODE,
     ],
   })
   const { write: closePosition } = useMarketClosePositionWithTracking(config)
