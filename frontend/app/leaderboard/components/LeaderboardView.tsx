@@ -36,7 +36,12 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
           className="centered text-ocean-200 flex gap-2 text-xs"
         >
           Sort: {sort === 'top' ? `Top to bottom` : 'Bottom to top'}
-          <ChevronIcon className="fill-ocean-200 box-3" />
+          <ChevronIcon
+            className={cx(
+              'fill-ocean-200 box-3 transition-all',
+              sort === 'bottom' ? 'rotate-180' : '',
+            )}
+          />
         </button>
 
         {/*  Search input */}
@@ -44,7 +49,7 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
           <SearchIcon className="stroke-ocean-300 box-6" />
           <input
             type="text"
-            className="text-ocean-200 placeholder:text-ocean-300 w-full bg-transparent"
+            className="text-ocean-200 placeholder:text-ocean-300 w-full bg-transparent outline-none"
             placeholder="Search"
           />
         </div>
