@@ -150,9 +150,11 @@ importers:
   packages/icons:
     specifiers:
       react: ^18.2.0
+      tailwind-merge: ^1.10.0
       typescript: ^5.0.2
     devDependencies:
       react: 18.2.0
+      tailwind-merge: 1.10.0
       typescript: 5.0.2
 
   packages/interface:
@@ -8601,7 +8603,6 @@ packages:
 
   /tailwind-merge/1.10.0:
     resolution: {integrity: sha512-WFnDXSS4kFTZwjKg5/oZSGzBRU/l+qcbv5NVTzLUQvJ9yovDAP05h0F2+ZFW0Lw9EcgRoc2AfURUdZvnEFrXKg==}
-    dev: false
 
   /tailwind/4.0.0:
     resolution: {integrity: sha512-LlUNoD/5maFG1h5kQ6/hXfFPdcnYw+1Z7z+kUD/W/E71CUMwcnrskxiBM8c3G8wmPsD1VvCuqGYMHviI8+yrmg==}
