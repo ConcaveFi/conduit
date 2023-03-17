@@ -19,7 +19,7 @@ export function ThemeSelector() {
             <Menu.Button
               key={_theme}
               onClick={() => changeTheme(_theme)}
-              className="btn btn-underline.secondary centered"
+              className="btn btn-underline.secondary centered bg-dark"
             >
               <img src={`/assets/theme/${_theme}.png`} alt="" />
             </Menu.Button>
