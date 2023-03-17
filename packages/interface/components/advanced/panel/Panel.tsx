@@ -39,7 +39,7 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
         {...headerProps}
       >
         {headerChild}
-        <span className="text-light-400 ocean:text-ocean-200 text-xs ">{name}</span>
+        <span className="text-silver ocean:text-ocean-200 text-xs ">{name}</span>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>
         {children}

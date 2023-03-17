@@ -14,7 +14,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
     >
       <div className="flex max-h-full flex-1 flex-col">
         {/* Skew */}
-        <div className="bg-ocean-500 centered flex w-full flex-col gap-1 rounded-b-xl py-3 px-4 ">
+        <div className="ocean:bg-ocean-500 centered flex w-full flex-col gap-1 rounded-b-xl py-3 px-4 ">
           <div className="flex w-full justify-between text-sm">
             <span className="text-positive text-xs">53%</span>
             <span className="text-xs text-white">Skew</span>
@@ -33,7 +33,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
               {/* <TableRow rows={['Price', 'Amount', 'Time']}>
                 {(cell) => <span className="text-ocean-200  font-medium text-xs">{cell}</span>}
               </TableRow> */}
-              <tr className="text-ocean-200 border-ocean-900 border-b-2 text-xs">
+              <tr className="text-silver ocean:text-ocean-200 border-coal ocean:border-ocean-900 border-b-2 text-xs">
                 <td className="pb-2">Price</td>
                 <td className="pb-2">Amount</td>
                 <td className="pb-2 pr-2">Time</td>
@@ -43,10 +43,10 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
               {new Array(7).fill(0).map((_, i) => {
                 const rand = Math.random()
                 return (
-                  <tr key={i} className="even:bg-ocean-900 text-xs font-medium ">
+                  <tr key={i} className="even:ocean:bg-ocean-900 even:bg-coal text-xs font-medium ">
                     <td className={cx(rand > 0.5 ? 'text-positive' : 'text-negative')}> 0.914</td>
-                    <td className="text-ocean-200  py-[6px]"> $1,644.56</td>
-                    <td className="text-ocean-200 pr-2">30s ago</td>
+                    <td className="ocean:text-ocean-200 py-[6px]  text-white"> $1,644.56</td>
+                    <td className="text-silver ocean:text-ocean-200 pr-2">30s ago</td>
                   </tr>
                 )
               })}

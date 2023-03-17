@@ -3,10 +3,10 @@ import { cx, NumericInput, Panel, PanelProps, Skeleton } from '@tradex/interface
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
 import { Address, getContract, Provider } from '@wagmi/core'
-import { SupportedChainId } from 'app/providers/wagmi-config'
 import { MAX_LEVERAGE } from 'app/[asset]/constants/perps-config'
 import { useMarketSettings, useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
+import { SupportedChainId } from 'app/providers/wagmi-config'
 import { divide, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
@@ -75,8 +75,8 @@ const OrderSizeInput = () => {
   const hasValue = greaterThan(inputs[other] || 0, 0)
 
   return (
-    <motion.div className="bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
-      <span className="text-ocean-200 text-xs">Order Size</span>
+    <motion.div className="bg-dark-bg ocean:bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+      <span className="ocean:text-ocean-200 text-xs text-white">Order Size</span>
       <div className="flex w-full max-w-full justify-between">
         <div className="flex min-w-0 flex-col">
           <AnimatePresence mode="popLayout">
@@ -92,7 +92,7 @@ const OrderSizeInput = () => {
               <NumericInput
                 data-overflow={isOverBuyingPower}
                 variant={'none'}
-                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
+                className=" placeholder:ocean:text-ocean-200 placeholder:text-silver min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
                 value={value ? format(value, { trailingZeros: false }) : ''}
                 onValueChange={({ value }, { source }) => {
@@ -186,23 +186,28 @@ function SizeSlider({
       className="relative flex w-full touch-none select-none items-center"
     >
       <Slider.Track
+        aria-disabled={disabled}
         className={cx(
           'h-1 flex-1 rounded-full',
-          disabled ? 'bg-ocean-500' : 'bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
+          'aria-enabled:bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
+          'aria-disabled:bg-coal-bright ocean:aria-disabled:bg-ocean-500',
         )}
       />
       <Slider.Thumb asChild>
         <motion.span
+          aria-disabled={disabled}
           className={cx(
-            'box-4 bg-ocean-800 block rounded-full border-2 outline-none transition-all duration-300 ease-out will-change-transform',
-            'focus:transition-none',
+            'box-4 bg-coal-bright ocean:bg-ocean-800 block rounded-full border-2 outline-none ',
+            'transition-all duration-300 ease-out will-change-transform focus:transition-none',
+            'aria-disabled:border-silver ocean:aria-disabled:border-ocean-400',
           )}
-          style={{ borderColor: disabled ? 'rgb(62 83 137)' : borderColor }}
+          style={{ borderColor: disabled ? '' : borderColor }}
         />
       </Slider.Thumb>
     </Slider.Root>
   )
 }
+// rgb(62 83 137)
 
 const riskLevelLabel = (value: number, max: number) => {
   // if (!value || value < remainingMargin) return 'NONE'
@@ -222,7 +227,14 @@ function LiquidationSlider() {
     <>
       <SizeSlider value={sizeUsd} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
       <div className="flex justify-between font-mono">
-        <span className={cx('text-xs', buyingPower ? 'text-green-500' : 'text-ocean-300')}>$0</span>
+        <span
+          className={cx(
+            'text-xs',
+            buyingPower ? 'text-green-500' : 'text-silver ocean:text-ocean-300',
+          )}
+        >
+          $0
+        </span>
         {!!buyingPower && <span className="text-xs text-orange-500">$ {format(buyingPower)}</span>}
       </div>
     </>
@@ -257,10 +269,10 @@ function LiquidationPriceRisk() {
 
 function LiquidationPrice() {
   return (
-    <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+    <div className="bg-dark-bg ocean:bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
-        <span className="text-ocean-200 text-xs">Liquidation Price:</span>
-        <span className="text-ocean-200 text-xs">Risk Level</span>
+        <span className="ocean:text-ocean-200 text-xs text-white">Liquidation Price:</span>
+        <span className="ocean:text-ocean-200 text-xs text-white">Risk Level</span>
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
@@ -316,24 +328,24 @@ function MarginDetails() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-4">
-        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-ocean-200">Deposited</span>
+        <div className="bg-coal ocean:bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-silver ocean:text-ocean-200">Deposited</span>
           {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-white">$ {format(remainingMargin)}</span>
           )}
         </div>
-        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-ocean-200">Buying power</span>
+        <div className="bg-coal ocean:bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-silver ocean:text-ocean-200">Buying power</span>
           {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
           )}
         </div>
-        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-ocean-200">In position</span>
+        <div className="bg-coal ocean:bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-silver ocean:text-ocean-200">In position</span>
           {isLoading ? (
             <Skeleton />
           ) : (
@@ -341,8 +353,8 @@ function MarginDetails() {
           )}
         </div>
       </div>
-      <div className="bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
-        <span className="text-ocean-200">Available</span>
+      <div className="bg-coal ocean:bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
+        <span className="text-silver ocean:text-ocean-200">Available</span>
         {isLoading ? (
           <Skeleton />
         ) : (
@@ -432,10 +444,12 @@ function DepositMarginToReduceRisk() {
   const { onOpen } = useQueryModal({ modalType: 'margin', type: 'transfer' })
   return (
     <div className="flex items-center justify-between">
-      <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
+      <span className="text-silver ocean:text-ocean-200 text-xs">
+        Increase margin to reduce risk
+      </span>
       <button
         onClick={onOpen}
-        className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
+        className="text-silver ocean:text-ocean-200 border-coal ocean:border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
       >
         Deposit Margin
       </button>

@@ -1,3 +1,4 @@
+const plugin = require('tailwindcss/plugin')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
@@ -30,5 +31,10 @@ module.exports = {
     '../packages/interface/components/**/*.tsx',
     '../packages/interface/styles/**/*.ts',
   ],
-  plugins: [require('@tradex/theme')],
+  plugins: [
+    require('@tradex/theme'),
+    plugin(({ addVariant }) => {
+      addVariant('aria-enabled', '&[aria-disabled="false"]')
+    }),
+  ],
 }
