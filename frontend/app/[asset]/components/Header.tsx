@@ -19,7 +19,7 @@ import { offchainPricesAtom, useMarketIndexPrice } from '../lib/price/useOffchai
 import { MarketList } from './MarketList'
 
 const formatBalance = (b: FetchBalanceResult | undefined) =>
-  b ? format(from([b.value.toBigInt(), b.decimals]), 2) : '0.0'
+  b ? format(from([b.value.toBigInt(), b.decimals]), 2) : '0.00'
 
 function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   return (
