@@ -18,6 +18,13 @@ const colors = {
     200: '#E4E4EC',
     100: '#FFFFFF',
   },
+  // Colors used on dark theme
+  'coal-bright': '#1F2029',
+  'dark-bg': '#17181F', //Black/Black BG at figma
+  silver: '#797A80',
+  coal: '#292A33',
+
+  // Remaining...
   'bright-text': '#CCE1FF',
   buttons: '#00D0FE',
   negative: '#E4364B', //On figma it's called red-500, to avoid conflicts with tailwind, changed to negative

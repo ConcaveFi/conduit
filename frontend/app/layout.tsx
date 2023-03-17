@@ -45,9 +45,9 @@ const mono = localFont({
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html
-      className={`bg-ocean-900 flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
+      className={` flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
     >
-      <body className="w-full">
+      <body className="bg-dark-bg ocean:bg-ocean-900 w-full">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>
