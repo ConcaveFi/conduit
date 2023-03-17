@@ -1,19 +1,18 @@
 export enum Themes {
-  // LIGHT = 'light',
+  LIGHT = 'light',
   DARK = 'dark',
   OCEAN = 'ocean',
 }
 
 export class Theme {
   public static readonly itemStore = 'theme'
-  public static readonly defaultTheme = Themes.DARK
+  public static readonly defaultTheme = Themes.OCEAN
 
   private constructor() {}
 
   public static getStoredTheme(): Themes | undefined {
-    if (typeof localStorage == 'undefined') return undefined
-
-    const theme = localStorage.getItem(this.itemStore)
+    if (typeof localStorage === 'undefined') return undefined
+    const theme = localStorage.get(this.itemStore)
     if (!theme) return undefined
     return theme as Themes
   }
@@ -27,7 +26,7 @@ export class Theme {
 
   public static storeTheme(theme: Themes) {
     if (typeof theme === 'undefined') return
-    localStorage.setItem(this.itemStore, theme)
+    localStorage.setItem(this.itemStore, this.defaultTheme)
   }
 
   private static removePrev() {
@@ -38,12 +37,10 @@ export class Theme {
     document.documentElement.classList.remove(prevTheme)
   }
 
-  public static initialize(): Themes {
+  public static loadTheme() {
     const storedTheme = Theme.getStoredTheme()
     const theme = storedTheme || Theme.defaultTheme
-    this.toDOM(theme)
-    this.storeTheme(theme)
-    return theme
+    Theme.toDOM(theme)
   }
 
   public static toDOM(theme: Themes) {
