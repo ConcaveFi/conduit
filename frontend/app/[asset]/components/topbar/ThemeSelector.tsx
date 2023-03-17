@@ -1,9 +1,11 @@
 import { Menu } from '@tradex/interface'
 import { useTheme } from 'app/providers/ThemeProvider'
 import Image from 'next/image'
-import { Themes } from 'utils/themeHandler'
+import { Theme, Themes } from 'utils/themeHandler'
 export function ThemeSelector() {
   const { changeTheme, theme } = useTheme()
+
+  console.log(Theme.getStoredTheme())
 
   return (
     <Menu className="flex justify-center">
@@ -17,7 +19,7 @@ export function ThemeSelector() {
             <Menu.Button
               key={_theme}
               onClick={() => changeTheme(_theme)}
-              className="btn btn-underline.secondary centered bg-dark"
+              className="btn btn-underline.secondary centered"
             >
               <img src={`/assets/theme/${_theme}.png`} alt="" />
             </Menu.Button>
