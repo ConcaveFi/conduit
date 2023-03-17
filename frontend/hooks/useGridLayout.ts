@@ -1,7 +1,7 @@
+import { useAtomValue } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
 import { Layout } from 'react-grid-layout'
-import { useBreakpoint } from 'use-breakpoint'
-import { BREAKPOINTS } from 'utils/contants/breakpoints'
+import { breakpointAtom } from 'utils/contants/breakpoints'
 import { GridLayout } from 'utils/grid/grid.layout'
 import { GridWidgetPresets } from 'utils/grid/widgets.presets'
 
@@ -9,7 +9,7 @@ export interface GridLayoutHook {
   defaultLayout?: Layout[]
 }
 export function useGridLayout(props?: GridLayoutHook) {
-  const { breakpoint } = useBreakpoint(BREAKPOINTS)
+  const breakpoint = useAtomValue(breakpointAtom)
   const [layout, setLayout] = useState(props?.defaultLayout)
 
   useEffect(() => {
