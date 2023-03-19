@@ -1,19 +1,19 @@
 const colors = require('../../../colors')
 
 const secondary = {
-  backgroundColor: colors.light[300],
+  backgroundColor: colors.dark[20],
 
   '.ocean &': {
-    backgroundColor: colors.ocean[500],
+    backgroundColor: colors.blue[20],
   },
 }
 const secondaryOutlined = {
-  backgroundColor: colors.light[300],
+  backgroundColor: colors.dark[20],
+  borderColor: colors.dark[30],
   border: '2px solid',
-  borderColor: colors.light[500],
   '.ocean &': {
-    backgroundColor: colors.ocean[500],
-    borderColor: `${colors.ocean[300]}60`,
+    borderColor: colors.blue[30],
+    backgroundColor: colors.blue[20],
   },
 }
 
