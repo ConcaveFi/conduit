@@ -1,11 +1,11 @@
 const colors = require('../../../colors')
 
 const secondary = {
-  backgroundColor: colors.light[200],
-  color: colors.light[500],
+  backgroundColor: colors.dark[30],
+  color: colors.dark.accent,
   '.ocean &': {
-    backgroundColor: colors.ocean[200],
-    color: colors['bright-text'],
+    backgroundColor: colors.blue[30],
+    color: colors.blue.accent,
   },
 }
 const secondaryOutlined = {

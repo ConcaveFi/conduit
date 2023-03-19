@@ -147,8 +147,8 @@ export function StrategyHeader() {
       </div>
       <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <IndexPrice />
-        <div className="flex gap-2">
-          <BalanceIcon />
+        <div className="centered flex gap-2">
+          <BalanceIcon className="fill-dark-30 ocean:fill-blue-30 box-6" />
           <Info title={t('24h_change')}>
             <span className="ocean:text-blue-accent text-xs font-bold text-white">
               $ 370,526,580
