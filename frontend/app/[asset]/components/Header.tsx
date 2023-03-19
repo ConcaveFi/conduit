@@ -84,7 +84,9 @@ function TokenBalance({
           </>
         }
       >
-        <span className="text-bright-text text-xs font-bold">{formatBalance(balance)}</span>
+        <span className="ocean:text-bright-text text-xs font-bold text-white">
+          {formatBalance(balance)}
+        </span>
       </Info>
     </div>
   )
@@ -95,7 +97,10 @@ function IndexPrice() {
   const indexPrice = useMarketIndexPrice({ marketKey: market?.key })
   return (
     <Info title={'Price index'}>
-      <span className="text-bright-text text-xs font-bold"> ${format(indexPrice, 2)}</span>
+      <span className="ocean:text-bright-text text-xs font-bold text-white">
+        {' '}
+        ${format(indexPrice, 2)}
+      </span>
     </Info>
   )
 }
@@ -142,7 +147,9 @@ export function StrategyHeader() {
         <div className="flex gap-2">
           <BalanceIcon />
           <Info title={t('24h_change')}>
-            <span className="text-bright-text text-xs font-bold">$ 370,526,580</span>
+            <span className="ocean:text-bright-text text-xs font-bold text-white">
+              $ 370,526,580
+            </span>
           </Info>
         </div>
         <Info title={t('24h_change')}>
@@ -152,12 +159,12 @@ export function StrategyHeader() {
           <span className="text-positive text-xs font-bold">{fundingRate}</span>
         </Info>
         <Info title={'Open interest (L)'}>
-          <span className="text-bright-text text-xs font-bold">
+          <span className="ocean:text-bright-text text-xs font-bold text-white">
             {`$${format(openInterestUsd.long, { compact: true })} / $${limit}`}
           </span>
         </Info>
         <Info title={'Open interest (S)'}>
-          <span className="text-bright-text text-xs font-bold">
+          <span className="ocean:text-bright-text text-xs font-bold text-white">
             {`$${format(openInterestUsd.short, { compact: true })} / $${limit}`}
           </span>
         </Info>
