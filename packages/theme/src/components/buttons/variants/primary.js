@@ -1,11 +1,11 @@
 const colors = require('../../../colors')
 
 const primary = {
-  backgroundColor: colors.light[100],
-  color: colors.light[100],
+  backgroundColor: colors.dark.accent,
+  color: colors.dark[10],
   '.ocean &': {
-    backgroundColor: colors.ocean[100],
-    color: colors.ocean[900],
+    backgroundColor: colors.blue.accent,
+    color: colors.blue[10],
   },
 }
 

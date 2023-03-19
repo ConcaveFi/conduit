@@ -1,19 +1,16 @@
 import { CloseIcon, ExpandIcon } from '@tradex/icons'
-import { VariantProps } from 'class-variance-authority'
-import { ReactNode, forwardRef, useState } from 'react'
+import { forwardRef, ReactNode, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { DivProps } from '../../../types/primitives'
-export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
 export type PanelHeaderProps = {
   children?: ReactNode
   onMaximize?: VoidFunction
   onClose?: VoidFunction
   onMinimize?: VoidFunction
-} & PanelHeaderAttributes &
-  DivProps
+} & DivProps
 export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
-  ({ children, variant, onMaximize, onClose, onMinimize, className, ...props }, ref) => {
+  ({ children, onMaximize, onClose, onMinimize, className, ...props }, ref) => {
     const [isFull, setIsFull] = useState(false)
     function handleToggle() {
       if (isFull && onMinimize) {
@@ -24,7 +21,7 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         onMaximize()
       }
     }
-    className = twMerge(panelHeaderStyles({ variant }), 'cursor-move', className)
+    className = twMerge(panelHeaderStyles, 'cursor-move', className)
     return (
       <div
         ref={ref}

@@ -1,4 +1,6 @@
+import { VariantProps } from 'class-variance-authority'
 import { forwardRef } from 'react'
+import { panelBodyStyles } from '../../../styles/advanced/panelStyles'
 import { DivProps } from '../../../types/primitives'
 import { PanelBody, PanelBodyProps } from './PanelBody'
 import { PanelHeader, PanelHeaderProps } from './PanelHeader'
@@ -11,9 +13,9 @@ export interface PanelEssentials {
   onMinimize?: VoidFunction
   onClose?: VoidFunction
 }
-export interface PanelProps extends DivProps, PanelHeaderProps, PanelEssentials {
+export type PanelAttributes = VariantProps<typeof panelBodyStyles>
+export interface PanelProps extends DivProps, PanelHeaderProps, PanelAttributes, PanelEssentials {
   name?: string
-
   headerChild?: JSX.Element
 }
 export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
@@ -35,11 +37,10 @@ export const Panel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
         onMinimize={onMinimize}
         onMaximize={onMaximize}
         onClose={onClose}
-        variant={variant}
         {...headerProps}
       >
         {headerChild}
-        <span className="text-silver ocean:text-ocean-200 text-xs ">{name}</span>
+        <span className="text-dark-accent ocean:text-blue-accent text-xs ">{name}</span>
       </PanelHeader>
       <PanelBody variant={variant} {...bodyProps}>
         {children}
