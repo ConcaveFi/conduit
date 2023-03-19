@@ -190,16 +190,16 @@ function SizeSlider({
         className={cx(
           'h-1 flex-1 rounded-full',
           'aria-enabled:bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
-          'aria-disabled:bg-coal-bright ocean:aria-disabled:bg-ocean-500',
+          'aria-disabled:bg-dark-20 ocean:aria-disabled:bg-blue-20',
         )}
       />
       <Slider.Thumb asChild>
         <motion.span
           aria-disabled={disabled}
           className={cx(
-            'box-4 bg-coal-bright ocean:bg-ocean-800 block rounded-full border-2 outline-none ',
+            'box-4 bg-dark-20 ocean:bg-blue-20 block rounded-full border-2 outline-none ',
             'transition-all duration-300 ease-out will-change-transform focus:transition-none',
-            'aria-disabled:border-silver ocean:aria-disabled:border-ocean-400',
+            'aria-disabled:border-dark-30 ocean:aria-disabled:border-blue-30',
           )}
           style={{ borderColor: disabled ? '' : borderColor }}
         />
@@ -230,7 +230,7 @@ function LiquidationSlider() {
         <span
           className={cx(
             'text-xs',
-            buyingPower ? 'text-green-500' : 'text-silver ocean:text-ocean-300',
+            buyingPower ? 'text-green-500' : 'text-dark-30 ocean:text-blue-30',
           )}
         >
           $0
@@ -271,8 +271,8 @@ function LiquidationPrice() {
   return (
     <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
-        <span className="ocean:text-ocean-200 text-xs text-white">Liquidation Price:</span>
-        <span className="ocean:text-ocean-200 text-xs text-white">Risk Level</span>
+        <span className="ocean:text-blue-accent text-dark-accent text-xs">Liquidation Price:</span>
+        <span className="ocean:text-blue-accent text-dark-accent text-xs">Risk Level</span>
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
