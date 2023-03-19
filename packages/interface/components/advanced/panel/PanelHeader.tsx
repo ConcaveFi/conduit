@@ -21,7 +21,7 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         onMaximize()
       }
     }
-    className = twMerge(panelHeaderStyles(), 'cursor-move', className)
+    className = twMerge(panelHeaderStyles, 'cursor-move', className)
     return (
       <div
         ref={ref}

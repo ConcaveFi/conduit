@@ -24,7 +24,7 @@ const formatBalance = (b: FetchBalanceResult | undefined) =>
 function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   return (
     <div className="flex flex-col items-start font-mono">
-      <span className="text-silver ocean:text-ocean-200 whitespace-nowrap font-sans text-xs">
+      <span className="text-dark-accent ocean:text-blue-accent whitespace-nowrap font-sans text-xs">
         {title}
       </span>
       {children}
@@ -142,10 +142,10 @@ export function StrategyHeader() {
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
-      <div className="centered ocean:bg-ocean-700 ocean:border-none border-coal order-2 flex min-h-[64px] w-full rounded-lg border px-5 md:order-[0] md:w-fit ">
+      <div className="centered bg-dark-10 ocean:bg-blue-10 order-2 flex min-h-[64px] w-full rounded-lg  px-5 md:order-[0] md:w-fit ">
         <MarketList />
       </div>
-      <div className="ocean:bg-ocean-700 ocean:border-none border-coal -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg border  md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
+      <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <IndexPrice />
         <div className="centered flex gap-2">
           <BalanceIcon className="fill-dark-30 ocean:fill-blue-30 box-6" />
@@ -172,7 +172,7 @@ export function StrategyHeader() {
           </span>
         </Info>
       </div>
-      <div className="ocean:bg-ocean-700 ocean:border-none border-coal flex   min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg border px-4 ">
+      <div className="bg-dark-10 ocean:bg-blue-10 flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg  px-4 ">
         <TokenBalance symbol="sUSD" token={sUSD_ADDRESS[chainId]} />
         <TokenBalance
           symbol="OP"

@@ -19,10 +19,10 @@ const colors = {
     100: '#FFFFFF',
   },
   // Colors used on dark theme
-  'coal-bright': '#1F2029',
-  'dark-bg': '#17181F', //Black/Black BG at figma
-  silver: '#797A80',
-  coal: '#292A33',
+  // 'coal-bright': '#1F2029',
+  // 'dark-bg': '#17181F', //Black/Black BG at figma
+  // silver: '#797A80',
+  // coal: '#292A33',
 
   // Remaining...
   'bright-text': '#CCE1FF',

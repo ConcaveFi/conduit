@@ -23,6 +23,7 @@ module.exports = {
     require('@tradex/theme'),
     plugin(({ addVariant }) => {
       addVariant('aria-enabled', '&[aria-disabled="false"]')
+      addVariant('aria-diselected', '&[aria-selected="false"]')
     }),
   ],
 }
