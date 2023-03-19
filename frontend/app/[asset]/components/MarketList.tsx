@@ -39,7 +39,7 @@ export const MarketList = function MarketList() {
     <Menu className={'my-auto h-fit'}>
       <Menu.Button className="btn centered gap-6 outline-none">
         <SelectedMarket marketKey={market.key} asset={handleSynth(market?.asset)} />
-        <ChevronIcon />
+        <ChevronIcon className="box-3 fill-dark-accent ocean:fill-blue-accent" />
       </Menu.Button>
       <Menu.Items className="card card-translucent-glass left-10 h-[500px] w-[360px] origin-top-left overflow-y-auto rounded-tl-sm p-2">
         {markets &&
@@ -101,7 +101,7 @@ const MarketButton = forwardRef<HTMLAnchorElement, MarketButton>(
         replace
         ref={ref}
         className={
-          'btn even:bg-light-400 ocean:even:bg-ocean-600 h-fit justify-between gap-6 rounded-lg p-2 px-3'
+          'btn even:bg-dark-10 ocean:even:bg-blue-10 h-fit justify-between gap-6 rounded-lg p-2 px-3'
         }
         {...(props as any)} // added "as any", buz ButtonProps is not compatible with, Link props, need to fix in future.
       >

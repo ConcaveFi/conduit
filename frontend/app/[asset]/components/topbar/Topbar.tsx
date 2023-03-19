@@ -29,7 +29,7 @@ function ConnectedAccount() {
           <>
             <button onClick={openChainModal} className="btn btn-underline centered gap-2 text-xs">
               {chain?.name}
-              <ChevronIcon className="fill-silver ocean:fill-ocean-200 h-3 w-3" />
+              <ChevronIcon className="fill-dark-30 ocean:fill-blue-30 h-3 w-3" />
             </button>
             <button className="btn btn-underline text-xs" onClick={openAccountModal}>
               {truncateAddress(account?.address)}
@@ -76,7 +76,7 @@ export function Topbar() {
         <LocationSelector />
         <ThemeSelector />
 
-        <NotificationIcon className="fill-silver ocean:fill-ocean-200 box-4" />
+        <NotificationIcon className="fill-dark-accent ocean:fill-blue-accent box-4" />
         <ConnectedAccount />
       </div>
       <Modal isOpen={swapModal.isOpen} onClose={swapModal.onClose}>
