@@ -44,23 +44,23 @@ function SideSelector() {
   return (
     <div className="flex gap-4 font-mono">
       <button
+        aria-pressed={side === 'long'}
         onClick={() => setSide('long')}
         className={cx(
-          `btn centered flex-1 rounded-lg py-2`,
-          side === 'long'
-            ? 'bg-teal-500  text-white'
-            : 'text-teal-400 ring-1 ring-inset ring-teal-400',
+          `btn centered flex-1 rounded-lg py-2 text-white  `,
+          'aria-pressed:bg-dark-green-gradient ocean:aria-pressed:bg-blue-green-gradient aria-pressed:border-transparent',
+          'aria-diselected:text-teal-400 aria-diselected:ring-1 ring-inset ring-teal-400',
         )}
       >
         {t('long')}
       </button>
       <button
+        aria-pressed={side === 'short'}
         onClick={() => setSide('short')}
         className={cx(
-          'centered btn flex-1 rounded-lg py-2',
-          side === 'short'
-            ? 'bg-red-500 text-white'
-            : 'text-red-400 ring-1 ring-inset ring-red-400',
+          `btn centered flex-1 rounded-lg py-2 text-white `,
+          'aria-pressed:bg-dark-red-gradient ocean:aria-pressed:bg-blue-red-gradient aria-pressed:border-transparent',
+          'aria-diselected:text-red-400 aria-diselected:ring-1 ring-inset ring-red-400',
         )}
       >
         {t('short')}
@@ -90,7 +90,7 @@ const OrderSizeInput = () => {
   const hasValue = greaterThan(inputs[other] || 0, 0)
 
   return (
-    <motion.div className="bg-dark-bg ocean:bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+    <motion.div className="bg-dark-main-bg ocean:bg-blue-main-bg flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <span className="ocean:text-ocean-200 text-xs text-white">Order Size</span>
       <div className="flex w-full max-w-full justify-between">
         <div className="flex min-w-0 flex-col">
@@ -308,7 +308,7 @@ function LiquidationPriceRisk() {
 
 function LiquidationInfo() {
   return (
-    <div className="bg-dark-bg ocean:bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
         <span className="ocean:text-ocean-200 text-xs text-white">Liquidation Price:</span>
         <span className="ocean:text-ocean-200 text-xs text-white">Risk Level</span>
@@ -367,24 +367,24 @@ function MarginDetails() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-4">
-        <div className="bg-coal ocean:bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-silver ocean:text-ocean-200">Deposited</span>
+        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-dark-accent ocean:text-blue-accent">Deposited</span>
           {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-white">$ {format(remainingMargin)}</span>
           )}
         </div>
-        <div className="bg-coal ocean:bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-silver ocean:text-ocean-200">Buying power</span>
+        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-dark-accent ocean:text-blue-accent">Buying power</span>
           {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
           )}
         </div>
-        <div className="bg-coal ocean:bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-silver ocean:text-ocean-200">In position</span>
+        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-dark-accent ocean:text-blue-accent">In position</span>
           {isLoading ? (
             <Skeleton />
           ) : (
@@ -392,8 +392,8 @@ function MarginDetails() {
           )}
         </div>
       </div>
-      <div className="bg-coal ocean:bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
-        <span className="text-silver ocean:text-ocean-200">Available</span>
+      <div className="bg-dark-30 ocean:bg-blue-30 flex justify-between rounded-lg p-3 text-sm">
+        <span className="text-dark-accent ocean:text-blue-accent">Available</span>
         {isLoading ? (
           <Skeleton />
         ) : (
@@ -549,12 +549,12 @@ function DepositMarginToReduceRisk() {
   const { onOpen } = useQueryModal({ modalType: 'margin', type: 'transfer' })
   return (
     <div className="flex items-center justify-between">
-      <span className="text-silver ocean:text-ocean-200 text-xs">
+      <span className="ocean:text-blue-accent text-dark-accent text-xs">
         Increase margin to reduce risk
       </span>
       <button
         onClick={onOpen}
-        className="text-silver ocean:text-ocean-200 border-coal ocean:border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
+        className="text-dark-accent ocean:text-blue-accent border-coal ocean:border-blue-accent  rounded-md border px-3 py-0.5 text-xs"
       >
         Deposit Margin
       </button>
