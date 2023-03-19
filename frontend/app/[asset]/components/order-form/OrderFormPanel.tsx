@@ -529,7 +529,7 @@ function PlaceOrderButton() {
   return (
     <>
       <button
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
+        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg  font-bold text-white shadow-lg"
         disabled={disabled}
         onClick={() => {
           orderLock('lock')
