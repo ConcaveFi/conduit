@@ -62,7 +62,14 @@ export class GridWidgetPresets {
   ]
 
   public static toLayout(preset: WidgetPreset): Layout[] {
-    const formatted = Object.entries(preset).map(([i, remaining]) => ({ i, ...remaining }))
+    const formatted = Object.entries(preset).map(([i, remaining]) => {
+      return {
+        i,
+        resizeHandles: ['se'],
+        isResizable: true,
+        ...remaining,
+      } satisfies Layout
+    })
     return formatted
   }
 
@@ -82,11 +89,4 @@ export class GridWidgetPresets {
   }
 }
 
-export type WidgetPreset = {
-  [key in GridWidgets]: {
-    x: number
-    y: number
-    w: number
-    h: number
-  }
-}
+export type WidgetPreset = { [key in GridWidgets]: Omit<Layout, 'i'> }

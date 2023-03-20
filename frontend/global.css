@@ -23,10 +23,11 @@
 
 .react-grid-placeholder {
   transition: all 200ms;
-  background-color: #ffffff40;
+  background: #ffffff60;
+  opacity: 0.2;
   border-radius: 10px;
-  z-index: -1;
 }
+
 .ocean .react-grid-placeholder {
   background-color: #00d0fe60;
 }
