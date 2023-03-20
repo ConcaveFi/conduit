@@ -116,7 +116,7 @@ export const TransferMarginButton = function TransferMarginButton() {
         onClick={onOpen}
         className=" btn-primary flex w-full items-center justify-center rounded-lg py-3 text-center text-sm font-medium"
       >
-        Deposit Margin to {market.asset}/sUSD
+        Deposit Margin to {market?.asset}/sUSD
       </button>
       <ManageMarginModal isOpen={isOpen} onClose={onClose} />
     </>

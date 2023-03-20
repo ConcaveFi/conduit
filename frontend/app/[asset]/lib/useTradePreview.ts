@@ -10,7 +10,7 @@ import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 import { sizeDeltaAtom } from '../components/order-form/OrderFormPanel'
-import { routeMarketAtom } from './market/useMarket'
+import { useRouteMarket } from './market/useMarket'
 
 const parseTradePreview = ({
   fee,
@@ -103,11 +103,11 @@ export function useCurrentTradePreview<TSelect = TradePreview>(
   select?: (t: TradePreview) => TSelect,
 ) {
   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
-  const market = useAtomValue(routeMarketAtom)
+  const market = useRouteMarket()
   return useTradePreview({
     sizeDelta,
     marketPrice: [0n, 0], // marketPrice updates like every second, do we want to refetch this often?
-    market: market.address,
+    market: market?.address,
     select,
   })
 }

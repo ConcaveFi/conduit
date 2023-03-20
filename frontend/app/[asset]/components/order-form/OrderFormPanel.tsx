@@ -77,7 +77,7 @@ const OrderSizeInput = () => {
     'usd',
   )
   const other = amountDenominator === 'usd' ? 'asset' : 'usd'
-  const symbols = { usd: 'sUSD', asset: routeMarket.asset }
+  const symbols = { usd: 'sUSD', asset: routeMarket?.asset }
 
   const onChange = useSetAtom(orderInputAtom)
   const inputs = useAtomValue(orderDerivedValuesAtom)

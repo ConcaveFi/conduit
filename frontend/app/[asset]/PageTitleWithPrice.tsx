@@ -14,9 +14,9 @@ export function PageTitleWithPrice() {
   })
 
   useEffect(() => {
-    if (!market.asset || !price) return
-    document.title = `${market.asset} - $ ${price} | Conduit`
-  }, [price, market.asset])
+    if (!market?.asset || !price) return
+    document.title = `${market?.asset} - $ ${price} | Conduit`
+  }, [price, market?.asset])
 
   return null
 }

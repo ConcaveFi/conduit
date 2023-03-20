@@ -7,16 +7,15 @@ import { Address, FetchBalanceResult } from '@wagmi/core'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { SupportedChainId } from 'app/providers/wagmi-config'
 import { add, divide, from, multiply, sub } from 'dnum'
-import { useAtomValue } from 'jotai'
 import Image from 'next/image'
 import { PropsWithChildren, ReactNode } from 'react'
 import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 import { useMarketSettings, useRouteMarket } from '../lib/market/useMarket'
-import { PythId, PythIds } from '../lib/price/pyth'
+import { MarketKey } from '../lib/price/pyth'
 import { ChainLinkFeed, ChainLinkFeeds, useChainLink } from '../lib/price/useChainLink'
-import { offchainPricesAtom, useMarketIndexPrice } from '../lib/price/useOffchainPrice'
+import { useMarketIndexPrice } from '../lib/price/useOffchainPrice'
 import { MarketList } from './MarketList'
 
 const formatBalance = (b: FetchBalanceResult | undefined) =>
@@ -33,8 +32,9 @@ function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   )
 }
 
-function PythPriceFeed({ id }: { id: PythId }) {
-  const price = useAtomValue(offchainPricesAtom({ network: 'mainnet', id }))
+function PythPriceFeed({ marketKey }: { marketKey: MarketKey }) {
+  // const price = useAtomValue(offchainPricesAtom({ network: 'mainnet', id }))
+  const price = useMarketIndexPrice({ marketKey })
   return <span className="font-mono">- {format(price, 2)}</span>
 }
 function ChainlinkPriceFeed({ feed }: { feed: ChainLinkFeed }) {
@@ -177,18 +177,14 @@ export function StrategyHeader() {
         <TokenBalance
           symbol="OP"
           token={OP_ADDRESS[chainId]}
-          priceFeed={<PythPriceFeed id={PythIds.OP.mainnet} />}
+          priceFeed={<PythPriceFeed marketKey="sOPPERP" />}
         />
         <TokenBalance
           symbol="SNX"
           token={SNX_ADDRESS[chainId]}
           priceFeed={<ChainlinkPriceFeed feed={ChainLinkFeeds.SNX} />}
         />
-        <TokenBalance
-          symbol="ETH"
-          token="eth"
-          priceFeed={<PythPriceFeed id={PythIds.ETH.mainnet} />}
-        />
+        <TokenBalance symbol="ETH" token="eth" priceFeed={<PythPriceFeed marketKey="sETHPERP" />} />
       </div>
     </div>
   )
