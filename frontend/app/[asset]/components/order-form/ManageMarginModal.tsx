@@ -33,9 +33,9 @@ export function ManageMarginModal(props: ModalProps) {
   return (
     <Modal
       {...props}
-      className="card card-secondary-outlined relative h-fit w-[400px] gap-4 p-[16px_12px]"
+      className="card card-secondary-outlined  relative h-fit w-[400px] gap-4 p-[16px_12px]"
     >
-      <span className="text-ocean-200 font-medium ">Deposit</span>
+      <span className="text-dark-accent ocean:text-blue-accent font-medium ">Deposit</span>
       <button onClick={props.onClose} className="outline-none ">
         <CloseIcon className="box-4 fill-ocean-200 absolute top-5 right-4" />
       </button>
@@ -47,13 +47,13 @@ export function ManageMarginModal(props: ModalProps) {
     return (
       <Fragment>
         <SUSDInput value={value} onValueChange={setValue} />
-        <p className="text-ocean-300 text-center text-sm">
+        <p className="text-dark-accent ocean:text-blue-accent text-center text-sm">
           A $50 margin minimum is required to open a position.
         </p>
         <button
           onClick={depositMargin}
           disabled={!depositMargin || type === 'withdraw'}
-          className="btn centered border-ocean-300 disabled:border-ocean-400 disabled:text-ocean-300 text-ocean-200 h-12 w-full rounded-full border-2 capitalize"
+          className="btn centered btn-secondary  h-12 w-full rounded-full  capitalize"
         >
           {type} Margin
         </button>
@@ -76,10 +76,10 @@ function SUSDInput(props: { value?: number; onValueChange?: (e?: number) => void
   return (
     <div className=" ">
       {/* Info section */}
-      <div className="mb-1 flex items-center justify-between px-3">
-        <span className="text-ocean-200 text-xs ">Balance:</span>
-        <span className="text-ocean-200 text-sm ">
-          <span className="text-white">{balance}</span>
+      <div className="text-dark-accent ocean:text-blue-accent mb-1 flex items-center justify-between px-3 ">
+        <span className="text-xs ">Balance:</span>
+        <span className="text-sm ">
+          {balance}
           &nbsp; sUSD
         </span>
       </div>
@@ -88,13 +88,13 @@ function SUSDInput(props: { value?: number; onValueChange?: (e?: number) => void
       <NumericInput
         value={props.value}
         onValueChange={(e) => props?.onValueChange?.(e.floatValue)}
-        className="placeholder:text-ocean-400 w-full bg-transparent text-white"
+        className="placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent w-full"
         placeholder="0.0"
         right={() => {
           return (
             <button
               onClick={() => props.onValueChange?.(numBalance)}
-              className="text-ocean-300 text-xs hover:underline"
+              className="text-dark-30 text-xs font-bold hover:underline"
             >
               MAX
             </button>

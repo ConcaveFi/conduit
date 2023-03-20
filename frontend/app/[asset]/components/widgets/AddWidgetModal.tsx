@@ -41,7 +41,7 @@ export function AddWidgetModal(props: ModalProps) {
             Cancel
           </span>
         </button>
-        <button onClick={handleApply} className="bg-green-gradient h-9 w-[80px] rounded-lg">
+        <button onClick={handleApply} className="btn-green-gradient h-9 w-[80px] rounded-lg">
           Apply
         </button>
       </div>
@@ -49,9 +49,12 @@ export function AddWidgetModal(props: ModalProps) {
   )
 
   function renderNotAddedWidgets() {
-    if (!hasWidgetsToAdd) return <span className="text-ocean-200">No more widgets to add.</span>
+    if (!hasWidgetsToAdd)
+      return (
+        <span className="text-dark-accent ocean:text-blue-accent">No more widgets to add.</span>
+      )
     return notAdded.map((key) => {
-      const buttonVariant = selecteds.includes(key) ? 'btn-secondary' : 'btn-underline.secondary'
+      const buttonVariant = selecteds.includes(key) ? 'btn-secondary' : 'btn-underline'
       const className = cx('btn w-fit py-2 px-5', buttonVariant)
       const onClick = () => dispatch(key)
       const buttonProps = { onClick, className }

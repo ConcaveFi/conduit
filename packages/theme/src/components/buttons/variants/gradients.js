@@ -2,21 +2,29 @@ const backgroundImage = require('../../../backgroundImage')
 const colors = require('../../../colors')
 
 const defaultAttributes = {
-  color: colors.ocean[800],
   boxShadow: '0px 8px 10px #0002',
+  color: 'white',
   '.ocean &': {
     boxShadow: '0px 5px 20px #0006',
   },
 }
 
 const greenGradient = {
-  backgroundImage: backgroundImage['green-gradient'],
-  ...defaultAttributes,
+  backgroundImage: backgroundImage['dark-green-gradient'],
+  color: 'white',
+  '.ocean &': {
+    backgroundImage: backgroundImage['blue-green-gradient'],
+  },
+  // ...defaultAttributes,
 }
 
 const redGradient = {
-  backgroundImage: backgroundImage['red-gradient'],
-  ...defaultAttributes,
+  backgroundImage: backgroundImage['dark-red-gradient'],
+  color: 'white',
+  '.ocean &': {
+    backgroundImage: backgroundImage['blue-red-gradient'],
+  },
+  // ...defaultAttributes,
 }
 
 module.exports = {
