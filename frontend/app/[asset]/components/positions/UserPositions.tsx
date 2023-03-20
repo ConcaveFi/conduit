@@ -14,13 +14,12 @@ import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
 
 export function UserPositions() {
-  return null
   const { address } = useAccount()
   const market = useRouteMarket()
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
-    args: market && address && [market?.address, address],
+    args: market && address && [market.address, address],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })
