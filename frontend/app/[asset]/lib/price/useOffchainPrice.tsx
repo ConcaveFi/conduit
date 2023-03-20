@@ -10,7 +10,12 @@ import { atomFamily } from 'jotai/utils'
 import { useNetwork } from 'wagmi'
 import { optimismGoerli } from 'wagmi/chains'
 import { connectedChainAtom } from '../jotai-wagmi'
-import { routeMarketAtom, useMarkets, useMarketSettings } from '../market/useMarket'
+import {
+  marketSettingsAtoms,
+  routeMarketAtom,
+  useMarkets,
+  useMarketSettings,
+} from '../market/useMarket'
 
 const pyth = {
   mainnet: new EvmPriceServiceConnection('https://xc-mainnet.pyth.network'),
@@ -62,7 +67,7 @@ export function useMarketPrice<TSelect = Dnum>({
   const { data: marketSkew } = useMarkets({
     select: (m) => m.find(({ key }) => key === marketKey)?.marketSkew,
   })
-  const { data: skewScale } = useMarketSettings({ marketKey, select: (s) => s.skewScale })
+  const { data: { skewScale } = {} } = useMarketSettings({ marketKey })
   const price = useMarketIndexPrice({ marketKey })
 
   return useMemo(() => {
@@ -74,7 +79,9 @@ export function useMarketPrice<TSelect = Dnum>({
 }
 
 export const routeMarketIndexPriceAtom = atom<Dnum>((get) => {
-  const market = get(routeMarketAtom)
+  const { data: market } = get(routeMarketAtom)
+  if (!market) return [0n, 0]
+
   const chain = get(connectedChainAtom)
   const network = chain?.id === optimismGoerli.id ? 'testnet' : 'mainnet'
   const price = get(
@@ -85,4 +92,18 @@ export const routeMarketIndexPriceAtom = atom<Dnum>((get) => {
     }),
   )
   return price
+})
+
+export const routeMarketPriceAtom = atom<Dnum>((get) => {
+  const { data: market } = get(routeMarketAtom)
+  if (!market) return [0n, 0]
+
+  const { data: marketSettings } = get(marketSettingsAtoms(market.key))
+  const price = get(routeMarketIndexPriceAtom)
+
+  if (!market.marketSkew || !marketSettings?.skewScale || !price) return [0n, 0]
+  const skew = add(divide(market.marketSkew, marketSettings.skewScale), 1)
+  const skewAdjustedPrice = multiply(price, skew)
+
+  return skewAdjustedPrice
 })

@@ -10,7 +10,7 @@ import {
   TRACKING_CODE,
 } from 'app/[asset]/constants/perps-config'
 import {
-  routeMarketAtom,
+  routeMarketKeyAtom,
   useMarketSettings,
   useRouteMarket,
 } from 'app/[asset]/lib/market/useMarket'
@@ -35,7 +35,7 @@ import { format, safeStringDnum } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { optimism } from 'wagmi/chains'
-import { routeMarketIndexPriceAtom } from '../../lib/price/useOffchainPrice'
+import { routeMarketPriceAtom } from '../../lib/price/useOffchainPrice'
 import { TransferMarginButton } from './TransferMargin'
 
 function SideSelector() {
@@ -342,9 +342,9 @@ function useMarginDetails<TSelect = MarginDetails>(select?: (m: MarginDetails) =
 
   const provider = useProvider({ chainId })
   return useQuery(
-    ['market position details', market.key, account, chainId],
-    () => fetchMarginDetails(account, chainId, provider, market.key),
-    { select, enabled: !!account },
+    ['market position details', market?.key, account, chainId],
+    () => fetchMarginDetails(account, chainId, provider, market!.key),
+    { select, enabled: !!account && !!market },
   )
 }
 
@@ -393,35 +393,32 @@ function MarginDetails() {
 }
 
 function ExecutionFee() {
-  const marketKey = useAtomValue(routeMarketAtom).key
-  const { data: executionFee } = useMarketSettings({
-    marketKey,
-    select: (settings) => settings.minKeeperFee,
-  })
+  const marketKey = useAtomValue(routeMarketKeyAtom)
+  const { data: { minKeeperFee } = {} } = useMarketSettings({ marketKey })
   return (
     <li className="odd:bg-ocean-400 flex w-full justify-between px-2 py-0.5">
       <span>Execution Fee:</span>
-      {executionFee && <span>$ {format(executionFee)}</span>}
+      {minKeeperFee && <span>$ {format(minKeeperFee)}</span>}
     </li>
   )
 }
 
 function EntryPrice() {
-  const { data: entryPrice } = useCurrentTradePreview((p) => p.entryPrice)
+  const { data: entryPrice } = useCurrentTradePreview((p) => format(p.entryPrice, 2))
   return (
     <li className="odd:bg-ocean-400 flex w-full justify-between rounded px-2 py-0.5">
       <span>Entry price:</span>
-      {entryPrice && <span>$ {format(entryPrice, 2)}</span>}
+      {entryPrice && <span>$ {entryPrice}</span>}
     </li>
   )
 }
 
 function TradeFee() {
-  const { data: fee } = useCurrentTradePreview((p) => p.fee)
+  const { data: fee } = useCurrentTradePreview((p) => format(p.fee, 2))
   return (
     <li className="odd:bg-ocean-400 flex  w-full justify-between rounded px-2 py-0.5">
       <span>Trade Fee: </span>
-      {fee && <span>$ {format(fee, 2)}</span>}
+      {fee && <span>$ {fee}</span>}
     </li>
   )
 }
@@ -436,16 +433,29 @@ function TradeDetails() {
   )
 }
 
+function OrderEntryPrice() {
+  const marketPrice = useAtomValue(routeMarketPriceAtom)
+  // const entryPrice = useAtomValue(orderPriceLockAtom)
+  return (
+    <li className="odd:bg-ocean-400 flex  w-full justify-between rounded px-2 py-0.5">
+      {/* <span>Entry price: </span>
+      {entryPrice && <span>$ {format(entryPrice, 2)}</span>} */}
+      <span>Market price: </span>
+      {marketPrice && <span>$ {format(marketPrice, 2)}</span>}
+    </li>
+  )
+}
+
 function OrderSummary() {
   return (
     <ul className="text-ocean-200 text-xs">
       <EntryPrice />
       <ExecutionFee />
       <TradeFee />
+      <OrderEntryPrice />
     </ul>
   )
 }
-
 function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
   const market = useRouteMarket()
   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
@@ -453,7 +463,7 @@ function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
   const side = useAtomValue(sideAtom)
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
-    address: market.address,
+    address: market?.address,
     enabled: !equal(sizeDelta, 0),
     args: [toBigNumber(sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT_DELTA), TRACKING_CODE],
   })
@@ -546,9 +556,9 @@ export const orderDerivedValuesAtom = atom((get) => {
   const { value, type } = get(orderInputAtom)
   if (!value) return { usd: '', asset: '' } as const
 
-  if (get(orderLockAtom) === 'locked') return get(orderDerivedValuesAtom)
+  // if (get(orderLockAtom) === 'locked') return get(orderDerivedValuesAtom)
 
-  const price = get(routeMarketIndexPriceAtom)
+  const price = get(routeMarketPriceAtom)
 
   const amount = isDnum(value) ? value : safeStringDnum(value)
   if (!price || equal(price, 0)) return { usd: '', asset: '', [type]: amount } as const

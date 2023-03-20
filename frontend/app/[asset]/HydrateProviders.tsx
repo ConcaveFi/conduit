@@ -1,17 +1,24 @@
 'use client'
 
-import { Hydrate } from '@tanstack/react-query'
+import { Hydrate, useQueryClient } from '@tanstack/react-query'
+import { queryClientAtom } from 'jotai-tanstack-query'
 import { useHydrateAtoms } from 'jotai/utils'
 import { PropsWithChildren } from 'react'
 import { deserialize } from 'superjson'
 import { SuperJSONResult } from 'superjson/dist/types'
 import { MarketSummaries } from './lib/market/markets'
-import { routeMarketAtom } from './lib/market/useMarket'
+import { routeMarketAtom, routeMarketKeyAtom } from './lib/market/useMarket'
 
 export function HydrateAtoms({ routeMarket: s_routeMarket }: { routeMarket: SuperJSONResult }) {
   const routeMarket = deserialize(s_routeMarket) as MarketSummaries[number]
 
-  useHydrateAtoms([[routeMarketAtom, routeMarket]])
+  const queryClient = useQueryClient()
+
+  useHydrateAtoms([
+    [routeMarketKeyAtom, routeMarket.key],
+    [routeMarketAtom, routeMarket],
+    [queryClientAtom, queryClient],
+  ])
 
   return null
 }

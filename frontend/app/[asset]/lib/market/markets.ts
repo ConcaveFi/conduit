@@ -58,6 +58,28 @@ export const fetchMarkets = async ({
   return parseMarketSummaries(markets)
 }
 
+export const marketSummaryQueryKey = (marketKey: MarketKey, chainId: SupportedChainId) => [
+  'market summary',
+  marketKey,
+  chainId,
+]
+export const fetchMarketSummary = async ({
+  marketKey,
+  provider,
+  chainId,
+}: {
+  marketKey: MarketKey
+  provider: Provider
+  chainId: SupportedChainId
+}) => {
+  const markets = await getContract({
+    address: marketData.address[chainId],
+    abi: marketData.abi,
+    signerOrProvider: provider,
+  }).marketSummariesForKeys([formatBytes32String(marketKey)])
+  return parseMarketSummaries(markets)[0]
+}
+
 // ---------- Market Settings ----------
 
 export const marketSettingsQueryKey = (marketKey?: MarketKey, chainId?: SupportedChainId) => [

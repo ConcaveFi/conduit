@@ -103,11 +103,11 @@ export function useCurrentTradePreview<TSelect = TradePreview>(
   select?: (t: TradePreview) => TSelect,
 ) {
   const sizeDelta = useAtomValue(sizeDeltaAtom.debouncedValueAtom)
-  const market = useAtomValue(routeMarketAtom).address
+  const { data: market } = useAtomValue(routeMarketAtom)
   return useTradePreview({
     sizeDelta,
     marketPrice: [0n, 0], // marketPrice updates like every second, do we want to refetch this often?
-    market,
+    market: market?.address,
     select,
   })
 }
