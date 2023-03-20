@@ -196,7 +196,7 @@ export const ExchangeCard = () => {
           label={'From'}
           right={(prop) => {
             return (
-              <button {...prop} onClick={maxIn}>
+              <button className="text-dark-30 ocean:text-blue-30 font-bold" onClick={maxIn}>
                 MAX
               </button>
             )
