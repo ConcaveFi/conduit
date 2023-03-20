@@ -1,11 +1,9 @@
 import { Menu } from '@tradex/interface'
 import { useTheme } from 'app/providers/ThemeProvider'
 import Image from 'next/image'
-import { Theme, Themes } from 'utils/themeHandler'
+import { Themes } from 'utils/themeHandler'
 export function ThemeSelector() {
   const { changeTheme, theme } = useTheme()
-
-  console.log(Theme.getStoredTheme())
 
   return (
     <Menu className="flex justify-center">

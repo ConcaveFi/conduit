@@ -26,6 +26,7 @@ export class Theme {
   }
 
   public static storeTheme(theme: Themes) {
+    if (typeof document === 'undefined') return
     if (typeof theme === 'undefined') return
     localStorage.setItem(this.itemStore, theme)
   }
