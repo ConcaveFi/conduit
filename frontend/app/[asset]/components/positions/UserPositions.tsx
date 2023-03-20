@@ -54,7 +54,7 @@ export function UserPositions() {
   if (!hasPosition) {
     return (
       <div className="centered flex h-full ">
-        <span className="text-light-400 ocean:text-ocean-300 text-sm font-medium">
+        <span className="text-dark-accent ocean:text-blue-accent text-sm font-medium">
           {t('you have no positions yet')}
         </span>
       </div>

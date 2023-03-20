@@ -9,8 +9,8 @@ const baseBodyStyles = cva(['flex flex-col flex-grow rounded-b-lg'])
 export const panelBodyStyles = cva(baseBodyStyles(), {
   variants: {
     variant: {
-      primary: ['bg-dark-20 ocean:bg-ocean-500'],
-      secondary: ['bg-dark-10 ocean:bg-ocean-700'],
+      primary: ['bg-dark-20 ocean:bg-blue-20'],
+      secondary: ['bg-dark-10 ocean:bg-blue-10'],
     },
     spacing: {
       sm: 'gap-2 p-2',

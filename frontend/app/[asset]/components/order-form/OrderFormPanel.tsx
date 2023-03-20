@@ -34,7 +34,7 @@ function SideSelector() {
         className={cx(
           `btn centered flex-1 rounded-lg py-2 text-white  `,
           'aria-selected:bg-dark-green-gradient ocean:aria-selected:bg-blue-green-gradient aria-selected:border-transparent',
-          'aria-diselected:text-teal-400 aria-diselected:ring-1 ring-inset ring-teal-400',
+          'aria-deselected:text-teal-400 aria-deselected:ring-1 ring-inset ring-teal-400',
         )}
       >
         {t('long')}
@@ -45,7 +45,7 @@ function SideSelector() {
         className={cx(
           `btn centered flex-1 rounded-lg py-2 text-white `,
           'aria-selected:bg-dark-red-gradient ocean:aria-selected:bg-blue-red-gradient aria-selected:border-transparent',
-          'aria-diselected:text-red-400 aria-diselected:ring-1 ring-inset ring-red-400',
+          'aria-deselected:text-red-400 aria-deselected:ring-1 ring-inset ring-red-400',
         )}
       >
         {t('short')}

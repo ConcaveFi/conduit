@@ -28,7 +28,7 @@ export function AddWidgetModal(props: ModalProps) {
       overlay
       className="card card-primary h-fit min-h-[300px] w-[400px] gap-4 p-5 "
     >
-      <span className="text-light-400 ocean:text-ocean-200 mx-auto text-2xl font-medium">
+      <span className="text-dark-accent ocean:text-blue-accent mx-auto text-2xl font-medium">
         {t('add widget')}
       </span>
 

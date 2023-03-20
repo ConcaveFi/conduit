@@ -1,5 +1,5 @@
 export enum Themes {
-  LIGHT = 'light',
+  // LIGHT = 'light',
   DARK = 'dark',
   OCEAN = 'ocean',
 }
