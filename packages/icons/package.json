@@ -6,6 +6,7 @@
   "private": true,
   "devDependencies": {
     "react": "^18.2.0",
+    "tailwind-merge": "^1.10.0",
     "typescript": "^5.0.2"
   }
 }
