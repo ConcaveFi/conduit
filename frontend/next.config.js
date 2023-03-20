@@ -12,7 +12,7 @@ const nextConfig = {
   },
   experimental: {
     appDir: true,
-    typedRoutes: true,
+    // typedRoutes: true,
     // swcPlugins: [
     //   ['@swc-jotai/react-refresh', {}],
     //   ['next-superjson-plugin', {}],
