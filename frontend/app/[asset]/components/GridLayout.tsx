@@ -18,7 +18,7 @@ export function GridLayout() {
   const panels = useMemo(() => {
     return widgets.map((widget) => {
       const Panel = GridWidget.toPanel(widget) as React.FC<DivProps>
-      return <Panel key={widget} />
+      return <Panel key={widget} className="transition-al " />
     })
   }, [widgets])
 
@@ -27,7 +27,7 @@ export function GridLayout() {
   return (
     <div className="ocean:bg-ocean-900 sm flex h-full w-full">
       <ReactGridLayout
-        className="relative h-full w-full transition-all"
+        className="relative h-full w-full transition-all duration-700"
         draggableHandle="[data-draggable='true']"
         onLayoutChange={handleChange}
         rowHeight={GRID_ROW_HEIGHT}
