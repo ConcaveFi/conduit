@@ -12,7 +12,6 @@ import { useMarketPrice } from '../lib/price/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
   const price = useMarketPrice({ marketKey, select: (p) => format(p, 2) })
-  console.log(price)
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
