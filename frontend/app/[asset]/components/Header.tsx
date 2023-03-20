@@ -4,6 +4,7 @@ import { OP_ADDRESS, SNX_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
 import { BalanceIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { Address, FetchBalanceResult } from '@wagmi/core'
+import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { SupportedChainId } from 'app/providers/wagmi-config'
 import { add, divide, from, multiply, sub } from 'dnum'
 import { useAtomValue } from 'jotai'
@@ -56,6 +57,8 @@ function TokenBalance({
     enabled: !!token && !!account,
   })
 
+  const isHydrated = useIsHydrated()
+
   if (isLoading)
     return (
       <div className="centered flex gap-2">
@@ -82,7 +85,9 @@ function TokenBalance({
           </>
         }
       >
-        <span className="text-bright-text text-xs font-bold">{formatBalance(balance)}</span>
+        <span className="text-bright-text text-xs font-bold">
+          {formatBalance(isHydrated ? balance : undefined)}
+        </span>
       </Info>
     </div>
   )
