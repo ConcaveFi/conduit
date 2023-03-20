@@ -6,11 +6,11 @@ import { useHydrateAtoms } from 'jotai/utils'
 import { PropsWithChildren } from 'react'
 import { deserialize } from 'superjson'
 import { SuperJSONResult } from 'superjson/dist/types'
-import { MarketSummaries } from './lib/market/markets'
+import { MarketSummary } from './lib/market/markets'
 import { routeMarketKeyAtom } from './lib/market/useMarket'
 
 export function HydrateAtoms({ routeMarket: s_routeMarket }: { routeMarket: SuperJSONResult }) {
-  const routeMarket = deserialize(s_routeMarket) as MarketSummaries[number]
+  const routeMarket = deserialize(s_routeMarket) as MarketSummary
 
   const queryClient = useQueryClient()
 

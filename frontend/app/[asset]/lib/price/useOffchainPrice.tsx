@@ -79,8 +79,7 @@ export function useMarketPrice<TSelect = Dnum>({
 }
 
 export const routeMarketIndexPriceAtom = atom<Dnum>((get) => {
-  const { data: market } = get(routeMarketAtom)
-  if (!market) return [0n, 0]
+  const market = get(routeMarketAtom)
 
   const chain = get(connectedChainAtom)
   const network = chain?.id === optimismGoerli.id ? 'testnet' : 'mainnet'
@@ -95,8 +94,7 @@ export const routeMarketIndexPriceAtom = atom<Dnum>((get) => {
 })
 
 export const routeMarketPriceAtom = atom<Dnum>((get) => {
-  const { data: market } = get(routeMarketAtom)
-  if (!market) return [0n, 0]
+  const market = get(routeMarketAtom)!
 
   const { data: marketSettings } = get(marketSettingsAtoms(market.key))
   const price = get(routeMarketIndexPriceAtom)

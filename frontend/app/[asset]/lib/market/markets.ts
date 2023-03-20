@@ -63,6 +63,7 @@ export const marketSummaryQueryKey = (marketKey: MarketKey, chainId: SupportedCh
   marketKey,
   chainId,
 ]
+export type MarketSummary = MarketSummaries[number]
 export const fetchMarketSummary = async ({
   marketKey,
   provider,
