@@ -1,4 +1,3 @@
-const plugin = require('tailwindcss/plugin')
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   theme: {
@@ -19,11 +18,5 @@ module.exports = {
     '../packages/interface/components/**/*.tsx',
     '../packages/interface/styles/**/*.ts',
   ],
-  plugins: [
-    require('@tradex/theme'),
-    plugin(({ addVariant }) => {
-      addVariant('aria-enabled', '&[aria-disabled="false"]')
-      addVariant('aria-diselected', '&[aria-selected="false"]')
-    }),
-  ],
+  plugins: [require('@tradex/theme')],
 }

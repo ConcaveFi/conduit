@@ -17,6 +17,6 @@
   background: #192253;
 }
 
-/* #chart-container > div {
+.ocean #chart-container > div {
   filter: contrast(110%) saturate(250%) brightness(120%);
-} */
+}
