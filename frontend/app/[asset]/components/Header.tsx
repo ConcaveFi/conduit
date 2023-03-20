@@ -9,6 +9,7 @@ import { SupportedChainId } from 'app/providers/wagmi-config'
 import { add, divide, from, multiply, sub } from 'dnum'
 import Image from 'next/image'
 import { PropsWithChildren, ReactNode } from 'react'
+import { useLayout } from 'utils/contants/breakpoints'
 import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
@@ -111,7 +112,7 @@ function IndexPrice() {
 export function StrategyHeader() {
   const { t } = useTranslation()
   const { chain } = useNetwork()
-
+  const { isMobile, isDesktop } = useLayout()
   const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
 
   const market = useRouteMarket()
@@ -145,6 +146,7 @@ export function StrategyHeader() {
       <div className="centered bg-dark-10 ocean:bg-blue-10 order-2 flex min-h-[64px] w-full rounded-lg  px-5 md:order-[0] md:w-fit ">
         <MarketList />
       </div>
+      {isDesktop && (
       <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <IndexPrice />
         <div className="centered flex gap-2">
@@ -172,6 +174,8 @@ export function StrategyHeader() {
           </span>
         </Info>
       </div>
+      )}
+      {isDesktop && (
       <div className="bg-dark-10 ocean:bg-blue-10 flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg  px-4 ">
         <TokenBalance symbol="sUSD" token={sUSD_ADDRESS[chainId]} />
         <TokenBalance
@@ -186,6 +190,7 @@ export function StrategyHeader() {
         />
         <TokenBalance symbol="ETH" token="eth" priceFeed={<PythPriceFeed marketKey="sETHPERP" />} />
       </div>
+      )}
     </div>
   )
 }

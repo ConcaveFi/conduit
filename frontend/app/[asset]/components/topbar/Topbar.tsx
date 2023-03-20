@@ -7,6 +7,7 @@ import { useTranslation } from '@tradex/languages'
 import { ExchangeCard } from 'app/exchange/components/SwapCard'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import Image from 'next/image'
+import { useLayout } from 'utils/contants/breakpoints'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { truncateAddress } from 'utils/truncateAddress'
 import { LocationSelector } from './LocationSelector'
@@ -43,37 +44,42 @@ function ConnectedAccount() {
 
 export function Topbar() {
   const { t } = useTranslation()
+  const { isMobile } = useLayout()
   const swapModal = useQueryModal({ modalType: 'swap' })
   return (
-    <div className="flex items-center justify-between px-4">
+    <div className="flex items-center justify-between px-0 sm:px-4">
       <div className="flex h-full items-center gap-2">
         <Image
           priority
-          src={require('public/assets/conduit.svg')}
-          className="w-[160px]"
-          alt="conduit"
+          src={isMobile ? '/assets/conduit-mobile.svg' : '/assets/conduit.svg'}
+          className="w-8 md:w-32 lg:w-48"
+          alt="logo"
           width={10}
           height={10}
         />
 
-        <button className="btn btn-underline  centered ml-6 h-full rounded-none px-5 text-xs font-medium">
-          {t('dashboard')}
-        </button>
-        <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 py-1 text-xs font-medium">
-          {t('futures')}
-        </button>
-        <button
-          onClick={swapModal.onOpen}
-          className="btn btn-underline centered h-full rounded-none px-5 text-xs font-medium"
-        >
-          Swap
-        </button>
-        <button className="btn btn-underline centered h-full rounded-none px-5 text-xs  font-medium">
-          Leaderboard
-        </button>
+        {!isMobile && (
+          <>
+            <button className="btn btn-underline  centered ml-6 h-full rounded-none px-5 text-xs font-medium">
+              {t('dashboard')}
+            </button>
+            <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 py-1 text-xs font-medium">
+              {t('futures')}
+            </button>
+            <button
+              onClick={swapModal.onOpen}
+              className="btn btn-underline centered h-full rounded-none px-5 text-xs font-medium"
+            >
+              Swap
+            </button>
+            <button className="btn btn-underline centered h-full rounded-none px-5 text-xs  font-medium">
+              Leaderboard
+            </button>
+          </>
+        )}
       </div>
       <div className="flex w-fit items-center gap-3 ">
-        <LocationSelector />
+        {!isMobile && <LocationSelector />}
         <ThemeSelector />
 
         <NotificationIcon className="fill-dark-accent ocean:fill-blue-accent box-4" />

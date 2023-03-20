@@ -367,7 +367,7 @@ function MarginDetails() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-4">
-        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+        <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">Deposited</span>
           {isLoading ? (
             <Skeleton />
@@ -375,7 +375,7 @@ function MarginDetails() {
             <span className="font-mono text-white">$ {format(remainingMargin)}</span>
           )}
         </div>
-        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+        <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">Buying power</span>
           {isLoading ? (
             <Skeleton />
@@ -383,7 +383,7 @@ function MarginDetails() {
             <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
           )}
         </div>
-        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+        <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">In position</span>
           {isLoading ? (
             <Skeleton />
@@ -600,7 +600,9 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     <Panel
       ref={ref}
       name="Order Form"
-      bodyProps={{ className: 'p-3 md:overflow-y-scroll overflow-x-hidden' }}
+      bodyProps={{
+        className: 'p-3 md:overflow-y-scroll overflow-x-hidden justify-between sm:justify-start',
+      }}
       {...props}
     >
       <TransferMarginButton />

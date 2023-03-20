@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useAtomValue } from 'jotai'
 
 export const innerWidthAtom = atom(0)
 innerWidthAtom.onMount = (set) => {
@@ -9,11 +9,13 @@ innerWidthAtom.onMount = (set) => {
   return () => window.removeEventListener('resize', resizeListener)
 }
 
-const createBreakpointAtom = <T extends { [key: string]: number }>(breakpoints: T, defaultValue: keyof T) => {
+const createBreakpointAtom = <T extends { [key: string]: number }>(breakpoints: T) => {
   const sortedBreakpoints = Object.entries(breakpoints).sort(([, a], [, b]) => a - b)
+  const lastBreakpoint = sortedBreakpoints[sortedBreakpoints.length - 1]
   const breakpointAtom = atom((get) => {
     const w = get(innerWidthAtom)
-    const [label] = sortedBreakpoints.find(([, limit]) => (w < limit)) || [defaultValue]
+    if (!w) return
+    const [label] = sortedBreakpoints.find(([, limit]) => w < limit) || lastBreakpoint
     return label as keyof T
   })
   return breakpointAtom
@@ -38,5 +40,10 @@ const breakpoints = {
   xl: 1280,
   '2xl': 1536,
 }
-export const breakpointAtom = createBreakpointAtom(breakpoints, 'lg')
+export const breakpointAtom = createBreakpointAtom(breakpoints)
 export type Breakpoints = keyof typeof breakpoints
+
+export const useLayout = () => {
+  const isMobile = useAtomValue(breakpointAtom) === 'sm'
+  return { isMobile, isDesktop: !isMobile }
+}
