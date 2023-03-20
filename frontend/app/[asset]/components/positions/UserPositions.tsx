@@ -10,6 +10,7 @@ import {
   usePrepareMarketClosePositionWithTracking,
 } from 'perps-hooks'
 import { parsePositionDetails } from 'perps-hooks/parsers'
+import React from 'react'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
 
@@ -71,19 +72,19 @@ export function UserPositions() {
   const sizeFormated = `${format(abs(size))} ($ ${format(abs(positionDetails.notionalValue))})`
 
   return (
-    <div className="border-ocean-400 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
+    <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
       <div className="flex gap-4">
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo info={[SideNAsset(side, market.asset), format(market?.price || '0')]} />
-          <PosItemInfo info={['Size', sizeFormated]} />
-          <PosItemInfo info={['Avg Entry', format(position.lastPrice)]} />
-          <PosItemInfo info={['Realized P&L', '-']} />
+          <PosItemInfo info={SideNAsset(side, market.asset)} value={format(market?.price || '0')} />
+          <PosItemInfo info={'Size'} value={sizeFormated} />
+          <PosItemInfo info={'Avg Entry'} value={format(position.lastPrice)} />
+          <PosItemInfo info={'Realized P&L'} value={'-'} />
         </div>
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo info={['Unrealized P&L', format(positionDetails.profitLoss)]} />
-          <PosItemInfo info={['Liq Price', format(positionDetails.liquidationPrice)]} />
-          <PosItemInfo info={['Net Funding', '-']} />
-          <PosItemInfo info={['Leverage', format(leverage)]} />
+          <PosItemInfo info={'Unrealized P&L'} value={format(positionDetails.profitLoss)} />
+          <PosItemInfo info={'Liq Price'} value={format(positionDetails.liquidationPrice)} />
+          <PosItemInfo info={'Net Funding'} value={'-'} />
+          <PosItemInfo info={'Leverage'} value={format(leverage)} />
         </div>
       </div>
       <button
@@ -97,27 +98,28 @@ export function UserPositions() {
 }
 function SideNAsset(side: string, asset: string) {
   return (
-    <>
+    <React.Fragment>
       <span className={cx(side === 'SHORT' ? 'text-negative' : 'text-positive')}>{side}</span>{' '}
       {asset}
-    </>
+    </React.Fragment>
   )
 }
 
 function PosItemInfo(props: {
-  info: [string | JSX.Element, string]
+  info: string | JSX.Element
   modifirer?: 'positive' | 'negative'
+  value: string
 }) {
-  const { modifirer, info } = props
+  const { modifirer, info, value } = props
   return (
-    <div className="bg-ocean-500 flex h-8 w-full  items-center justify-between rounded-md px-2">
-      <span className="font-medium text-white">{info[0]}</span>
+    <div className="bg-dark-30 ocean:bg-blue-30 flex h-8 w-full  items-center justify-between rounded-md px-2">
+      <span className="font-medium text-white">{info}</span>
       <span
         className={cx(
           modifirer ? (modifirer === 'positive' ? 'text-positive' : 'text-negative') : 'text-white',
         )}
       >
-        {info[1]}
+        {value}
       </span>
     </div>
   )

@@ -46,10 +46,10 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
 
         {/*  Search input */}
         <div className="centered bg-dark-10 ocean:bg-blue-10 flex h-[40px] w-[190px] gap-1 rounded-full px-4 shadow-md">
-          <SearchIcon className="stroke-dark-30 ocean:stroke-blue-30 box-6" />
+          <SearchIcon className="stroke-dark-30 ocean:stroke-blue-30 box-6 " />
           <input
             type="text"
-            className="text-ocean-200 placeholder:text-dark-30 ocean:placeholder:text-blue-30 w-full bg-transparent outline-none"
+            className="text-dark-accent ocean:text-blue-accent placeholder:text-dark-30 ocean:placeholder:text-blue-30 w-full bg-transparent outline-none"
             placeholder="Search"
           />
         </div>
