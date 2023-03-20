@@ -20,14 +20,14 @@ function ConnectedAccount() {
       {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
         if (!account || !isHydrated) {
           return (
-            <button onClick={openConnectModal} className="btn btn-green-gradient py-2">
+            <button onClick={openConnectModal} className="btn btn-green-gradient py-2 px-4">
               Connect wallet
             </button>
           )
         }
         return (
           <>
-            <button onClick={openChainModal} className="btn btn-underline centered gap-2 text-xs">
+            <button onClick={openChainModal} className="btn btn-underline centered gap-2  text-xs">
               {chain?.name}
               <ChevronIcon className="fill-dark-30 ocean:fill-blue-30 h-3 w-3" />
             </button>

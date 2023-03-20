@@ -1,4 +1,4 @@
-import { cx } from '@tradex/interface'
+import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { DEFAULT_PRICE_IMPACT_DELTA, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
@@ -38,10 +38,10 @@ export function UserPositions() {
   if (!market || !position || !isHydrated)
     return (
       <div className="centered flex h-6 w-full gap-4">
-        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
-        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
-        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
-        <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-600 h-full w-full bg-white"></div>
+        <Skeleton className="h-full w-full "></Skeleton>
+        <Skeleton className="h-full w-full "></Skeleton>
+        <Skeleton className="h-full w-full "></Skeleton>
+        <Skeleton className="h-full w-full "></Skeleton>
       </div>
     )
 

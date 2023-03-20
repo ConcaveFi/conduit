@@ -4,7 +4,8 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={twMerge(
-        'animate-skeleton skeleton-from-ocean-300 skeleton-to-ocean-400 h-3 w-full rounded',
+        'animate-skeleton skeleton-from-dark-main-bg skeleton-to-dark-20 h-3 w-full rounded',
+        'ocean:skeleton-from-blue-10 ocean:skeleton-to-blue-30 ',
         className,
       )}
     />
