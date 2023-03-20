@@ -81,20 +81,22 @@ export function CurrencySelector({
       <div className="flex h-full flex-col justify-end">
         <div
           onClick={() => modalProps.onOpen()}
-          className="hover:bg-Blue/main-dim flex w-44 cursor-pointer gap-2 rounded-full bg-[#082652] bg-opacity-50 p-2"
+          className="bg-dark-30 flex w-44 cursor-pointer gap-2 rounded-full bg-opacity-50 p-2 hover:bg-opacity-100"
         >
           <Avatar variant={'icon'} size="sm">
             <ImageIcon src={currency.logoURI} />
           </Avatar>
 
-          <span className="text-blue-blue mr-auto text-sm">{currency.symbol}</span>
+          <span className="text-dark-accent ocean:text-blue-accent mr-auto text-sm">
+            {currency.symbol}
+          </span>
           <div className="flex flex-col justify-center">
-            <ChevronIcon className="fill-ocean-200 h-3 w-3" />
+            <ChevronIcon className="fill-dark-accent ocean:fill-blue-accent mr-2 h-3 w-3" />
           </div>
         </div>
-        <div className="text-Blue/main-dim flex w-full justify-between px-2 text-sm">
+        <div className="text-dark-30 ocean:text-blue-30 flex w-full justify-between px-4 text-sm">
           Balance
-          <div className="text-blue-blue text-sm">
+          <div className="text-dark-accent ocean:text-blue-accent text-sm text-opacity-70">
             {compactFormat(balance || BigNumber.from(0))}
           </div>
         </div>
