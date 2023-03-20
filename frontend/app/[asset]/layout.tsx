@@ -2,10 +2,10 @@ import { dehydrate } from '@tanstack/query-core'
 import { optimism } from '@wagmi/core/chains'
 import { PropsWithChildren } from 'react'
 import { serialize } from 'superjson'
-import ReactQueryHydrate from './HydrateProviders'
-import { PageTitleWithPrice } from './PageTitleWithPrice'
 import { Topbar } from './components/topbar/Topbar'
+import { ReactQueryHydrate } from './HydrateProviders'
 import { marketsQueryKey } from './lib/market/markets'
+import { PageTitleWithPrice } from './PageTitleWithPrice'
 import { getAllMarkets, getQueryClient } from './server-only'
 export default async function Layout({ children }: PropsWithChildren) {
   const queryClient = getQueryClient()
