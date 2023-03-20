@@ -1,5 +1,6 @@
 'use client'
 
+import { ChevronIcon } from '@tradex/icons'
 import { DivProps } from '@tradex/interface'
 import { useGridLayout } from 'hooks/useGridLayout'
 import { useMemo } from 'react'
@@ -35,6 +36,11 @@ export function GridLayout() {
         cols={GRID_COLS}
         useCSSTransforms
         layout={layout}
+        resizeHandle={
+          <button id="teste" className=" invisible absolute bottom-1 right-1 group-hover:visible ">
+            <ChevronIcon className="fill-dark-30 box-4  -rotate-45" />
+          </button>
+        }
       >
         {panels}
       </ReactGridLayout>

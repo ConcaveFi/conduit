@@ -42,7 +42,10 @@ export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
       variant="secondary"
       {...props}
       ref={ref}
-      bodyProps={{ id: container_id, className: 'p-0' }}
-    />
+      bodyProps={{ className: 'p-0 group' }}
+    >
+      <div id={container_id} className="h-full w-full"></div>
+      {props.children}
+    </Panel>
   )
 })
