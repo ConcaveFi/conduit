@@ -49,9 +49,9 @@ export function Topbar() {
       <div className="flex h-full items-center gap-2">
         <Image
           priority
-          src={'/assets/conduit.svg'}
+          src={require('public/assets/conduit.svg')}
           className="w-[160px]"
-          alt="logo"
+          alt="conduit"
           width={10}
           height={10}
         />
