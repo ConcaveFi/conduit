@@ -7,6 +7,7 @@ import { StrategyHeader } from './components/Header'
 import { HydrateAtoms, JotaiProvider, ReactQueryHydrate } from './HydrateProviders'
 import { fetchMarketSettings, marketSettingsQueryKey, MarketSummaries } from './lib/market/markets'
 import { getAllMarkets, getProvider, getQueryClient } from './server-only'
+
 export async function generateStaticParams() {
   const markets = await getAllMarkets(optimism.id)
   return markets.map((m) => ({ asset: m.asset }))
