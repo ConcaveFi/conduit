@@ -27,7 +27,7 @@ export const useCoingeckoPrice = ({
         `${endpoint}/${plataform}?contract_addresses=${fixedContractAddress}&vs_currencies=usd`,
       )
       const response = (await request.json()) as { usd: string }
-      console.log(response)
+
       return (+response[fixedContractAddress].usd || 0) as number
     },
     { enabled },
