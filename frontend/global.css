@@ -9,10 +9,14 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #3e5389;
+  background: #2f313e;
+
   border-radius: 20px;
 }
+.ocean ::-webkit-scrollbar-thumb {
+  background: #192253;
+}
 
-#chart-container > div {
+.ocean #chart-container > div {
   filter: contrast(110%) saturate(250%) brightness(120%);
 }

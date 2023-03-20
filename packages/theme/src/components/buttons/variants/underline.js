@@ -7,22 +7,13 @@ const defaultProps = {
 }
 
 const underline = {
-  color: colors.light[500],
+  color: colors.dark.accent,
   '.ocean &': {
-    color: colors.ocean[200],
-  },
-  ...defaultProps,
-}
-
-const underlineSecondary = {
-  color: colors.light[600],
-  '.ocean &': {
-    color: colors.ocean[300],
+    color: colors.blue.accent,
   },
   ...defaultProps,
 }
 
 module.exports = {
   underline,
-  'underline.secondary': underlineSecondary,
 }

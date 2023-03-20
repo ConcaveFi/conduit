@@ -1,4 +1,4 @@
-import { cx } from '@tradex/interface'
+import { ButtonProps, cx } from '@tradex/interface'
 import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
 
 export type DWSelectorType = 'deposit' | 'withdraw'
@@ -16,19 +16,20 @@ export function DepositWithdrawSelector(props?: SelectorProps) {
   useEffect(() => props?.onTypeChange?.(type), [type, props])
   return (
     <Fragment>
-      <div className="bg-ocean-400 flex h-11 w-full gap-2 rounded-full bg-opacity-50 p-[4px] ">
+      <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex h-11 w-full gap-2 rounded-full bg-opacity-50 p-[4px] ">
         <button {...buttonProps('deposit')}>Deposit</button>
         <button {...buttonProps('withdraw')}>withdraw</button>
       </div>
       {children}
     </Fragment>
   )
-
-  function buttonProps(_type: DWSelectorType) {
+  function buttonProps(_type: DWSelectorType): ButtonProps {
     return {
+      'aria-selected': type === _type,
       className: cx(
-        'centered h-full basis-full rounded-full text-sm ',
-        type === _type ? 'btn btn-primary' : 'btn-underline.secondary',
+        'centered h-full basis-full rounded-full font-medium text-sm transition-none',
+        'aria-deselected:btn-underline',
+        'btn aria-selected:btn-primary',
       ),
       onClick: () => setType(_type),
     }

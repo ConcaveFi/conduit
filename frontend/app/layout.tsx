@@ -1,9 +1,8 @@
 import '@rainbow-me/rainbowkit/styles.css'
+import localFont from 'next/font/local'
 import { PropsWithChildren } from 'react'
 import 'tailwindcss/tailwind.css'
 import '../global.css'
-
-import localFont from 'next/font/local'
 import AppProviders from './providers'
 
 const sans = localFont({
@@ -46,9 +45,9 @@ const mono = localFont({
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html
-      className={`bg-ocean-900 ocean flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
+      className={` flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
     >
-      <body className="w-full">
+      <body className="bg-dark-main-bg ocean:bg-blue-main-bg w-full">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

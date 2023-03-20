@@ -34,5 +34,7 @@ export const SwapButton = ({
     if (allow.data) return 'approve'
     return 'swap'
   })()
-  return <button className="bg-blue-blue mt-2 rounded-full p-2 text-base" {...states[state]} />
+  return (
+    <button className="btn-secondary mt-2 rounded-full p-2 py-3 text-base" {...states[state]} />
+  )
 }

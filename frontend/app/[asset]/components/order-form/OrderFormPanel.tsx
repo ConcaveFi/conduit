@@ -29,23 +29,23 @@ function SideSelector() {
   return (
     <div className="flex gap-4 font-mono">
       <button
+        aria-selected={side === 'long'}
         onClick={() => setSide('long')}
         className={cx(
-          `btn centered flex-1 rounded-lg py-2`,
-          side === 'long'
-            ? 'bg-teal-500  text-white'
-            : 'text-teal-400 ring-1 ring-inset ring-teal-400',
+          `btn centered flex-1 rounded-lg py-2 text-white  `,
+          'aria-selected:bg-dark-green-gradient ocean:aria-selected:bg-blue-green-gradient aria-selected:border-transparent',
+          'aria-deselected:text-teal-400 aria-deselected:ring-1 ring-inset ring-teal-400',
         )}
       >
         {t('long')}
       </button>
       <button
+        aria-selected={side === 'short'}
         onClick={() => setSide('short')}
         className={cx(
-          'centered btn flex-1 rounded-lg py-2',
-          side === 'short'
-            ? 'bg-red-500 text-white'
-            : 'text-red-400 ring-1 ring-inset ring-red-400',
+          `btn centered flex-1 rounded-lg py-2 text-white `,
+          'aria-selected:bg-dark-red-gradient ocean:aria-selected:bg-blue-red-gradient aria-selected:border-transparent',
+          'aria-deselected:text-red-400 aria-deselected:ring-1 ring-inset ring-red-400',
         )}
       >
         {t('short')}
@@ -75,8 +75,8 @@ const OrderSizeInput = () => {
   const hasValue = greaterThan(inputs[other] || 0, 0)
 
   return (
-    <motion.div className="bg-ocean-700 flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
-      <span className="text-ocean-200 text-xs">Order Size</span>
+    <motion.div className="bg-dark-main-bg ocean:bg-blue-main-bg flex max-h-20 w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+      <span className="ocean:text-ocean-200 text-xs text-white">Order Size</span>
       <div className="flex w-full max-w-full justify-between">
         <div className="flex min-w-0 flex-col">
           <AnimatePresence mode="popLayout">
@@ -92,7 +92,7 @@ const OrderSizeInput = () => {
               <NumericInput
                 data-overflow={isOverBuyingPower}
                 variant={'none'}
-                className="placeholder:text-ocean-200 min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
+                className=" placeholder:ocean:text-ocean-200 placeholder:text-silver min-w-0 overflow-ellipsis bg-transparent font-mono text-xl text-white outline-none data-[overflow=true]:text-red-400"
                 placeholder="0.00"
                 value={value ? format(value, { trailingZeros: false }) : ''}
                 onValueChange={({ value }, { source }) => {
@@ -186,23 +186,28 @@ function SizeSlider({
       className="relative flex w-full touch-none select-none items-center"
     >
       <Slider.Track
+        aria-disabled={disabled}
         className={cx(
           'h-1 flex-1 rounded-full',
-          disabled ? 'bg-ocean-500' : 'bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
+          'aria-enabled:bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
+          'aria-disabled:bg-dark-20 ocean:aria-disabled:bg-blue-20',
         )}
       />
       <Slider.Thumb asChild>
         <motion.span
+          aria-disabled={disabled}
           className={cx(
-            'box-4 bg-ocean-800 block rounded-full border-2 outline-none transition-all duration-300 ease-out will-change-transform',
-            'focus:transition-none',
+            'box-4 bg-dark-20 ocean:bg-blue-20 block rounded-full border-2 outline-none ',
+            'transition-all duration-300 ease-out will-change-transform focus:transition-none',
+            'aria-disabled:border-dark-30 ocean:aria-disabled:border-blue-30',
           )}
-          style={{ borderColor: disabled ? 'rgb(62 83 137)' : borderColor }}
+          style={{ borderColor: disabled ? '' : borderColor }}
         />
       </Slider.Thumb>
     </Slider.Root>
   )
 }
+// rgb(62 83 137)
 
 const riskLevelLabel = (value: number, max: number) => {
   // if (!value || value < remainingMargin) return 'NONE'
@@ -222,7 +227,14 @@ function LiquidationSlider() {
     <>
       <SizeSlider value={sizeUsd} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
       <div className="flex justify-between font-mono">
-        <span className={cx('text-xs', buyingPower ? 'text-green-500' : 'text-ocean-300')}>$0</span>
+        <span
+          className={cx(
+            'text-xs',
+            buyingPower ? 'text-green-500' : 'text-dark-30 ocean:text-blue-30',
+          )}
+        >
+          $0
+        </span>
         {!!buyingPower && <span className="text-xs text-orange-500">$ {format(buyingPower)}</span>}
       </div>
     </>
@@ -257,10 +269,10 @@ function LiquidationPriceRisk() {
 
 function LiquidationPrice() {
   return (
-    <div className="bg-ocean-700 flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
+    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
       <div className="flex justify-between">
-        <span className="text-ocean-200 text-xs">Liquidation Price:</span>
-        <span className="text-ocean-200 text-xs">Risk Level</span>
+        <span className="ocean:text-blue-accent text-dark-accent text-xs">Liquidation Price:</span>
+        <span className="ocean:text-blue-accent text-dark-accent text-xs">Risk Level</span>
       </div>
       <div className="flex flex-col gap-2 font-mono">
         <div className="flex h-7 items-center justify-between">
@@ -316,24 +328,24 @@ function MarginDetails() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-4">
-        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-ocean-200">Deposited</span>
+        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-dark-accent ocean:text-blue-accent">Deposited</span>
           {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-white">$ {format(remainingMargin)}</span>
           )}
         </div>
-        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-ocean-200">Buying power</span>
+        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-dark-accent ocean:text-blue-accent">Buying power</span>
           {isLoading ? (
             <Skeleton />
           ) : (
             <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
           )}
         </div>
-        <div className="bg-ocean-400 flex flex-col gap-1 rounded-lg p-2 text-xs">
-          <span className="text-ocean-200">In position</span>
+        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+          <span className="text-dark-accent ocean:text-blue-accent">In position</span>
           {isLoading ? (
             <Skeleton />
           ) : (
@@ -341,8 +353,8 @@ function MarginDetails() {
           )}
         </div>
       </div>
-      <div className="bg-ocean-400 flex justify-between rounded-lg p-3 text-sm">
-        <span className="text-ocean-200">Available</span>
+      <div className="bg-dark-30 ocean:bg-blue-30 flex justify-between rounded-lg p-3 text-sm">
+        <span className="text-dark-accent ocean:text-blue-accent">Available</span>
         {isLoading ? (
           <Skeleton />
         ) : (
@@ -420,7 +432,10 @@ function PlaceOrderButton() {
   return (
     <>
       <button
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 font-bold text-white shadow-lg"
+        className={cx(
+          'btn centered bg-dark-green-gradient ocean:bg-blue-green-gradient',
+          'h-11 rounded-lg font-bold  text-white shadow-lg disabled:opacity-60',
+        )}
         {...props}
       />
       {/* <ConfirmOrderModal /> */}
@@ -432,10 +447,12 @@ function DepositMarginToReduceRisk() {
   const { onOpen } = useQueryModal({ modalType: 'margin', type: 'transfer' })
   return (
     <div className="flex items-center justify-between">
-      <span className="text-ocean-200 text-xs">Increase margin to reduce risk</span>
+      <span className="ocean:text-blue-accent text-dark-accent text-xs">
+        Increase margin to reduce risk
+      </span>
       <button
         onClick={onOpen}
-        className="text-ocean-200 border-ocean-300 hover:bg-ocean-400 rounded-md border px-3 py-0.5 text-xs"
+        className="text-dark-accent ocean:text-blue-accent border-coal ocean:border-blue-accent  rounded-md border px-3 py-0.5 text-xs"
       >
         Deposit Margin
       </button>

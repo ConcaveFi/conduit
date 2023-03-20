@@ -24,7 +24,9 @@ const formatBalance = (b: FetchBalanceResult | undefined) =>
 function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   return (
     <div className="flex flex-col items-start font-mono">
-      <span className="text-ocean-200 whitespace-nowrap font-sans text-xs">{title}</span>
+      <span className="text-dark-accent ocean:text-blue-accent whitespace-nowrap font-sans text-xs">
+        {title}
+      </span>
       {children}
     </div>
   )
@@ -82,7 +84,9 @@ function TokenBalance({
           </>
         }
       >
-        <span className="text-bright-text text-xs font-bold">{formatBalance(balance)}</span>
+        <span className="ocean:text-blue-accent text-xs font-bold text-white">
+          {formatBalance(balance)}
+        </span>
       </Info>
     </div>
   )
@@ -93,7 +97,10 @@ function IndexPrice() {
   const indexPrice = useMarketIndexPrice({ marketKey: market?.key })
   return (
     <Info title={'Price index'}>
-      <span className="text-bright-text text-xs font-bold"> ${format(indexPrice, 2)}</span>
+      <span className="ocean:text-blue-accent text-xs font-bold text-white">
+        {' '}
+        ${format(indexPrice, 2)}
+      </span>
     </Info>
   )
 }
@@ -132,15 +139,17 @@ export function StrategyHeader() {
 
   return (
     <div className="flex flex-wrap gap-3 2xl:flex-nowrap">
-      <div className="centered bg-ocean-700 order-2 flex min-h-[64px] w-full rounded-lg px-5 md:order-[0] md:w-fit ">
+      <div className="centered bg-dark-10 ocean:bg-blue-10 order-2 flex min-h-[64px] w-full rounded-lg  px-5 md:order-[0] md:w-fit ">
         <MarketList />
       </div>
-      <div className="bg-ocean-700 -order-1 flex min-h-[64px] w-full  flex-wrap items-center justify-around rounded-lg  md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
+      <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
         <IndexPrice />
-        <div className="flex gap-2">
-          <BalanceIcon />
+        <div className="centered flex gap-2">
+          <BalanceIcon className="fill-dark-30 ocean:fill-blue-30 box-6" />
           <Info title={t('24h_change')}>
-            <span className="text-bright-text text-xs font-bold">$ 370,526,580</span>
+            <span className="ocean:text-blue-accent text-xs font-bold text-white">
+              $ 370,526,580
+            </span>
           </Info>
         </div>
         <Info title={t('24h_change')}>
@@ -150,17 +159,17 @@ export function StrategyHeader() {
           <span className="text-positive text-xs font-bold">{fundingRate}</span>
         </Info>
         <Info title={'Open interest (L)'}>
-          <span className="text-bright-text text-xs font-bold">
+          <span className="ocean:text-blue-accent text-xs font-bold text-white">
             {`$${format(openInterestUsd.long, { compact: true })} / $${limit}`}
           </span>
         </Info>
         <Info title={'Open interest (S)'}>
-          <span className="text-bright-text text-xs font-bold">
+          <span className="ocean:text-blue-accent text-xs font-bold text-white">
             {`$${format(openInterestUsd.short, { compact: true })} / $${limit}`}
           </span>
         </Info>
       </div>
-      <div className="bg-ocean-700  flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg px-4 ">
+      <div className="bg-dark-10 ocean:bg-blue-10 flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg  px-4 ">
         <TokenBalance symbol="sUSD" token={sUSD_ADDRESS[chainId]} />
         <TokenBalance
           symbol="OP"

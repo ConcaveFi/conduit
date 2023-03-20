@@ -49,11 +49,17 @@ const Tabs = () => {
         return (
           <Tab key={index} className="h-full outline-none ">
             {({ selected }) => {
-              const styles = cx(
-                'btn text-xs p-[5px_15px]  flex centered outline-none ring-0',
-                selected ? 'bg-ocean-400 rounded-md text-ocean-200' : 'btn-underline.secondary',
+              return (
+                <button
+                  aria-selected={selected}
+                  className={cx(
+                    'btn centered flex rounded-md p-[5px_15px] text-xs outline-none ring-0',
+                    'aria-selected:btn-secondary aria-deselected:btn-underline',
+                  )}
+                >
+                  {t(tab)}
+                </button>
               )
-              return <span className={styles}>{t(tab)}</span>
             }}
           </Tab>
         )

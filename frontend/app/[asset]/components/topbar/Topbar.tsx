@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { truncateAddress } from 'utils/truncateAddress'
 import { LocationSelector } from './LocationSelector'
+import { ThemeSelector } from './ThemeSelector'
 // import { ThemeSelector } from './ThemeSelector'
 
 function ConnectedAccount() {
@@ -19,16 +20,16 @@ function ConnectedAccount() {
       {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
         if (!account || !isHydrated) {
           return (
-            <button onClick={openConnectModal} className="btn btn-green-gradient py-2">
+            <button onClick={openConnectModal} className="btn btn-green-gradient py-2 px-4">
               Connect wallet
             </button>
           )
         }
         return (
           <>
-            <button onClick={openChainModal} className="btn btn-underline centered gap-2 text-xs">
+            <button onClick={openChainModal} className="btn btn-underline centered gap-2  text-xs">
               {chain?.name}
-              <ChevronIcon className="fill-ocean-200 h-3 w-3" />
+              <ChevronIcon className="fill-dark-30 ocean:fill-blue-30 h-3 w-3" />
             </button>
             <button className="btn btn-underline text-xs" onClick={openAccountModal}>
               {truncateAddress(account?.address)}
@@ -55,10 +56,10 @@ export function Topbar() {
           height={10}
         />
 
-        <button className="btn btn-underline centered ml-6 h-full rounded-none px-5 text-xs font-medium">
+        <button className="btn btn-underline  centered ml-6 h-full rounded-none px-5 text-xs font-medium">
           {t('dashboard')}
         </button>
-        <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 text-xs font-medium">
+        <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 py-1 text-xs font-medium">
           {t('futures')}
         </button>
         <button
@@ -73,9 +74,9 @@ export function Topbar() {
       </div>
       <div className="flex w-fit items-center gap-3 ">
         <LocationSelector />
-        {/* <ThemeSelector /> */}
+        <ThemeSelector />
 
-        <NotificationIcon className="fill-ocean-200 box-4" />
+        <NotificationIcon className="fill-dark-accent ocean:fill-blue-accent box-4" />
         <ConnectedAccount />
       </div>
       <Modal isOpen={swapModal.isOpen} onClose={swapModal.onClose}>

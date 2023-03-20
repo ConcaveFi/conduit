@@ -13,10 +13,10 @@ export function AddWidgetOverlay() {
       <div className="pointer-events-none fixed flex h-screen w-full items-end justify-end p-6">
         <button
           onClick={() => setOpen(true)}
-          className="btn btn-green-gradient pointer-events-auto gap-3 rounded-full px-8 py-4 shadow-xl"
+          className="btn btn-green-gradient centered pointer-events-auto gap-3 rounded-full px-8 py-4 shadow-xl"
         >
           {t('add widget')}
-          <PlusIcon className="fill-ocean-900" />
+          <PlusIcon className="fill-dark-main-bg ocean:fill-blue-main-bg" />
         </button>
       </div>
       <AddWidgetModal isOpen={isOpen} onClose={() => setOpen(false)} />

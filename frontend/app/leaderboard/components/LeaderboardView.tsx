@@ -33,32 +33,34 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
         {/* Sorter */}
         <button
           onClick={() => setSort((prev) => (prev === 'bottom' ? 'top' : 'bottom'))}
-          className="centered text-ocean-200 flex gap-2 text-xs"
+          className="centered text-dark-accent ocean:text-blue-accent flex gap-2 text-xs"
         >
           Sort: {sort === 'top' ? `Top to bottom` : 'Bottom to top'}
           <ChevronIcon
             className={cx(
-              'fill-ocean-200 box-3 transition-all',
+              'fill-dark-30 ocean:fill-blue-30 box-3 transition-all',
               sort === 'bottom' ? 'rotate-180' : '',
             )}
           />
         </button>
 
         {/*  Search input */}
-        <div className="centered bg-Blue/main-block flex h-[40px] w-[190px] gap-1 rounded-full px-4">
-          <SearchIcon className="stroke-ocean-300 box-6" />
+        <div className="centered bg-dark-10 ocean:bg-blue-10 flex h-[40px] w-[190px] gap-1 rounded-full px-4 shadow-md">
+          <SearchIcon className="stroke-dark-30 ocean:stroke-blue-30 box-6 " />
           <input
             type="text"
-            className="text-ocean-200 placeholder:text-ocean-300 w-full bg-transparent outline-none"
+            className="text-dark-accent ocean:text-blue-accent placeholder:text-dark-30 ocean:placeholder:text-blue-30 w-full bg-transparent outline-none"
             placeholder="Search"
           />
         </div>
       </div>
 
       {/* Card */}
-      <span className="text-ocean-200 mx-auto mt-2 mb-2 text-xs font-medium">Top Traders</span>
-      <div className="border-Blue/main-block rounded-lg border">
-        <table className="bg-ocean-700 w-full  overflow-hidden rounded-lg ">
+      <span className="text-dark-accent ocean:text-blue-accent mx-auto mt-2 mb-2 text-xs font-medium">
+        Top Traders
+      </span>
+      <div className=" border-dark-30 ocean:border-blue-30 rounded-lg border">
+        <table className=" w-full  overflow-hidden rounded-lg ">
           {TableHeader}
           <tbody>{placesRow}</tbody>
         </table>
@@ -69,15 +71,15 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
         <div className="flex gap-2">
           {/* <BorderArrow className="box-4 rotate-180" /> */}
           <button onClick={() => handlePagination(pagination - 1)}>
-            <ChevronIcon className="box-4 fill-ocean-300 rotate-90" />{' '}
+            <ChevronIcon className="box-4 fill-dark-30 ocean:fill-blue-30 rotate-90" />{' '}
           </button>
         </div>
-        <span className="text-ocean-200 text-xs">
+        <span className="text-dark-30 ocean:text-blue-30 text-xs">
           page {pagination} of {totalPages}
         </span>
         <div className="flex gap-2">
           <button onClick={() => handlePagination(pagination + 1)}>
-            <ChevronIcon className="box-4 fill-ocean-300 -rotate-90" />
+            <ChevronIcon className="box-4 fill-dark-30 ocean:fill-blue-30 -rotate-90" />
           </button>
           {/*  <BorderArrow className="box-4 " /> */}
         </div>
@@ -90,7 +92,7 @@ function LeaderboardRow({ place, rank }: { place: LeaderboardStats; rank: number
   return (
     <tr
       key={place.account}
-      className="text-bright-text   even:bg-ocean-900 h-[52px] text-sm font-medium"
+      className="even:bg-dark-10 ocean:even:bg-blue-10 h-[52px] text-sm font-medium text-white"
     >
       <td className="pl-5 ">{rank}</td>
       <td>{truncateAddress(place.account)}</td>
@@ -106,7 +108,7 @@ function LeaderboardRow({ place, rank }: { place: LeaderboardStats; rank: number
 
 const TableHeader = (
   <thead className=" ">
-    <tr className="text-ocean-200  h-[34px] bg-[#0B1640] text-xs font-medium ">
+    <tr className="text-dark-accent ocean:text-blue-accent bg-dark-20 ocean:bg-blue-20 h-[34px] text-xs font-medium ">
       <td className="pl-5 ">Rank</td>
       <td>Trader</td>
       <td>Total Trades</td>

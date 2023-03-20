@@ -9,7 +9,7 @@ export const avatarStyles = cva(baseStyles(), {
   variants: {
     variant: {
       icon: '',
-      blue: 'bg-Blue/main-dim outline outline-4 outline-[#3e538940]',
+      blue: 'bg-dark-30 ocean:bg-blue-30 ocean:outline-blue-20 outline outline-4 outline-dark-20 ',
       red: 'bg-red-600 outline outline-4 outline-[#E4364B40]',
       green:
         'bg-gradient-to-bl from-teal-400 via-teal-400 to-cyan-400 outline  outline-4 outline-[#34edb340]',
