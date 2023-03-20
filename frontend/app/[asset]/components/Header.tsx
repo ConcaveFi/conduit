@@ -88,7 +88,7 @@ function TokenBalance({
           </>
         }
       >
-        <span className="ocean:text-bright-text text-xs font-bold text-white">
+        <span className="ocean:text-blue-accent text-xs font-bold text-white">
           {formatBalance(isHydrated ? balance : undefined)}
         </span>
       </Info>

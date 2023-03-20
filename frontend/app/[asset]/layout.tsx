@@ -7,6 +7,7 @@ import { ReactQueryHydrate } from './HydrateProviders'
 import { marketsQueryKey } from './lib/market/markets'
 import { PageTitleWithPrice } from './PageTitleWithPrice'
 import { getAllMarkets, getQueryClient } from './server-only'
+
 export default async function Layout({ children }: PropsWithChildren) {
   const queryClient = getQueryClient()
   await queryClient.prefetchQuery(marketsQueryKey(optimism.id), () => getAllMarkets(optimism.id))

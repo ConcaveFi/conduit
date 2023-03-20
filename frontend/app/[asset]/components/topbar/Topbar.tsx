@@ -60,21 +60,21 @@ export function Topbar() {
 
         {!isMobile && (
           <>
-            <button className="btn btn-underline  centered ml-6 h-full rounded-none px-5 text-xs font-medium">
-              {t('dashboard')}
-            </button>
-            <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 py-1 text-xs font-medium">
-              {t('futures')}
-            </button>
-            <button
-              onClick={swapModal.onOpen}
-              className="btn btn-underline centered h-full rounded-none px-5 text-xs font-medium"
-            >
-              Swap
-            </button>
-            <button className="btn btn-underline centered h-full rounded-none px-5 text-xs  font-medium">
-              Leaderboard
-            </button>
+        <button className="btn btn-underline  centered ml-6 h-full rounded-none px-5 text-xs font-medium">
+          {t('dashboard')}
+        </button>
+        <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 py-1 text-xs font-medium">
+          {t('futures')}
+        </button>
+        <button
+          onClick={swapModal.onOpen}
+          className="btn btn-underline centered h-full rounded-none px-5 text-xs font-medium"
+        >
+          Swap
+        </button>
+        <button className="btn btn-underline centered h-full rounded-none px-5 text-xs  font-medium">
+          Leaderboard
+        </button>
           </>
         )}
       </div>
