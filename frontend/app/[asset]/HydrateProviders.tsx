@@ -7,7 +7,7 @@ import { PropsWithChildren } from 'react'
 import { deserialize } from 'superjson'
 import { SuperJSONResult } from 'superjson/dist/types'
 import { MarketSummaries } from './lib/market/markets'
-import { routeMarketAtom, routeMarketKeyAtom } from './lib/market/useMarket'
+import { routeMarketKeyAtom } from './lib/market/useMarket'
 
 export function HydrateAtoms({ routeMarket: s_routeMarket }: { routeMarket: SuperJSONResult }) {
   const routeMarket = deserialize(s_routeMarket) as MarketSummaries[number]
@@ -16,7 +16,6 @@ export function HydrateAtoms({ routeMarket: s_routeMarket }: { routeMarket: Supe
 
   useHydrateAtoms([
     [routeMarketKeyAtom, routeMarket.key],
-    [routeMarketAtom, routeMarket],
     [queryClientAtom, queryClient],
   ])
 

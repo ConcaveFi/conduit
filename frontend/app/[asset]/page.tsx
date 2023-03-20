@@ -1,9 +1,10 @@
+import { dehydrate } from '@tanstack/query-core'
 import { optimism } from '@wagmi/core/chains'
 import { serialize } from 'superjson'
 import { WidgetsProvider } from '../providers/WidgetsProvider'
 import { GridLayout } from './components/GridLayout'
 import { StrategyHeader } from './components/Header'
-import { HydrateAtoms, JotaiProvider } from './HydrateProviders'
+import ReactQueryHydrate, { HydrateAtoms, JotaiProvider } from './HydrateProviders'
 import { fetchMarketSettings, marketSettingsQueryKey, MarketSummaries } from './lib/market/markets'
 import { getAllMarkets, getProvider, getQueryClient } from './server-only'
 
@@ -37,14 +38,18 @@ export default async function Page({ params }) {
   // this lib seens cool https://www.npmjs.com/package/next-superjson-plugin
   // but adding the swcPlugin breaks dev mode, TODO: circle back later
   const serializedRouteMarket = serialize(market)
+  const dehydratedState = dehydrate(queryClient)
+  const serializedDehydratedState = serialize(dehydratedState)
 
   return (
-    <JotaiProvider>
-      <HydrateAtoms routeMarket={serializedRouteMarket} />
-      <StrategyHeader />
-      <WidgetsProvider>
-        <GridLayout />
-      </WidgetsProvider>
-    </JotaiProvider>
+    <ReactQueryHydrate dehydratedState={serializedDehydratedState}>
+      <JotaiProvider>
+        <HydrateAtoms routeMarket={serializedRouteMarket} />
+        <StrategyHeader />
+        <WidgetsProvider>
+          <GridLayout />
+        </WidgetsProvider>
+      </JotaiProvider>
+    </ReactQueryHydrate>
   )
 }

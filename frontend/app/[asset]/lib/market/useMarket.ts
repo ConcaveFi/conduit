@@ -55,6 +55,7 @@ export const [, routeMarketAtom] = atomsWithQuery<MarketSummaries[number]>((get)
       const allMarkets = get(queryClientAtom).getQueryData(
         marketsQueryKey(chainId),
       ) as MarketSummaries
+      console.log(get(queryClientAtom), allMarkets?.length)
       return allMarkets?.find((m) => m.key === marketKey)
     },
     staleTime: 20 * 1000, // 20s
