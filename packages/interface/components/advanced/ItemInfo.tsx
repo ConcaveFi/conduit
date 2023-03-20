@@ -11,7 +11,7 @@ const styles = cva(cva('')(), {
     modifier: {
       positive: 'text-positive',
       negative: 'text-negative',
-      none: 'text-bright-text ',
+      none: 'text-white ',
     },
   },
   defaultVariants: {
@@ -35,7 +35,7 @@ export function ItemInfo({ Icon, info, value, align = 'start', modifier }: ItemI
           {info}
         </span>
         <span
-          className={`-mt-1 whitespace-nowrap font-mono text-sm  font-semibold ${styles({
+          className={`-mt-1 whitespace-nowrap font-mono text-sm  font-semibold  ${styles({
             modifier,
           })}`}
         >

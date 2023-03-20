@@ -12,10 +12,10 @@ function greenSlider(theme) {
     '&::-webkit-slider-runnable-track': {
       'border-radius': '20px',
       height: '5px',
-      background: colors.light[300],
+      background: colors.dark[30],
     },
     '.ocean &::-webkit-slider-runnable-track': {
-      background: colors.ocean[600],
+      background: colors.blue[30],
     },
     '&::-webkit-slider-thumb': {
       height: '14px',

@@ -47,7 +47,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html
       className={` flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
     >
-      <body className="bg-dark-main-bg ocean:bg-ocean-900 w-full">
+      <body className="bg-dark-main-bg ocean:bg-blue-main-bg w-full">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

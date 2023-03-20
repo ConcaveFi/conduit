@@ -54,7 +54,7 @@ const Tabs = () => {
                   aria-selected={selected}
                   className={cx(
                     'btn centered flex rounded-md p-[5px_15px] text-xs outline-none ring-0',
-                    'aria-selected:btn-secondary aria-diselected:btn-underline',
+                    'aria-selected:btn-secondary aria-deselected:btn-underline',
                   )}
                 >
                   {t(tab)}

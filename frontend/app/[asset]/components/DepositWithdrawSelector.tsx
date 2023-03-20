@@ -28,7 +28,7 @@ export function DepositWithdrawSelector(props?: SelectorProps) {
       'aria-selected': type === _type,
       className: cx(
         'centered h-full basis-full rounded-full font-medium text-sm transition-none',
-        'aria-diselected:btn-underline',
+        'aria-deselected:btn-underline',
         'btn aria-selected:btn-primary',
       ),
       onClick: () => setType(_type),
