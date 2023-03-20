@@ -30,6 +30,7 @@ const colors = {
   negative: '#E4364B', //On figma it's called red-500, to avoid conflicts with tailwind, changed to negative
   positive: '#34EDB3', //Same on above one, name on figma: green-400
 
+  // teste: '#00f',
   // NEW
   dark: {
     'main-bg': '#101219',
