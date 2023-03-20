@@ -49,9 +49,12 @@ const Overlay = () => (
 export const ModalHeader = ({ message, onClose }: { message: string; onClose?: () => void }) => {
   return (
     <div className="flex justify-between">
-      <p className="text-blue-blue text-lg">{message}</p>
+      <p className="text-dark-accent ocean:text-blue-accent text-lg">{message}</p>
       <div className="flex cursor-pointer items-center">
-        <CloseIcon onClick={onClose} className="stroke-Blue/main-dim h-3 w-3" />
+        <CloseIcon
+          onClick={onClose}
+          className="stroke-dark-accent ocean:text-blue-accent h-3 w-3 "
+        />
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Currency, ETH_ADDRESS, Exchange, Token } from '@tradex/core'
 import { ChevronIcon, SearchIcon, Spinner } from '@tradex/icons'
-import { Avatar, Card, ImageIcon, Input, Modal, ModalHeader } from '@tradex/interface'
+import { Avatar, Card, cx, ImageIcon, Input, Modal, ModalHeader } from '@tradex/interface'
 import { fetchBalance } from '@wagmi/core'
 import { BigNumber } from 'ethers'
 import { parseUnits } from 'ethers/lib/utils'
@@ -78,10 +78,10 @@ export function CurrencySelector({
 
   return (
     <>
-      <div className="flex h-full flex-col justify-end">
+      <div className="flex h-full flex-col justify-end ">
         <div
           onClick={() => modalProps.onOpen()}
-          className="bg-dark-30 flex w-44 cursor-pointer gap-2 rounded-full bg-opacity-50 p-2 hover:bg-opacity-100"
+          className="bg-dark-30 ocean:bg-blue-30 flex w-44 cursor-pointer gap-2 rounded-full bg-opacity-50 p-2 hover:bg-opacity-100"
         >
           <Avatar variant={'icon'} size="sm">
             <ImageIcon src={currency.logoURI} />
@@ -127,22 +127,20 @@ const SelectTokenCard = ({
     <Card className="w-80 gap-2 ">
       <ModalHeader message={'Search Token'} onClose={onClose} />
       <Input
+        onChange={({ target }) => setSearch(target.value)}
         placeholder={'Search Token'}
-        value={search}
         variant={'primary'}
-        onChange={({ target }) => {
-          setSearch(target.value)
-        }}
         left={SearchIcon}
+        value={search}
       />
       <div className="flex justify-between p-2">
-        <p className="text-blue-blue text-md">Tokens</p>
-        <p className="text-blue-blue text-md">Holdings</p>
+        <p className="text-dark-30 ocean:text-blue-30 text-md">Tokens</p>
+        <p className="text-dark-30 ocean:text-blue-30 text-md">Holdings</p>
       </div>
       <div className=" flex h-96 flex-col overflow-y-auto">
         {isLoading && (
           <div className="flex h-full items-center justify-center">
-            <Spinner className={'h-8 w-8'} />
+            <Spinner className={'fill-dark-accent ocean:fill-blue-accent h-8 w-8'} />
           </div>
         )}
         {tokens.map((c, i) => (
@@ -179,20 +177,26 @@ const TokenItem = ({
       onClick={() => {
         onSelect(token)
       }}
-      className="hover:bg-Blue/main-dim flex cursor-pointer gap-2 rounded-md p-2"
+      className={cx(
+        'flex cursor-pointer gap-2 rounded-md p-2',
+        'even:bg-dark-main-bg ocean:even:bg-blue-main-bg',
+        'hover:bg-dark-20 ocean:hover:bg-blue-20',
+      )}
     >
       <div className="flex items-center">
         <ImageIcon src={token.logoURI} size={24} />
       </div>
       <div className="flex flex-col justify-center">
         <span className="text-sm font-medium leading-4 text-white">{token.symbol}</span>
-        <span className="text-blue-blue  text-2xs	leading-3">{token.name}</span>
+        <span className="text-dark-30 ocean:text-blue-30  text-2xs	leading-3">{token.name}</span>
       </div>
       <div className="ml-auto flex flex-col items-end">
         <span className="text-sm font-medium leading-4 text-white">
           {compactFormat(token.balance, token)}
         </span>
-        <span className="text-blue-blue text-2xs mt-1 rounded-md	leading-3 ">$ {compactValue}</span>
+        <span className="text-dark-30 ocean:text-blue-30 text-2xs mt-1 rounded-md	leading-3 ">
+          $ {compactValue}
+        </span>
       </div>
     </div>
   )
