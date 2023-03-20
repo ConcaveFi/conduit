@@ -3,10 +3,10 @@ import { cx, NumericInput, Panel, PanelProps, Skeleton } from '@tradex/interface
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useTranslation } from '@tradex/languages'
 import { Address, getContract, Provider } from '@wagmi/core'
-import { SupportedChainId } from 'app/providers/wagmi-config'
 import { MAX_LEVERAGE } from 'app/[asset]/constants/perps-config'
 import { useMarketSettings, useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
+import { SupportedChainId } from 'app/providers/wagmi-config'
 import { divide, equal, from, greaterThan, multiply, subtract, toNumber } from 'dnum'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
@@ -328,7 +328,7 @@ function MarginDetails() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-4">
-        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+        <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">Deposited</span>
           {isLoading ? (
             <Skeleton />
@@ -336,7 +336,7 @@ function MarginDetails() {
             <span className="font-mono text-white">$ {format(remainingMargin)}</span>
           )}
         </div>
-        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+        <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">Buying power</span>
           {isLoading ? (
             <Skeleton />
@@ -344,7 +344,7 @@ function MarginDetails() {
             <span className="font-mono text-green-400">$ {format(buyingPower)}</span>
           )}
         </div>
-        <div className="bg-dark-30 ocean:bg-blue-30 flex flex-col gap-1 rounded-lg p-2 text-xs">
+        <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">In position</span>
           {isLoading ? (
             <Skeleton />
@@ -496,7 +496,9 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
     <Panel
       ref={ref}
       name="Order Form"
-      bodyProps={{ className: 'p-3 md:overflow-y-scroll overflow-x-hidden' }}
+      bodyProps={{
+        className: 'p-3 md:overflow-y-scroll overflow-x-hidden justify-between sm:justify-start',
+      }}
       {...props}
     >
       <TransferMarginButton />

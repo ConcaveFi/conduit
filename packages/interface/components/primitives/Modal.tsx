@@ -1,6 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { CloseIcon } from '@tradex/icons'
 import { Fragment } from 'react'
+import { twJoin } from 'tailwind-merge'
 import { DivProps } from '../../types/primitives'
 export interface ModalProps extends DivProps {
   isOpen: boolean
@@ -8,7 +9,7 @@ export interface ModalProps extends DivProps {
   overlay?: boolean
 }
 export function Modal(props: ModalProps) {
-  const { isOpen, onClose, overlay = true, ...panelProps } = props
+  const { isOpen, onClose, overlay = true, className, ...panelProps } = props
   return (
     <Transition appear unmount show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10 " onClose={onClose}>
@@ -25,7 +26,11 @@ export function Modal(props: ModalProps) {
             leaveTo="opacity-0 scale-95"
           >
             {/* @ts-ignore */}
-            <Dialog.Panel as={'div'} {...panelProps} />
+            <Dialog.Panel
+              as={'div'}
+              className={twJoin('m-2 mt-auto sm:mt-2', className)}
+              {...panelProps}
+            />
           </Transition.Child>
         </div>
       </Dialog>

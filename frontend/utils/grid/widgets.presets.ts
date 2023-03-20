@@ -37,9 +37,9 @@ const MEDIUM_LAYOUT: WidgetPreset = {
 // This layout will be handled different in the future
 const SMALL_LAYOUT: WidgetPreset = {
   'chart-panel': { x: 0, y: 0, w: 12, h: 2 },
-  'news-panel': { x: 6, y: 6, w: 6, h: 2.4 },
-  'order-panel': { x: 0, y: 2, w: 12, h: 3.5 },
-  'trades-panel': { x: 0, y: 9, w: 6, h: 2.4 },
+  'news-panel': { x: 0, y: 6, w: 12, h: 2 },
+  'order-panel': { x: 0, y: 2, w: 12, h: 4 },
+  'trades-panel': { x: 0, y: 12, w: 12, h: 2 },
   'views-panel': { x: 0, y: 5, w: 12, h: 2 },
 }
 
