@@ -49,7 +49,11 @@ export function useMarginDetails<TSelect = TMarginDetails>(
   return useQuery(
     ['market position details', market?.key, account, chainId],
     () => fetchMarginDetails(account, chainId, provider, market!.key),
-    { select, enabled: !!account && !!market },
+    {
+      select,
+      enabled: !!account && !!market,
+      refetchInterval: 20 * 1000, // 20s
+    },
   )
 }
 

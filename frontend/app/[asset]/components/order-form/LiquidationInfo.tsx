@@ -75,13 +75,12 @@ function SizeSlider({
 function LiquidationSlider() {
   const { data: buyingPower = 0 } = useMarginDetails((details) => toNumber(details.buyingPower, 2))
 
-  const sizeUsd = useAtomValue(orderSizeUsdAtom)
-
   const onChange = useSetAtom(orderInputAtom)
+  const size = usePositionSizeForLiquidation()
 
   return (
     <>
-      <SizeSlider value={sizeUsd} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
+      <SizeSlider value={size} max={buyingPower} onChange={onChange} disabled={!buyingPower} />
       <div className="flex justify-between font-mono">
         <span
           className={cx(
@@ -99,7 +98,6 @@ function LiquidationSlider() {
 
 function LiquidationPrice() {
   const { data } = useCurrentTradePreview()
-  // if (isFetching) return <Skeleton className="mb-1 h-5 w-24" />
   return (
     <span
       className={cx(
@@ -113,9 +111,18 @@ function LiquidationPrice() {
         decimals={2}
         ease="cubicInOut"
       />
-      {/* {data ? format(data.liquidationPrice, 2) : '0.00'} */}
     </span>
   )
+}
+
+function usePositionSizeForLiquidation() {
+  // account in position + order form input values
+  const { data: inPositionUsd = 0 } = useMarginDetails((details) =>
+    toNumber(details.notionalValue, 2),
+  )
+  const sizeUsd = useAtomValue(orderSizeUsdAtom)
+
+  return sizeUsd + inPositionUsd
 }
 
 const riskLevelLabel = (value: number, max: number, remainingMargin: number) => {
@@ -126,19 +133,15 @@ const riskLevelLabel = (value: number, max: number, remainingMargin: number) => 
 }
 
 function LiquidationPriceRisk() {
-  const { data: marginDetails } = useMarginDetails((details) => ({
-    buyingPower: toNumber(details.buyingPower, 2),
-    remainingMargin: toNumber(details.remainingMargin, 2),
-  }))
-
-  const sizeUsd = useAtomValue(orderSizeUsdAtom)
-
-  const color = useInterpolateLiquidationRiskColor(sizeUsd, marginDetails?.buyingPower || 0)
-  const riskLabel = riskLevelLabel(
-    sizeUsd,
-    marginDetails?.buyingPower || 0,
-    marginDetails?.remainingMargin || 0,
+  const { data: buyingPower = 0 } = useMarginDetails((details) => toNumber(details.buyingPower, 2))
+  const { data: remainingMargin = 0 } = useMarginDetails((details) =>
+    toNumber(details.remainingMargin, 2),
   )
+
+  const size = usePositionSizeForLiquidation()
+
+  const color = useInterpolateLiquidationRiskColor(size, buyingPower)
+  const riskLabel = riskLevelLabel(size, buyingPower, remainingMargin)
 
   return (
     <>
