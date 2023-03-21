@@ -17,7 +17,7 @@ export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
   const { t } = useTranslation()
 
   const market = useRouteMarket()
-  const asset = market.asset
+  const asset = market?.asset
 
   const chartState = useScript(TRADING_VIEW_SRC)
   const chart = useRef<TVWidget>()

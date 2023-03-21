@@ -10,6 +10,7 @@ export const ChainLinkFeeds = {
   SNX: '0x2fcf37343e916eaed1f1ddaaf84458a359b53877',
   ETH: '0x13e3ee699d1909e989722e753853ae30b17e08c5',
 } as const
+
 export type ChainLinkFeed = (typeof ChainLinkFeeds)[keyof typeof ChainLinkFeeds]
 export function useChainLink(feed: ChainLinkFeed) {
   const chainId = optimism.id

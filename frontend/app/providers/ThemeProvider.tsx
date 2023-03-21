@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import { Theme, Themes } from 'utils/themeHandler'
 
 interface ThemeContextValues {
@@ -12,16 +12,18 @@ const ThemeContext = createContext<ThemeContextValues>({
 })
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState<Themes>()
-
-  useEffect(() => setTheme(Theme.initialize()), [])
+  const [theme, setTheme] = useState<Themes>(Theme.initialize())
 
   function changeTheme(_theme: Themes) {
     Theme.set(_theme)
     setTheme(_theme)
   }
 
-  return <ThemeContext.Provider value={{ theme, changeTheme }}>{children}</ThemeContext.Provider>
+  return (
+    <ThemeContext.Provider value={useMemo(() => ({ theme, changeTheme }), [theme])}>
+      {children}
+    </ThemeContext.Provider>
+  )
 }
 
 export const useTheme = () => useContext(ThemeContext)

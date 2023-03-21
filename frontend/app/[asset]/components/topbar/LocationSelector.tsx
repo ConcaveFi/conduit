@@ -19,7 +19,7 @@ export function LocationSelector() {
       <Menu.Button className="box-6">
         <Image
           src={`/assets/flags/${LOCALE_NAME[locale]}.png`}
-          className="w-auto object-contain "
+          className="box-6 w-auto object-contain"
           alt="usa"
           fill
         />

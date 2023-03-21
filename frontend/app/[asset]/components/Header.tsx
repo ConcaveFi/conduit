@@ -4,9 +4,9 @@ import { OP_ADDRESS, SNX_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
 import { BalanceIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { Address, FetchBalanceResult } from '@wagmi/core'
+import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { SupportedChainId } from 'app/providers/wagmi-config'
 import { add, divide, from, multiply, sub } from 'dnum'
-import { useAtomValue } from 'jotai'
 import Image from 'next/image'
 import { PropsWithChildren, ReactNode } from 'react'
 import { useLayout } from 'utils/contants/breakpoints'
@@ -14,13 +14,13 @@ import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 import { useMarketSettings, useRouteMarket } from '../lib/market/useMarket'
-import { PythId, PythIds } from '../lib/price/pyth'
+import { useMarketIndexPrice } from '../lib/price/price'
+import { MarketKey } from '../lib/price/pyth'
 import { ChainLinkFeed, ChainLinkFeeds, useChainLink } from '../lib/price/useChainLink'
-import { offchainPricesAtom, useMarketIndexPrice } from '../lib/price/useOffchainPrice'
 import { MarketList } from './MarketList'
 
 const formatBalance = (b: FetchBalanceResult | undefined) =>
-  b ? format(from([b.value.toBigInt(), b.decimals]), 2) : '0.0'
+  b ? format(from([b.value.toBigInt(), b.decimals]), 2) : '0.00'
 
 function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   return (
@@ -33,8 +33,9 @@ function Info({ children, title }: PropsWithChildren<{ title: ReactNode }>) {
   )
 }
 
-function PythPriceFeed({ id }: { id: PythId }) {
-  const price = useAtomValue(offchainPricesAtom({ network: 'mainnet', id }))
+function PythPriceFeed({ marketKey }: { marketKey: MarketKey }) {
+  // const price = useAtomValue(offchainPricesAtom({ network: 'mainnet', id }))
+  const price = useMarketIndexPrice({ marketKey })
   return <span className="font-mono">- {format(price, 2)}</span>
 }
 function ChainlinkPriceFeed({ feed }: { feed: ChainLinkFeed }) {
@@ -58,6 +59,8 @@ function TokenBalance({
     address: account,
     enabled: !!token && !!account,
   })
+
+  const isHydrated = useIsHydrated()
 
   if (isLoading)
     return (
@@ -86,7 +89,7 @@ function TokenBalance({
         }
       >
         <span className="ocean:text-blue-accent text-xs font-bold text-white">
-          {formatBalance(balance)}
+          {formatBalance(isHydrated ? balance : undefined)}
         </span>
       </Info>
     </div>
@@ -144,53 +147,53 @@ export function StrategyHeader() {
         <MarketList />
       </div>
       {isDesktop && (
-      <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
-        <IndexPrice />
-        <div className="centered flex gap-2">
-          <BalanceIcon className="fill-dark-30 ocean:fill-blue-30 box-6" />
+        <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
+          <IndexPrice />
+          <div className="centered flex gap-2">
+            <BalanceIcon className="fill-dark-30 ocean:fill-blue-30 box-6" />
+            <Info title={t('24h_change')}>
+              <span className="ocean:text-blue-accent text-xs font-bold text-white">
+                $ 370,526,580
+              </span>
+            </Info>
+          </div>
           <Info title={t('24h_change')}>
+            <span className="text-negative text-xs font-bold"> -1.33%</span>
+          </Info>
+          <Info title={'1H Funding Rate'}>
+            <span className="text-positive text-xs font-bold">{fundingRate}</span>
+          </Info>
+          <Info title={'Open interest (L)'}>
             <span className="ocean:text-blue-accent text-xs font-bold text-white">
-              $ 370,526,580
+              {`$${format(openInterestUsd.long, { compact: true })} / $${limit}`}
+            </span>
+          </Info>
+          <Info title={'Open interest (S)'}>
+            <span className="ocean:text-blue-accent text-xs font-bold text-white">
+              {`$${format(openInterestUsd.short, { compact: true })} / $${limit}`}
             </span>
           </Info>
         </div>
-        <Info title={t('24h_change')}>
-          <span className="text-negative text-xs font-bold"> -1.33%</span>
-        </Info>
-        <Info title={'1H Funding Rate'}>
-          <span className="text-positive text-xs font-bold">{fundingRate}</span>
-        </Info>
-        <Info title={'Open interest (L)'}>
-          <span className="ocean:text-blue-accent text-xs font-bold text-white">
-            {`$${format(openInterestUsd.long, { compact: true })} / $${limit}`}
-          </span>
-        </Info>
-        <Info title={'Open interest (S)'}>
-          <span className="ocean:text-blue-accent text-xs font-bold text-white">
-            {`$${format(openInterestUsd.short, { compact: true })} / $${limit}`}
-          </span>
-        </Info>
-      </div>
       )}
       {isDesktop && (
-      <div className="bg-dark-10 ocean:bg-blue-10 flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg  px-4 ">
-        <TokenBalance symbol="sUSD" token={sUSD_ADDRESS[chainId]} />
-        <TokenBalance
-          symbol="OP"
-          token={OP_ADDRESS[chainId]}
-          priceFeed={<PythPriceFeed id={PythIds.OP.mainnet} />}
-        />
-        <TokenBalance
-          symbol="SNX"
-          token={SNX_ADDRESS[chainId]}
-          priceFeed={<ChainlinkPriceFeed feed={ChainLinkFeeds.SNX} />}
-        />
-        <TokenBalance
-          symbol="ETH"
-          token="eth"
-          priceFeed={<PythPriceFeed id={PythIds.ETH.mainnet} />}
-        />
-      </div>
+        <div className="bg-dark-10 ocean:bg-blue-10 flex min-h-[64px] w-[35%] flex-1 justify-around gap-4 rounded-lg  px-4 ">
+          <TokenBalance symbol="sUSD" token={sUSD_ADDRESS[chainId]} />
+          <TokenBalance
+            symbol="OP"
+            token={OP_ADDRESS[chainId]}
+            priceFeed={<PythPriceFeed marketKey="sOPPERP" />}
+          />
+          <TokenBalance
+            symbol="SNX"
+            token={SNX_ADDRESS[chainId]}
+            priceFeed={<ChainlinkPriceFeed feed={ChainLinkFeeds.SNX} />}
+          />
+          <TokenBalance
+            symbol="ETH"
+            token="eth"
+            priceFeed={<PythPriceFeed marketKey="sETHPERP" />}
+          />
+        </div>
       )}
     </div>
   )

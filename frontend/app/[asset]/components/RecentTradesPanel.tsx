@@ -20,7 +20,7 @@ export const RecentTradesPanel = forwardRef<HTMLDivElement, PanelProps>((props, 
             <span className="text-xs text-white">Skew</span>
             <span className="text-negative text-xs">47%</span>
           </div>
-          <div className="w-fu flex h-3  w-full overflow-hidden  rounded-full  ">
+          <div className="flex h-3  w-full overflow-hidden  rounded-full  ">
             <div className="bg-positive h-full w-[53%] "></div>
             <div className="bg-negative h-full w-[47%] "></div>
           </div>
