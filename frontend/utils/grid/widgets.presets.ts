@@ -3,27 +3,27 @@ import { Breakpoints } from '../contants/breakpoints'
 import { GridWidgets } from './grid.widgets'
 
 const X_EXTRA_LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 3, y: 0, w: 6, h: 3.5 },
-  'news-panel': { x: 0, y: 6, w: 3, h: 2.5 },
-  'order-panel': { x: 12, y: 0, w: 3, h: 5 },
-  'trades-panel': { x: 0, y: 0, w: 3, h: 2.5 },
-  'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
+  'chart-panel': { x: 3, y: 0, w: 6, h: 7 },
+  'news-panel': { x: 0, y: 6, w: 3, h: 5 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 10 },
+  'trades-panel': { x: 0, y: 0, w: 3, h: 5 },
+  'views-panel': { x: 3, y: 15, w: 6, h: 3 },
 }
 
 const EXTRA_LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 9, h: 3.5 },
-  'news-panel': { x: 9, y: 0, w: 3, h: 2.4 },
-  'order-panel': { x: 12, y: 0, w: 3, h: 5.25 },
-  'trades-panel': { x: 0, y: 9, w: 3, h: 2.4 },
-  'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
+  'chart-panel': { x: 0, y: 0, w: 9, h: 6 },
+  'news-panel': { x: 9, y: 0, w: 3, h: 3 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 9 },
+  'trades-panel': { x: 0, y: 9, w: 3, h: 3 },
+  'views-panel': { x: 3, y: 15, w: 6, h: 3 },
 }
 
 const LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 8, h: 3.5 },
-  'news-panel': { x: 4, y: 6, w: 4, h: 2.4 },
-  'order-panel': { x: 12, y: 0, w: 4, h: 5.25 },
-  'trades-panel': { x: 0, y: 9, w: 4, h: 2.4 },
-  'views-panel': { x: 0, y: 5, w: 8, h: 1.5 },
+  'chart-panel': { x: 0, y: 0, w: 8, h: 6 },
+  'news-panel': { x: 4, y: 6, w: 4, h: 3 },
+  'order-panel': { x: 12, y: 0, w: 4, h: 9 },
+  'trades-panel': { x: 0, y: 9, w: 4, h: 3 },
+  'views-panel': { x: 0, y: 5, w: 8, h: 3 },
 }
 
 const MEDIUM_LAYOUT: WidgetPreset = {
@@ -36,11 +36,11 @@ const MEDIUM_LAYOUT: WidgetPreset = {
 
 // This layout will be handled different in the future
 const SMALL_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 12, h: 2 },
-  'news-panel': { x: 0, y: 6, w: 12, h: 2 },
-  'order-panel': { x: 0, y: 2, w: 12, h: 4.5 },
-  'trades-panel': { x: 0, y: 12, w: 12, h: 2 },
-  'views-panel': { x: 0, y: 5, w: 12, h: 2 },
+  'chart-panel': { x: 0, y: 0, w: 12, h: 4 },
+  'news-panel': { x: 0, y: 6, w: 12, h: 4 },
+  'order-panel': { x: 0, y: 2, w: 12, h: 8 },
+  'trades-panel': { x: 0, y: 12, w: 12, h: 4 },
+  'views-panel': { x: 0, y: 5, w: 12, h: 4 },
 }
 
 /**
