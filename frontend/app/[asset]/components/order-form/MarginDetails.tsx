@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '@tradex/interface'
 import { Address, getContract, Provider } from '@wagmi/core'
-import { SupportedChainId } from 'app/providers/wagmi-config'
 import { MAX_LEVERAGE } from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
+import { SupportedChainId } from 'app/providers/wagmi-config'
 import { multiply, subtract } from 'dnum'
 import { formatBytes32String } from 'ethers/lib/utils.js'
 import { marketData } from 'perps-hooks/contracts'
@@ -54,7 +54,7 @@ export function useMarginDetails<TSelect = TMarginDetails>(
 }
 
 export function MarginDetails() {
-  const { data: details, isLoading } = useMarginDetails()
+  const { data: details, isInitialLoading: isLoading } = useMarginDetails()
   const { notionalValue, remainingMargin, available, buyingPower } = details || {}
 
   return (
@@ -88,7 +88,7 @@ export function MarginDetails() {
       <div className="bg-dark-30 ocean:bg-blue-30 flex items-center justify-between rounded-lg p-3 text-sm">
         <span className="text-dark-accent ocean:text-blue-accent">Available</span>
         {isLoading ? (
-          <Skeleton className="w-14" />
+          <Skeleton className="w-20" />
         ) : (
           <span className="font-mono text-white">$ {format(available)}</span>
         )}

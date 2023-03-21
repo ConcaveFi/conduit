@@ -6,10 +6,10 @@ import atomWithDebounce from 'utils/atom-utils'
 import { DepositMarginToReduceRisk } from './DepositMarginToReduceRisk'
 import { LiquidationInfo } from './LiquidationInfo'
 import { MarginDetails } from './MarginDetails'
-import { orderDerivedValuesAtom, OrderSizeInput } from './OrderSizeInput'
+import { OrderDetails } from './OrderDetails'
+import { OrderSizeInput, orderDerivedValuesAtom } from './OrderSizeInput'
 import { PlaceOrderButton } from './PlaceOrderButton'
-import { sideAtom, SideSelector } from './SideSelector'
-import { TradeDetails } from './TradeDetails'
+import { SideSelector, sideAtom } from './SideSelector'
 import { TransferMarginButton } from './TransferMargin'
 
 export const orderSizeUsdAtom = selectAtom(orderDerivedValuesAtom, ({ usd }) =>
@@ -47,7 +47,7 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
 
       <PlaceOrderButton />
 
-      <TradeDetails />
+      <OrderDetails />
     </Panel>
   )
 })
