@@ -8,7 +8,7 @@ import { LiquidationInfo } from './LiquidationInfo'
 import { MarginDetails } from './MarginDetails'
 import { OrderDetails } from './OrderDetails'
 import { OrderSizeInput, orderDerivedValuesAtom } from './OrderSizeInput'
-import { PlaceOrderButton } from './PlaceOrderButton'
+import { PlaceOrderButton } from './PlaceOrder'
 import { SideSelector, sideAtom } from './SideSelector'
 import { TransferMarginButton } from './TransferMargin'
 

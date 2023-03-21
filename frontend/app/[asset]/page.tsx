@@ -2,10 +2,10 @@ import { dehydrate } from '@tanstack/query-core'
 import { optimism } from '@wagmi/core/chains'
 import { serialize } from 'superjson'
 import { WidgetsProvider } from '../providers/WidgetsProvider'
+import { HydrateAtoms, JotaiProvider, ReactQueryHydrate } from './HydrateProviders'
 import { GridLayout } from './components/GridLayout'
 import { StrategyHeader } from './components/Header'
-import { HydrateAtoms, JotaiProvider, ReactQueryHydrate } from './HydrateProviders'
-import { fetchMarketSettings, marketSettingsQueryKey, MarketSummaries } from './lib/market/markets'
+import { MarketSummaries, fetchMarketSettings, marketSettingsQueryKey } from './lib/market/markets'
 import { getAllMarkets, getProvider, getQueryClient } from './server-only'
 
 export async function generateStaticParams() {
@@ -23,7 +23,7 @@ const marketByAsset = (markets: MarketSummaries, asset: string) =>
 
 export default async function Page({ params }) {
   const market = await getRouteMarket(params.asset)
-  if (!market) throw 'wtf'
+  if (!market) throw new Error('rpc error')
 
   const queryClient = getQueryClient()
   await queryClient.prefetchQuery(marketSettingsQueryKey(market.key, optimism.id), () =>

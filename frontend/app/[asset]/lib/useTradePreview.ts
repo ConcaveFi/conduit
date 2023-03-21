@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Address, getContract, Provider, ReadContractResult } from '@wagmi/core'
 import { SupportedChainId } from 'app/providers/WagmiProvider'
 import { Dnum, from, toJSON } from 'dnum'
+import { BigNumber } from 'ethers'
 import { useAtomValue } from 'jotai'
 import { marketAbi } from 'perps-hooks/abis'
 import { market as marketContract } from 'perps-hooks/contracts'
@@ -37,7 +38,6 @@ const OrderType = {
 async function fetchTradePreview(
   market: Address,
   sizeDelta: Dnum,
-  marketPrice: Dnum,
   account: Address,
   provider: Provider,
 ) {
@@ -45,25 +45,14 @@ async function fetchTradePreview(
     address: market,
     abi: marketContract.abi,
     signerOrProvider: provider,
-  }).postTradeDetails(
-    toBigNumber(sizeDelta),
-    toBigNumber(marketPrice),
-    OrderType.delayedOffchain,
-    account,
-  )
+  }).postTradeDetails(toBigNumber(sizeDelta), BigNumber.from(0), OrderType.delayedOffchain, account)
   return parseTradePreview(result) as TradePreview
 }
-const tradePreviewQueryKey = (
-  market?: Address,
-  sizeDelta?: Dnum,
-  marketPrice?: Dnum,
-  account?: Address,
-) => [
+const tradePreviewQueryKey = (market?: Address, sizeDelta?: Dnum, account?: Address) => [
   'trade preview',
   {
     market,
     sizeDelta: sizeDelta && toJSON(sizeDelta),
-    marketPrice: marketPrice && toJSON(marketPrice),
     account,
     orderType: OrderType.delayedOffchain,
   },
@@ -71,13 +60,11 @@ const tradePreviewQueryKey = (
 
 export function useTradePreview<TSelect = TradePreview>({
   sizeDelta,
-  marketPrice,
   market,
   select,
 }: {
   market?: Address
   sizeDelta?: Dnum
-  marketPrice?: Dnum
   select?: (t: TradePreview) => TSelect
 }) {
   const { chain } = useNetwork()
@@ -86,15 +73,16 @@ export function useTradePreview<TSelect = TradePreview>({
 
   const provider = useProvider({ chainId })
 
-  const enabled = Boolean(account && market && marketPrice && sizeDelta)
+  const enabled = Boolean(account && market && sizeDelta)
 
   return useQuery(
-    tradePreviewQueryKey(market, sizeDelta, marketPrice, account),
-    () => fetchTradePreview(market!, sizeDelta!, marketPrice!, account!, provider),
+    tradePreviewQueryKey(market, sizeDelta, account),
+    () => fetchTradePreview(market!, sizeDelta!, account!, provider),
     {
       select,
       enabled,
       keepPreviousData: true,
+      refetchInterval: 20 * 1000, // 20s
     },
   )
 }
@@ -106,7 +94,6 @@ export function useCurrentTradePreview<TSelect = TradePreview>(
   const market = useRouteMarket()
   return useTradePreview({
     sizeDelta,
-    marketPrice: [0n, 0], // marketPrice updates like every second, do we want to refetch this often?
     market: market?.address,
     select,
   })

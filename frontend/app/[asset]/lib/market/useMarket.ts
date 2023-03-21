@@ -10,13 +10,13 @@ import { optimism } from 'wagmi/chains'
 import { connectedChainAtom, providerAtom } from '../jotai-wagmi'
 import { MarketKey } from '../price/pyth'
 import {
-  fetchMarkets,
-  fetchMarketSettings,
-  fetchMarketSummary,
-  marketSettingsQueryKey,
-  marketsQueryKey,
   MarketSummaries,
   MarketSummary,
+  fetchMarketSettings,
+  fetchMarketSummary,
+  fetchMarkets,
+  marketSettingsQueryKey,
+  marketsQueryKey,
 } from './markets'
 
 export function useMarkets<TSelectData = MarketSummaries>({
@@ -44,24 +44,27 @@ export function useMarkets<TSelectData = MarketSummaries>({
   which updates market skew, funding rate, etc
 */
 export const routeMarketKeyAtom = atom<MarketSummary['key']>('sETHPERP')
-export const [, routeMarketAtom] = atomsWithQuery<MarketSummary>((get) => {
-  const chain = get(connectedChainAtom)
-  const chainId = !chain || chain?.unsupported ? optimism.id : (chain.id as SupportedChainId)
-  const provider = get(providerAtom)
-  const marketKey = get(routeMarketKeyAtom)
-  const queryClient = get(queryClientAtom)
-  return {
-    queryKey: ['market summary', marketKey, chainId],
-    queryFn: () => fetchMarketSummary({ marketKey, provider, chainId }),
-    initialData: () => {
-      const allMarkets = queryClient.getQueryData(marketsQueryKey(chainId)) as MarketSummaries
-      return allMarkets?.find((m) => m.key === marketKey)
-    },
-    staleTime: 20 * 1000, // 20s
-    cacheTime: Infinity,
-    keepPreviousData: true,
-  }
+export const marketAtoms = atomFamily((marketKey: MarketKey) => {
+  const [, marketAtom] = atomsWithQuery<MarketSummary>((get) => {
+    const chain = get(connectedChainAtom)
+    const chainId = !chain || chain?.unsupported ? optimism.id : (chain.id as SupportedChainId)
+    const provider = get(providerAtom)
+    const queryClient = get(queryClientAtom)
+    return {
+      queryKey: ['market summary', marketKey, chainId],
+      queryFn: () => fetchMarketSummary({ marketKey, provider, chainId }),
+      initialData: () => {
+        const allMarkets = queryClient.getQueryData(marketsQueryKey(chainId)) as MarketSummaries
+        return allMarkets?.find((m) => m.key === marketKey)
+      },
+      staleTime: 20 * 1000, // 20s
+      cacheTime: Infinity,
+      keepPreviousData: true,
+    }
+  })
+  return marketAtom
 })
+export const routeMarketAtom = atom((get) => get(marketAtoms(get(routeMarketKeyAtom))))
 export const useRouteMarket = () => useAtomValue(routeMarketAtom).data
 
 export const marketSettingsAtoms = atomFamily((marketKey: MarketKey | undefined) => {

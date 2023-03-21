@@ -111,8 +111,7 @@ function LiquidationPrice() {
       <NumberEasing
         value={data ? toNumber(data.liquidationPrice, 2) : 0}
         decimals={2}
-        speed={500}
-        ease="quintInOut"
+        ease="cubicInOut"
       />
       {/* {data ? format(data.liquidationPrice, 2) : '0.00'} */}
     </span>

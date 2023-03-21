@@ -7,15 +7,15 @@ import { forwardRef, useEffect, useRef } from 'react'
 import { format } from 'utils/format'
 import { handleSynth } from 'utils/handleTokenLogo'
 import { useMarkets, useRouteMarket } from '../lib/market/useMarket'
+import { useMarketPrice } from '../lib/price/price'
 import { MarketKey } from '../lib/price/pyth'
-import { useMarketPrice } from '../lib/price/useOffchainPrice'
 
 function SelectedMarket({ asset, marketKey }: { asset: string; marketKey: MarketKey }) {
-  const price = useMarketPrice({ marketKey, select: (p) => format(p, 2) })
+  const price = useMarketPrice({ marketKey })
   return (
     <ItemInfo
       info={`${asset} Perpetual`}
-      value={price ? `$ ${price}` : ''}
+      value={price ? `$ ${format(price, 2)}` : ''}
       Icon={
         <Image
           alt={`${asset} icon`}

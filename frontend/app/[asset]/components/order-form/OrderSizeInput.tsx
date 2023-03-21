@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useForceUpdate } from 'framer-motion'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { useReducer, useRef } from 'react'
 import { format, safeStringDnum } from 'utils/format'
-import { routeMarketPriceAtom } from '../../lib/price/useOffchainPrice'
+import { routeMarketPriceAtom } from '../../lib/price/price'
 import { useMarginDetails } from './MarginDetails'
 
 export type InputState = { value: string | Dnum; type: 'usd' | 'asset' }

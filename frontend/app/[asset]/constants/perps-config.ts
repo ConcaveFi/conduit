@@ -44,6 +44,6 @@ import { formatBytes32String } from 'ethers/lib/utils'
 
 export const TRACKING_CODE = formatBytes32String('Conduit')
 
-export const DEFAULT_PRICE_IMPACT_DELTA = from(0.5, 18)
+export const DEFAULT_PRICE_IMPACT = from(0.5, 18)
 
 export const MAX_LEVERAGE = from(25, 18)

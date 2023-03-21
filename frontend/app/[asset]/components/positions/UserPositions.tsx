@@ -1,8 +1,8 @@
 import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { useIsHydrated } from 'app/providers/IsHydratedProvider'
-import { DEFAULT_PRICE_IMPACT_DELTA, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
+import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
+import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { abs, divide, equal, format, from, greaterThan } from 'dnum'
 import {
   useMarketClosePositionWithTracking,
@@ -29,7 +29,7 @@ export function UserPositions() {
     address: market?.address,
     args: position && [
       // BigNumber.from(position.size).mul(-1),
-      toBigNumber(DEFAULT_PRICE_IMPACT_DELTA),
+      toBigNumber(DEFAULT_PRICE_IMPACT),
       TRACKING_CODE,
     ],
   })
