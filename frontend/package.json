@@ -42,7 +42,7 @@
     "jotai-tanstack-query": "^0.6.0",
     "js-cookie": "^3.0.1",
     "multicall-provider": "^0.1.20",
-    "next": "13.2.5-canary.8",
+    "next": "13.2.5-canary.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-error-boundary": "^3.1.4",
