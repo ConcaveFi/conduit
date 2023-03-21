@@ -10,7 +10,7 @@ import { useWidgets } from '../../providers/WidgetsProvider'
 
 const ReactGridLayout = WidthProvider(RGL)
 const GRID_COLS = 12
-const GRID_ROW_HEIGHT = 145
+const GRID_ROW_HEIGHT = 60
 
 export function GridLayout() {
   const { handleChange, layout } = useGridLayout()
