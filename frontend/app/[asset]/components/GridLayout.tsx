@@ -19,7 +19,7 @@ export function GridLayout() {
   const panels = useMemo(() => {
     return widgets.map((widget) => {
       const Panel = GridWidget.toPanel(widget) as React.FC<DivProps>
-      return <Panel key={widget} className="transition-al " />
+      return <Panel key={widget} className="transition-all" />
     })
   }, [widgets])
 
