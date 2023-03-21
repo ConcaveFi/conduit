@@ -73,7 +73,6 @@ type Order = { market: MarketSummary; sizeDelta: Dnum; side: 'long' | 'short' }
 
 function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
   const order = useAtomValue(orderToBeConfirmedAtom)!
-  const orderConfirmation = useSetAtom(confirmOrderAtom)
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: order.market.address,
@@ -87,7 +86,8 @@ function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
   } = useMarketSubmitOffchainDelayedOrderWithTracking({
     ...config,
     onSuccess: () => {
-      orderConfirmation('confirm')
+      console.log('close')
+      onClose()
     },
   })
 
@@ -97,13 +97,13 @@ function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
 
       <OrderSummary order={order} />
 
-      <motion.button
-        className="btn centered disabled:bg-ocean-400 disabled:text-ocean-300 h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
+      <button
+        className="btn disabled:bg-dark-30 ocean:disabled:bg-blue-30 centered h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
         disabled={!submitOrder || !isIdle}
         onClick={() => submitOrder?.()}
       >
         {isLoading ? `Confirm in your wallet` : `Submit ${order.side} order`}
-      </motion.button>
+      </button>
     </div>
   )
 }
@@ -114,6 +114,7 @@ const confirmOrderAtom = atom(null, (get, set, action: 'ask' | 'dismiss' | 'conf
   if (action === 'dismiss' || action === 'confirm') {
     set(orderToBeConfirmedAtom, undefined)
     set(isConfirmingOrderAtom, false)
+    return
   }
 
   const market = get(routeMarketAtom).data

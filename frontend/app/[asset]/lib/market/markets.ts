@@ -13,10 +13,10 @@ export type MarketSummariesResult = ReadContractResult<
   'allProxiedMarketSummaries'
 >
 const SupportedMarkets = Object.keys(PythIdsByMarketKey)
-const isMarketSupported = (key: string) => SupportedMarkets.includes(key)
+const isMarketSupported = (parsedKey: string) => SupportedMarkets.includes(parsedKey)
 const parseMarketSummaries = (summaries: MarketSummariesResult) =>
   summaries
-    .filter((m) => isMarketSupported(m.key))
+    .filter((m) => isMarketSupported(parseBytes32String(m.key)))
     .map(({ key, asset, feeRates, market: address, ..._market }) => {
       const m = valuesToBigInt(_market)
       const fee = valuesToBigInt(feeRates)
