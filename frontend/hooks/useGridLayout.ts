@@ -15,8 +15,8 @@ export function useGridLayout(props?: GridLayoutHook) {
   useEffect(() => {
     if (breakpoint === undefined) return
 
-    // const stored = GridLayout.getStoredlayout(breakpoint)
-    // if (stored !== undefined) return setLayout(stored)
+    const stored = GridLayout.getStoredlayout(breakpoint)
+    if (stored !== undefined) return setLayout(stored)
 
     setLayout(GridWidgetPresets.getByBreakpoint(breakpoint))
   }, [breakpoint])
