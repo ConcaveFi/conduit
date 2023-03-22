@@ -52,7 +52,7 @@ const Tabs = () => {
           <Tab key={index} className="h-full outline-none ">
             {({ selected }) => {
               return (
-                <button
+                <span
                   aria-selected={selected}
                   className={cx(
                     'btn centered flex rounded-md p-[5px_15px] text-xs outline-none ring-0',
@@ -60,7 +60,7 @@ const Tabs = () => {
                   )}
                 >
                   {t(tab)}
-                </button>
+                </span>
               )
             }}
           </Tab>
