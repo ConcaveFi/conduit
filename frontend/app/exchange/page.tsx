@@ -13,4 +13,10 @@ export default async function Exchange({ params }) {
 export const metadata = {
   title: 'Exchange | Conduit',
   description: '', // TODO
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: 'no',
+  },
 }

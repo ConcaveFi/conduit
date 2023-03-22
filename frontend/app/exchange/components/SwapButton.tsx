@@ -26,10 +26,10 @@ export const SwapButton = ({
   } as const
 
   const state = (() => {
-    if (10 !== chain?.id) return `chainId`
     if (!mounted()) return 'loading'
     if (error && error.message) return 'error'
     if (!isConnected) return 'disconnected'
+    if (10 !== chain?.id) return `chainId`
     if (spender.isFetching) return 'loading'
     if (allow.isFetching) return 'loading'
     if (balanceIn.isFetching) return 'loading'

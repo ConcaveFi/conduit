@@ -57,4 +57,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
 export const metadata = {
   title: 'Conduit',
   description: 'Onchain perpetuals',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: 'no',
+  },
 }
