@@ -3,35 +3,35 @@ import { Breakpoints } from '../contants/breakpoints'
 import { GridWidgets } from './grid.widgets'
 
 const X_EXTRA_LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 3, y: 0, w: 6, h: 7 },
-  'news-panel': { x: 0, y: 6, w: 3, h: 5 },
-  'order-panel': { x: 12, y: 0, w: 3, h: 10 },
-  'trades-panel': { x: 0, y: 0, w: 3, h: 5 },
-  'views-panel': { x: 3, y: 15, w: 6, h: 3 },
+  'chart-panel': { x: 3, y: 0, w: 6, h: 10 },
+  'news-panel': { x: 0, y: 12, w: 3, h: 10 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 20 },
+  'trades-panel': { x: 0, y: 0, w: 3, h: 10 },
+  'views-panel': { x: 3, y: 30, w: 6, h: 6 },
 }
 
 const EXTRA_LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 9, h: 6 },
-  'news-panel': { x: 9, y: 0, w: 3, h: 3 },
-  'order-panel': { x: 12, y: 0, w: 3, h: 9 },
-  'trades-panel': { x: 0, y: 9, w: 3, h: 3 },
-  'views-panel': { x: 3, y: 15, w: 6, h: 3 },
+  'chart-panel': { x: 0, y: 0, w: 9, h: 8 },
+  'news-panel': { x: 9, y: 0, w: 3, h: 6 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 14 },
+  'trades-panel': { x: 0, y: 18, w: 3, h: 6 },
+  'views-panel': { x: 3, y: 30, w: 6, h: 6 },
 }
 
 const LARGE_LAYOUT: WidgetPreset = {
   'chart-panel': { x: 0, y: 0, w: 8, h: 6 },
-  'news-panel': { x: 4, y: 6, w: 4, h: 3 },
-  'order-panel': { x: 12, y: 0, w: 4, h: 9 },
-  'trades-panel': { x: 0, y: 9, w: 4, h: 3 },
-  'views-panel': { x: 0, y: 5, w: 8, h: 3 },
+  'news-panel': { x: 4, y: 12, w: 4, h: 6 },
+  'order-panel': { x: 12, y: 0, w: 4, h: 12 },
+  'trades-panel': { x: 0, y: 18, w: 4, h: 6 },
+  'views-panel': { x: 0, y: 10, w: 8, h: 6 },
 }
 
 const MEDIUM_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 7, h: 2 },
-  'news-panel': { x: 4, y: 6, w: 4, h: 2.4 },
-  'order-panel': { x: 12, y: 0, w: 5, h: 3.5 },
-  'trades-panel': { x: 0, y: 9, w: 4, h: 2.4 },
-  'views-panel': { x: 0, y: 5, w: 7, h: 1.5 },
+  'chart-panel': { x: 0, y: 0, w: 7, h: 6 },
+  'news-panel': { x: 4, y: 6, w: 4, h: 5 },
+  'order-panel': { x: 12, y: 0, w: 5, h: 12 },
+  'trades-panel': { x: 0, y: 18, w: 4, h: 6 },
+  'views-panel': { x: 0, y: 10, w: 7, h: 6 },
 }
 
 // This layout will be handled different in the future

@@ -61,10 +61,7 @@ export function UserPositions() {
     )
   }
 
-  const profitLoss = positionDetails.profitLoss
-
   const remainingMargin = positionDetails.remainingMargin
-
   const leverage = !equal(remainingMargin, 0)
     ? divide(positionDetails.notionalValue, remainingMargin)
     : from([0n, 0])
@@ -72,8 +69,8 @@ export function UserPositions() {
   const sizeFormated = `${format(abs(size))} ($ ${format(abs(positionDetails.notionalValue))})`
 
   return (
-    <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-4 overflow-hidden rounded-lg border-2 p-4  ">
-      <div className="flex gap-4">
+    <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border p-2  ">
+      <div className="flex gap-2">
         <div className="flex w-full flex-col gap-3">
           <PosItemInfo info={SideNAsset(side, market.asset)} value={format(market?.price || '0')} />
           <PosItemInfo info={'Size'} value={sizeFormated} />
@@ -81,15 +78,21 @@ export function UserPositions() {
           <PosItemInfo info={'Realized P&L'} value={'-'} />
         </div>
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo info={'Unrealized P&L'} value={format(positionDetails.profitLoss)} />
-          <PosItemInfo info={'Liq Price'} value={format(positionDetails.liquidationPrice)} />
+          <PosItemInfo
+            info={'Unrealized P&L'}
+            value={format(positionDetails.profitLoss, { digits: 2 })}
+          />
+          <PosItemInfo
+            info={'Liq Price'}
+            value={format(positionDetails.liquidationPrice, { digits: 2 })}
+          />
           <PosItemInfo info={'Net Funding'} value={'-'} />
-          <PosItemInfo info={'Leverage'} value={format(leverage)} />
+          <PosItemInfo info={'Leverage'} value={format(leverage, { digits: 2 })} />
         </div>
       </div>
       <button
         onClick={closePosition}
-        className="btn border-negative text-negative centered h-12 w-full rounded-lg border-2"
+        className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
       >
         Close position
       </button>
@@ -112,7 +115,7 @@ function PosItemInfo(props: {
 }) {
   const { modifirer, info, value } = props
   return (
-    <div className="bg-dark-30 ocean:bg-blue-30 flex h-8 w-full  items-center justify-between rounded-md px-2">
+    <div className="bg-dark-30 ocean:bg-blue-30 flex h-[22px] w-full  items-center justify-between rounded-sm px-2 text-xs">
       <span className="font-medium text-white">{info}</span>
       <span
         className={cx(

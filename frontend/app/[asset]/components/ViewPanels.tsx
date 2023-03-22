@@ -20,7 +20,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
         variant="secondary"
         ref={ref}
         headerProps={{ className: 'min-h-[36px] p-0 pr-2' }}
-        bodyProps={{ className: 'group' }}
+        bodyProps={{ className: 'group p-2 overflow-y-auto' }}
         headerChild={<Tabs />}
       >
         <Tab.Panels>
