@@ -12,7 +12,7 @@ export function Modal(props: ModalProps) {
   const { isOpen, onClose, overlay = true, className, ...panelProps } = props
   return (
     <Transition appear unmount show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10 " onClose={onClose}>
+      <Dialog as="div" className="relative z-50 " onClose={onClose}>
         {overlay && <Overlay />}
         {/* Container */}
         <div className="centered fixed inset-0 flex overflow-y-auto ">
