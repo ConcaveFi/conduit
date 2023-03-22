@@ -1,5 +1,5 @@
 import { Menu as PrimitiveMenu, Transition } from '@headlessui/react'
-import React, { forwardRef, Fragment } from 'react'
+import React, { Fragment, forwardRef } from 'react'
 import { ButtonProps, DivProps } from '../../types/primitives'
 
 export function Menu({ ...props }: DivProps) {
@@ -25,7 +25,7 @@ const MenuItems = forwardRef<HTMLDivElement, DivProps>(({ className, ...props },
       leaveTo="opacity-0 scale-75"
     >
       <PrimitiveMenu.Items
-        className={`absolute top-full mt-2 ${className}`}
+        className={`static top-full mt-2 sm:absolute ${className}`}
         {...props}
         as={'div'}
         ref={ref}
