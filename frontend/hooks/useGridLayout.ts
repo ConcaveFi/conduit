@@ -27,23 +27,40 @@ export function useGridLayout(props?: GridLayoutHook) {
   console.log(layout)
   const onAddWidgets = useCallback(
     (widgets: GridWidgets[]) => {
-      if (!breakpoint || !layout) throw new Error('Ocurred an error trying to add a widget')
-      const newLayout = layout.map((widgetProps) => {
-        if (!widgets.includes(widgetProps.i)) return widgetProps
-        const widget = widgetProps.i as GridWidgets
-        const widgetPreset = GridWidgetPresets.getWidgetPreset(widget, breakpoint)
-        console.log(widgetPreset)
+      if (!breakpoint || !layout) throw new Error('Ocurred an error adding a widget')
+      const presets: Layout[] = []
+      for (let widget of widgets) {
+        // If for some reason the layout already has the added widget
+        // We don't want to add it again with the porpuse to avoid possible bugs
+        const hasPreset = layout.find((wp) => wp.i === widget)
+        if (hasPreset) continue
 
-        return widgetPreset
-      })
-      setLayout(newLayout)
+        const widgetPreset = GridWidgetPresets.getWidgetPreset(widget, breakpoint)
+        presets.push(widgetPreset)
+      }
+      if (presets.length > 0) setLayout([...layout, ...presets])
     },
     [breakpoint, layout],
   )
 
+  // it's important removing the widget props from the layout even if this means do another mount
+  // because this can generate some problems when you try to add them again with their respective presets
+  const onRemoveWidget = useCallback(
+    (widget: GridWidgets) => {
+      if (!breakpoint || !layout) throw new Error('Ocurred an error removing a widget')
+      const newLayout = layout.filter((wp) => wp.i !== widget)
+      setLayout(newLayout)
+    },
+    [layout, breakpoint],
+  )
+
   useEffect(() => {
     events.current.on('add', onAddWidgets)
-    return () => events.current.off('add', onAddWidgets)
+    events.current.on('remove', onRemoveWidget)
+    return () => {
+      events.current.off('add', onAddWidgets)
+      events.current.off('remove', onRemoveWidget)
+    }
   }, [onAddWidgets])
 
   const handleChange = useCallback(
