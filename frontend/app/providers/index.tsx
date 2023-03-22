@@ -8,6 +8,7 @@ import { PropsWithChildren, useEffect, useLayoutEffect, useState } from 'react'
 import { Theme } from 'utils/themeHandler'
 import { IsHydratedProvider } from './IsHydratedProvider'
 import { ThemeProvider } from './ThemeProvider'
+import { TransactionsProvider } from './TransactionsProvider'
 import { WagmiProvider } from './WagmiProvider'
 
 const _useLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
@@ -27,7 +28,9 @@ export default function AppProviders({ children }: PropsWithChildren) {
       <WagmiProvider>
         {/* <TranslationProvider> */}
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <TransactionsProvider>{children}</TransactionsProvider>
+          </ThemeProvider>
         </QueryClientProvider>
         {/* </TranslationProvider> */}
       </WagmiProvider>
