@@ -104,7 +104,7 @@ export function WidgetsProvider({ children }: any) {
     const _widgets = widgets.filter((w) => w !== widget)
     setWidgets(_widgets)
     GridWidget.storeWidgets(_widgets)
-    events
+    events.current.callListeners('remove', widget)
     return widget
   }
 
