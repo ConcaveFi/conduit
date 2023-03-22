@@ -6,7 +6,6 @@ import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useTradePreview } from 'app/[asset]/lib/useTradePreview'
 import { Dnum, abs, equal, greaterThan, multiply } from 'dnum'
-import { motion } from 'framer-motion'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
@@ -155,13 +154,13 @@ export function PlaceOrderButton() {
 
   return (
     <>
-      <motion.button
-        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg  font-bold text-white shadow-lg"
+      <button
+        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg py-2 font-bold text-white shadow-lg"
         disabled={disabled}
         onClick={() => orderConfirmation('ask')}
       >
         {label}
-      </motion.button>
+      </button>
       <Modal isOpen={isConfirmingOrder} onClose={onDismiss}>
         <ConfirmOrderDialog onClose={onDismiss} />
       </Modal>
