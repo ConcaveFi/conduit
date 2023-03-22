@@ -53,7 +53,7 @@ const SMALL_LAYOUT: WidgetPreset = {
  * @property layouts return all breakpoint layouts
  */
 export class GridWidgetPresets {
-  public static layouts = [
+  public static readonly layouts = [
     X_EXTRA_LARGE_LAYOUT,
     EXTRA_LARGE_LAYOUT,
     LARGE_LAYOUT,
@@ -71,6 +71,27 @@ export class GridWidgetPresets {
       } satisfies Layout
     })
     return formatted
+  }
+
+  public static getWidgetPreset(widget: GridWidgets, breakpoint: Breakpoints): Layout {
+    const layoutPreset = GridWidgetPresets.getRawByBreakpoint(breakpoint)
+    const preset = layoutPreset[widget]
+    return { i: widget, ...preset, resizeHandles: ['se'], isResizable: true }
+  }
+
+  public static getRawByBreakpoint(breakpoint: Breakpoints) {
+    switch (breakpoint) {
+      case '2xl':
+        return X_EXTRA_LARGE_LAYOUT
+      case 'xl':
+        return EXTRA_LARGE_LAYOUT
+      case 'lg':
+        return LARGE_LAYOUT
+      case 'md':
+        return MEDIUM_LAYOUT
+      case 'sm':
+        return SMALL_LAYOUT
+    }
   }
 
   public static getByBreakpoint(breakpoint: Breakpoints): Layout[] {

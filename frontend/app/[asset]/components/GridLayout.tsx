@@ -1,7 +1,6 @@
 'use client'
 
 import { ChevronIcon } from '@tradex/icons'
-import { DivProps } from '@tradex/interface'
 import { useGridLayout } from 'hooks/useGridLayout'
 import { useMemo } from 'react'
 import RGL, { WidthProvider } from 'react-grid-layout'
@@ -18,11 +17,10 @@ export function GridLayout() {
 
   const panels = useMemo(() => {
     return widgets.map((widget) => {
-      const Panel = GridWidget.toPanel(widget) as React.FC<DivProps>
-      return <Panel key={widget} />
+      const Panel = GridWidget.toPanel(widget)
+      return <Panel key={widget} onClose={() => removeWidget(widget)} />
     })
   }, [widgets])
-
   if (!layout) return <></>
 
   return (
