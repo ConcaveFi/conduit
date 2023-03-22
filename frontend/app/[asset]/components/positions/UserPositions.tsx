@@ -15,8 +15,9 @@ import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
 
 export function UserPositions() {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const market = useRouteMarket()
+
   const { t } = useTranslation()
 
   const { data: positionDetails } = useMarketDataPositionDetails({
@@ -36,6 +37,8 @@ export function UserPositions() {
   const { write: closePosition } = useMarketClosePositionWithTracking(config)
 
   const isHydrated = useIsHydrated()
+  if (!isConnected) return notConnected
+
   if (!market || !position || !isHydrated)
     return (
       <div className="centered flex h-6 w-full gap-4">
@@ -127,3 +130,11 @@ function PosItemInfo(props: {
     </div>
   )
 }
+
+const notConnected = (
+  <div className="centered flex h-full ">
+    <span className="text-dark-accent ocean:text-blue-accent text-sm font-medium">
+      Connect your wallet to see your positions
+    </span>
+  </div>
+)
