@@ -1,3 +1,5 @@
+'use client'
+
 import { atom, useAtomValue } from 'jotai'
 
 export const innerWidthAtom = atom(0)

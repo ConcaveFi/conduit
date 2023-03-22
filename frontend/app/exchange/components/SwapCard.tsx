@@ -189,8 +189,8 @@ export const ExchangeCard = () => {
   const swapState = useSwap()
   const { inputIn, inputOut, maxIn, error, quoteInfo, swapCurrencies } = swapState
   return (
-    <div className="flex gap-2">
-      <Card className="w-auto gap-2 rounded-3xl px-5 py-4">
+    <>
+      <Card className="w-full gap-2 rounded-3xl px-2 py-2 sm:w-auto sm:px-5 sm:py-4">
         <SwapInput
           {...inputIn}
           label={'From'}
@@ -221,6 +221,6 @@ export const ExchangeCard = () => {
           <DoneTransaction tx={swapState.tx} onClose={swapState.confirmModal.onClose} />
         )}
       </Modal>
-    </div>
+    </>
   )
 }

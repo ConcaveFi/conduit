@@ -1,6 +1,6 @@
 import { Spinner } from '@tradex/icons'
 import { useIsMounted } from 'usehooks-ts'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { useSwap } from './SwapCard'
 
 export const SwapButton = ({
@@ -13,6 +13,7 @@ export const SwapButton = ({
 }: ReturnType<typeof useSwap>) => {
   const { isConnected } = useAccount()
   const mounted = useIsMounted()
+  const { chain } = useNetwork()
   const states = {
     disconnected: { children: 'Connect Wallet' },
     loading: { children: <Spinner /> },
@@ -21,8 +22,11 @@ export const SwapButton = ({
     approve: { children: 'Approve', onClick: () => allow.data && allow.data() },
     swap: { children: 'Swap', onClick: doSwap },
     error: { children: error?.message },
+    chainId: { children: 'Unsupported chain' },
   } as const
+
   const state = (() => {
+    if (10 !== chain?.id) return `chainId`
     if (!mounted()) return 'loading'
     if (error && error.message) return 'error'
     if (!isConnected) return 'disconnected'

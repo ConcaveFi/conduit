@@ -43,11 +43,11 @@ export const SwapInput = ({
 } & InputProps) => {
   const price = useCurrencyAmountPrice({ currencyAmount: inputProps.currency })
   return (
-    <div className="flex items-end gap-2">
-      <div className="flex w-full flex-col  ">
+    <div className="flex w-full items-end gap-2">
+      <div className="flex w-full flex-col">
         <span className="text-dark-30 ocean:text-blue-30 ml-3 mb-1 text-sm ">{label} </span>
         <NumericInput
-          className="w-60"
+          className="w-full"
           decimalScale={6}
           variant={'primary'}
           bottom={({ className }) => (
@@ -60,6 +60,7 @@ export const SwapInput = ({
 
         {children}
       </div>
+      {/* <CurrencySelector currency={inputProps.currency} disabled onSelect={setCurrency} /> */}
       <CurrencySelector currency={inputProps.currency} disabled onSelect={setCurrency} />
     </div>
   )

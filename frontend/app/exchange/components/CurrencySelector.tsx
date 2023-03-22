@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Currency, ETH_ADDRESS, Exchange, Token } from '@tradex/core'
 import { ChevronIcon, SearchIcon, Spinner } from '@tradex/icons'
-import { Avatar, Card, cx, ImageIcon, Input, Modal, ModalHeader } from '@tradex/interface'
+import { Avatar, Card, ImageIcon, Input, Modal, ModalHeader, cx } from '@tradex/interface'
 import { fetchBalance } from '@wagmi/core'
 import { BigNumber } from 'ethers'
 import { parseUnits } from 'ethers/lib/utils'
@@ -78,10 +78,10 @@ export function CurrencySelector({
 
   return (
     <>
-      <div className="flex h-full flex-col justify-end ">
+      <div className="flex h-full flex-col justify-end md:w-fit  ">
         <div
           onClick={() => modalProps.onOpen()}
-          className="bg-dark-30 ocean:bg-blue-30 flex w-44 cursor-pointer gap-2 rounded-full bg-opacity-50 p-2 hover:bg-opacity-100"
+          className="bg-dark-30 ocean:bg-blue-30 flex cursor-pointer gap-2 rounded-full bg-opacity-50 p-2 hover:bg-opacity-100"
         >
           <Avatar variant={'icon'} size="sm">
             <ImageIcon src={currency.logoURI} />
@@ -94,13 +94,13 @@ export function CurrencySelector({
             <ChevronIcon className="fill-dark-accent ocean:fill-blue-accent mr-2 h-3 w-3" />
           </div>
         </div>
-        <div className="text-dark-30 ocean:text-blue-30 flex w-full justify-between px-4 text-sm">
+        <div className="text-dark-30 ocean:text-blue-30 flex w-full justify-between text-sm">
           Balance
           <div className="text-dark-accent ocean:text-blue-accent text-sm text-opacity-70">
-            {compactFormat(balance || BigNumber.from(0))}
+            {compactFormat(balance || BigNumber.from(0), currency)}
           </div>
         </div>
-        <Modal onClose={modalProps.onClose} isOpen={modalProps.isOpen}>
+        <Modal className="w-full sm:w-fit" onClose={modalProps.onClose} isOpen={modalProps.isOpen}>
           <SelectTokenCard
             onClose={modalProps.onClose}
             onSelect={(c) => {
@@ -124,7 +124,7 @@ const SelectTokenCard = ({
   const { tokens, isLoading, search, setSearch } = useCurrencySelector()
 
   return (
-    <Card className="w-80 gap-2 ">
+    <Card className=" w-full gap-2 md:w-80 ">
       <ModalHeader message={'Search Token'} onClose={onClose} />
       <Input
         onChange={({ target }) => setSearch(target.value)}
