@@ -54,8 +54,8 @@ function UnsupportedNetworkModal(props: ModalProps) {
   const { switchNetwork } = useSwitchNetwork()
   return (
     <Modal {...props}>
-      <div className="` h-screen">
-        <div className="card card-primary-outlined gap- mt-20 h-fit w-[450px] p-6">
+      <div className="h-screen">
+        <div className="card card-primary-outlined mt-20 h-fit w-[450px] p-6">
           <span className="text-dark-accent ocean:text-blue-accent mx-auto text-xl ">
             Unsupported network
           </span>

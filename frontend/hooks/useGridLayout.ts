@@ -21,39 +21,24 @@ export function useGridLayout(props?: GridLayoutHook) {
     let stored = GridLayout.getStoredlayout(breakpoint)
     if (typeof stored !== 'undefined') {
       stored = stored.filter((wp) => widgets.includes(wp.i)) // remove widget config if widget is not added to DOM
-      for (let widget of widgets) {
-        // If stored layout already has the current layout on it, we don't have to care about
-        if (stored.find((wp) => wp.i === widget)) continue
+      const missingPresets = widgets
+        .filter((widget) => !stored?.some((wp) => wp.i === widget))
+        .map((widget) => GridWidgetPresets.getWidgetPreset(widget, breakpoint))
 
-        // When you remove some widgets but still remaining some, at localstorage will be stored only these widgets
-        // if you go to another breakpoint, add the widgets that has been removed, and go back to the previus breakpoint
-        // will be storedo only the 2 widget hasn't been removed before, so it's important make this verification
-        // to check if stored layout is missing any widget propierties.
-        const widgetProps = GridWidgetPresets.getWidgetPreset(widget, breakpoint)
-        stored.push(widgetProps)
-      }
-      return setLayout(stored)
+      return setLayout([...stored, ...missingPresets])
     }
 
     const displayPresets = GridWidgetPresets.getByBreakpoint(breakpoint)
     const filtered = displayPresets.filter((wp) => widgets.includes(wp.i))
     setLayout(filtered)
-    return () => setLayout([])
   }, [breakpoint, widgets])
 
   const onAddWidgets = useCallback(
     (widgets: GridWidgets[]) => {
       if (!breakpoint || !layout) throw new Error('Ocurred an error adding a widget')
-      const presets: Layout[] = []
-      for (let widget of widgets) {
-        // If for some reason the layout already has the added widget
-        // We don't want to add it again with the purpose to avoid possible bugs
-        const hasPreset = layout.find((wp) => wp.i === widget)
-        if (hasPreset) continue
-
-        const widgetPreset = GridWidgetPresets.getWidgetPreset(widget, breakpoint)
-        presets.push(widgetPreset)
-      }
+      const presets = widgets
+        .filter((widget) => !layout.some((wp) => wp.i === widget))
+        .map((w) => GridWidgetPresets.getWidgetPreset(w, breakpoint))
       if (presets.length > 0) setLayout([...layout, ...presets])
     },
     [breakpoint, layout],
