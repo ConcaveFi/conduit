@@ -20,7 +20,7 @@ export function GridLayout() {
       const Panel = GridWidget.toPanel(widget)
       return <Panel key={widget} onClose={() => removeWidget(widget)} />
     })
-  }, [widgets])
+  }, [widgets, removeWidget])
   if (!layout) return <></>
 
   return (

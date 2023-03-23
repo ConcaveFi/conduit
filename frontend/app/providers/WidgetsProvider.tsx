@@ -1,19 +1,17 @@
 'use client'
 
-import { createContext, MutableRefObject, useContext, useRef, useState } from 'react'
-import { WidgetEvents } from 'src/entities/widgets.events'
+import { createContext, useContext, useState } from 'react'
+
 import { GridWidget, GridWidgets } from 'utils/grid/grid.widgets'
 import { AddWidgetOverlay } from '../[asset]/components/widgets/AddWidgetOverlay'
 interface WidgetsContext {
   addWidgets(_widgets: GridWidgets[]): void
   removeWidget(widget: GridWidgets): Promise<GridWidgets | undefined>
   hasWidget(_widgets: GridWidgets): boolean
-  events: MutableRefObject<WidgetEvents>
   widgets: GridWidgets[]
 }
 const WidgetsContext = createContext<WidgetsContext>({
   removeWidget: async () => undefined,
-  events: { current: new WidgetEvents() },
   hasWidget: () => true,
   addWidgets() {},
   widgets: [],
@@ -21,7 +19,6 @@ const WidgetsContext = createContext<WidgetsContext>({
 export const useWidgets = () => useContext(WidgetsContext)
 
 export function WidgetsProvider({ children }: any) {
-  const events = useRef(new WidgetEvents())
   const [widgets, setWidgets] = useState(
     GridWidget.getStoredWidgets() || GridWidget.getDefaultWidgets(),
   )
@@ -39,7 +36,6 @@ export function WidgetsProvider({ children }: any) {
     }
     setWidgets(newWidgets)
     GridWidget.storeWidgets(newWidgets)
-    events.current.callListeners('add', _widgets)
   }
 
   /**
@@ -52,7 +48,6 @@ export function WidgetsProvider({ children }: any) {
     const _widgets = widgets.filter((w) => w !== widget)
     setWidgets(_widgets)
     GridWidget.storeWidgets(_widgets)
-    events.current.callListeners('remove', widget)
     return widget
   }
 
@@ -62,7 +57,7 @@ export function WidgetsProvider({ children }: any) {
   }
 
   return (
-    <WidgetsContext.Provider value={{ hasWidget, widgets, addWidgets, removeWidget, events }}>
+    <WidgetsContext.Provider value={{ hasWidget, widgets, addWidgets, removeWidget }}>
       {children}
       <AddWidgetOverlay />
     </WidgetsContext.Provider>
