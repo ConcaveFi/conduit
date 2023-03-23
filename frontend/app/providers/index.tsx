@@ -6,10 +6,10 @@ import { queryClientAtom } from 'jotai-tanstack-query'
 import { useHydrateAtoms } from 'jotai/utils'
 import Image from 'next/image'
 // import { TranslationProvider } from '@tradex/languages'
-import { PropsWithChildren, useEffect, useLayoutEffect, useState } from 'react'
+import { PropsWithChildren, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { Theme } from 'utils/themeHandler'
 import { useNetwork, useSwitchNetwork } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { IsHydratedProvider } from './IsHydratedProvider'
 import { ThemeProvider } from './ThemeProvider'
 import { WagmiProvider } from './WagmiProvider'
@@ -27,13 +27,20 @@ export default function AppProviders({ children }: PropsWithChildren) {
   }, [])
 
   const { chain } = useNetwork()
+  const isOpen = useMemo(() => {
+    if (!chain?.id) return false
+    const supportedNetworks = [optimism.id, optimismGoerli.id]
+    const includes = supportedNetworks.includes(chain.id)
+    if (includes) return false
+    return true
+  }, [chain?.id])
 
   return (
     <IsHydratedProvider>
       <WagmiProvider>
         {/* <TranslationProvider> */}
         <QueryClientProvider client={queryClient}>
-          <UnsupportedNetworkModal isOpen={chain?.id !== 10} onClose={() => {}} />
+          <UnsupportedNetworkModal isOpen={isOpen} onClose={() => {}} />
 
           <ThemeProvider>{children}</ThemeProvider>
         </QueryClientProvider>
