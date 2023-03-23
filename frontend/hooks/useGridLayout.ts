@@ -1,10 +1,9 @@
 import { useWidgets } from 'app/providers/WidgetsProvider'
 import { useAtomValue } from 'jotai'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Layout } from 'react-grid-layout'
 import { breakpointAtom } from 'utils/contants/breakpoints'
 import { GridLayout } from 'utils/grid/grid.layout'
-import { GridWidgets } from 'utils/grid/grid.widgets'
 import { GridWidgetPresets } from 'utils/grid/widgets.presets'
 
 export interface GridLayoutHook {
@@ -12,49 +11,35 @@ export interface GridLayoutHook {
 }
 export function useGridLayout(props?: GridLayoutHook) {
   const breakpoint = useAtomValue(breakpointAtom)
-  const [layout, setLayout] = useState(props?.defaultLayout)
-  const { events, widgets } = useWidgets()
+  const { widgets } = useWidgets()
 
-  useEffect(() => {
-    if (typeof breakpoint === 'undefined') return
+  const layout = useMemo(() => {
+    if (!breakpoint) return null
+    const stored = GridLayout.getStoredlayout(breakpoint)
+    const defaultLayout = GridWidgetPresets.getByBreakpoint(breakpoint)
+    let layout = stored || defaultLayout
 
-    let stored = GridLayout.getStoredlayout(breakpoint)
-    if (typeof stored !== 'undefined') {
-      stored = stored.filter((wp) => widgets.includes(wp.i)) // remove widget config if widget is not added to DOM
-      const missingPresets = widgets
-        .filter((widget) => !stored?.some((wp) => wp.i === widget))
+    const hasMissingWidgets = widgets.length > layout.length
+    const hasUnusedWidget = widgets.length < layout.length
+    if (hasMissingWidgets) {
+      const missingWidgets = widgets
+        .filter((widget) => !layout.find((wp) => wp.i === widget))
         .map((widget) => GridWidgetPresets.getWidgetPreset(widget, breakpoint))
 
-      return setLayout([...stored, ...missingPresets])
+      layout.push(...missingWidgets)
+    } else if (hasUnusedWidget) {
+      layout = layout.filter((wp) => widgets.includes(wp.i))
     }
 
-    const displayPresets = GridWidgetPresets.getByBreakpoint(breakpoint)
-    const filtered = displayPresets.filter((wp) => widgets.includes(wp.i))
-    setLayout(filtered)
+    return layout
   }, [breakpoint, widgets])
-
-  const onAddWidgets = useCallback(
-    (widgets: GridWidgets[]) => {
-      if (!breakpoint || !layout) throw new Error('Ocurred an error adding a widget')
-      const presets = widgets
-        .filter((widget) => !layout.some((wp) => wp.i === widget))
-        .map((w) => GridWidgetPresets.getWidgetPreset(w, breakpoint))
-      if (presets.length > 0) setLayout([...layout, ...presets])
-    },
-    [breakpoint, layout],
-  )
-
-  useEffect(() => {
-    events.current.on('add', onAddWidgets)
-    return () => events.current.off('add', onAddWidgets)
-  }, [onAddWidgets])
 
   const handleChange = useCallback(
     (_layout: Layout[]) => {
       if (!breakpoint) return
       GridLayout.storeLayout(_layout, breakpoint)
     },
-    [breakpoint, layout],
+    [breakpoint],
   )
 
   return {
