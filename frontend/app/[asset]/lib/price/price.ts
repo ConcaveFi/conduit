@@ -15,7 +15,7 @@ const pyth = {
 }
 
 const subscribeindexPricesEffect =
-  (network: 'mainnet' | 'testnet', id: PythId) => (onPriceChange: (price: Dnum) => void) => {
+  (network: PythNetwork, id: PythId) => (onPriceChange: (price: Dnum) => void) => {
     pyth[network].subscribePriceFeedUpdates([id], (feed) => {
       const { price, expo } = feed.getPriceUnchecked()
       const _price = divide(price, 10 ** Math.abs(expo), 18)
