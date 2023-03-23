@@ -13,25 +13,41 @@ export interface GridLayoutHook {
 export function useGridLayout(props?: GridLayoutHook) {
   const breakpoint = useAtomValue(breakpointAtom)
   const [layout, setLayout] = useState(props?.defaultLayout)
-  const { events } = useWidgets()
+  const { events, widgets } = useWidgets()
 
   useEffect(() => {
-    if (breakpoint === undefined) return
+    if (typeof breakpoint === 'undefined') return
 
-    const stored = GridLayout.getStoredlayout(breakpoint)
-    if (stored !== undefined) return setLayout(stored)
+    let stored = GridLayout.getStoredlayout(breakpoint)
+    if (typeof stored !== 'undefined') {
+      stored = stored.filter((wp) => widgets.includes(wp.i)) // remove widget config if widget is not added to DOM
+      for (let widget of widgets) {
+        // If stored layout already has the current layout on it, we don't have to care about
+        if (stored.find((wp) => wp.i === widget)) continue
 
-    setLayout(GridWidgetPresets.getByBreakpoint(breakpoint))
-  }, [breakpoint])
+        // When you remove some widgets but still remaining some, at localstorage will be stored only these widgets
+        // if you go to another breakpoint, add the widgets that has been removed, and go back to the previus breakpoint
+        // will be storedo only the 2 widget hasn't been removed before, so it's important make this verification
+        // to check if stored layout is missing any widget propierties.
+        const widgetProps = GridWidgetPresets.getWidgetPreset(widget, breakpoint)
+        stored.push(widgetProps)
+      }
+      return setLayout(stored)
+    }
 
-  console.log(layout)
+    const displayPresets = GridWidgetPresets.getByBreakpoint(breakpoint)
+    const filtered = displayPresets.filter((wp) => widgets.includes(wp.i))
+    setLayout(filtered)
+    return () => setLayout([])
+  }, [breakpoint, widgets])
+
   const onAddWidgets = useCallback(
     (widgets: GridWidgets[]) => {
       if (!breakpoint || !layout) throw new Error('Ocurred an error adding a widget')
       const presets: Layout[] = []
       for (let widget of widgets) {
         // If for some reason the layout already has the added widget
-        // We don't want to add it again with the porpuse to avoid possible bugs
+        // We don't want to add it again with the purpose to avoid possible bugs
         const hasPreset = layout.find((wp) => wp.i === widget)
         if (hasPreset) continue
 
@@ -43,32 +59,17 @@ export function useGridLayout(props?: GridLayoutHook) {
     [breakpoint, layout],
   )
 
-  // it's important removing the widget props from the layout even if this means do another mount
-  // because this can generate some problems when you try to add them again with their respective presets
-  const onRemoveWidget = useCallback(
-    (widget: GridWidgets) => {
-      if (!breakpoint || !layout) throw new Error('Ocurred an error removing a widget')
-      const newLayout = layout.filter((wp) => wp.i !== widget)
-      setLayout(newLayout)
-    },
-    [layout, breakpoint],
-  )
-
   useEffect(() => {
     events.current.on('add', onAddWidgets)
-    events.current.on('remove', onRemoveWidget)
-    return () => {
-      events.current.off('add', onAddWidgets)
-      events.current.off('remove', onRemoveWidget)
-    }
+    return () => events.current.off('add', onAddWidgets)
   }, [onAddWidgets])
 
   const handleChange = useCallback(
-    function storeLayout(_layout: Layout[]) {
+    (_layout: Layout[]) => {
       if (!breakpoint) return
       GridLayout.storeLayout(_layout, breakpoint)
     },
-    [breakpoint],
+    [breakpoint, layout],
   )
 
   return {
