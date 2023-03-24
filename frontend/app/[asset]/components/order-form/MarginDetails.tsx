@@ -63,7 +63,7 @@ export function MarginDetails() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">Deposited</span>
           {isLoading ? (
