@@ -29,12 +29,7 @@ export function LeaderboardView({ places }: { places: LeaderboardQuery }) {
       <span className="text-dark-accent ocean:text-blue-accent mx-auto mt-2 mb-2 text-xs font-medium">
         Top Traders
       </span>
-      <LeaderboardTable
-        search={search}
-        pagination={pagination}
-        direction={direction}
-        places={places}
-      />
+      <LeaderboardTable search={search} pagination={pagination} sort={direction} places={places} />
 
       {/* Pagination */}
       <div className="my-4 flex justify-between px-4">
