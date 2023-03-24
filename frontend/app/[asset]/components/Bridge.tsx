@@ -23,7 +23,7 @@ const oceanTheme: Customize = {
 }
 
 const darkTheme: Customize = {
-  primary: 'rgb(18,15,58)',
+  primary: 'rgb(21,23,32)',
   secondary: 'rgb(18,15,58)',
   text: 'rgb(254,254,254)',
   secondaryText: 'rgb(254,254,254)',
