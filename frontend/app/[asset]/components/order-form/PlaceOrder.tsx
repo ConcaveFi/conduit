@@ -1,3 +1,4 @@
+import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { Modal } from '@tradex/interface'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { MarketSummary } from 'app/[asset]/lib/market/markets'
@@ -6,7 +7,6 @@ import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useTradePreview } from 'app/[asset]/lib/useTradePreview'
 import { Dnum, abs, equal, greaterThan, multiply } from 'dnum'
-import { motion } from 'framer-motion'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
@@ -71,8 +71,8 @@ function OrderSummary({ order }: { order: Order }) {
 
 type Order = { market: MarketSummary; sizeDelta: Dnum; side: 'long' | 'short' }
 
-function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
-  const order = useAtomValue(orderToBeConfirmedAtom)!
+function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFunction }) {
+  const registerTransaction = useAddRecentTransaction()
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: order.market.address,
@@ -85,9 +85,14 @@ function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
     isLoading,
   } = useMarketSubmitOffchainDelayedOrderWithTracking({
     ...config,
-    onSuccess: () => {
-      console.log('close')
+    onSuccess: (tx) => {
       onClose()
+      registerTransaction({
+        hash: tx.hash,
+        meta: {
+          description: `Open ${order.side} ${order.market.asset} position`,
+        },
+      })
     },
   })
 
@@ -109,31 +114,21 @@ function ConfirmOrderDialog({ onClose }: { onClose: VoidFunction }) {
 }
 
 const orderToBeConfirmedAtom = atom<Order | undefined>(undefined)
-const isConfirmingOrderAtom = atom(false)
-const confirmOrderAtom = atom(null, (get, set, action: 'ask' | 'dismiss' | 'confirm') => {
-  if (action === 'dismiss' || action === 'confirm') {
+const confirmOrderAtom = atom(null, (get, set, action: 'ask' | 'dismiss') => {
+  if (action === 'dismiss') {
     set(orderToBeConfirmedAtom, undefined)
-    set(isConfirmingOrderAtom, false)
     return
   }
 
   const market = get(routeMarketAtom).data
-  if (!market) return set(isConfirmingOrderAtom, false)
+  if (!market) return set(orderToBeConfirmedAtom, undefined)
 
   set(orderToBeConfirmedAtom, {
     market,
     side: get(sideAtom),
     sizeDelta: get(sizeDeltaAtom.currentValueAtom),
   })
-  set(isConfirmingOrderAtom, true)
 })
-// const orderOutdatedAtom = atom((get) => {
-//   const currentPrice = get(routeMarketPriceAtom)
-//   const orderPrice = get(orderToBeConfirmed)?.price
-//   if (!orderPrice) return false
-//   const priceChange = multiply(divide(subtract(currentPrice, orderPrice), orderPrice), 100)
-//   return greaterThan(abs(priceChange), DEFAULT_PRICE_IMPACT)
-// })
 
 export function PlaceOrderButton() {
   const sizeUsd = useAtomValue(orderSizeUsdAtom)
@@ -149,21 +144,21 @@ export function PlaceOrderButton() {
 
   const disabled = !sizeUsd || equal(sizeUsd, 0) || isOverBuyingPower
 
+  const order = useAtomValue(orderToBeConfirmedAtom)
   const orderConfirmation = useSetAtom(confirmOrderAtom)
-  const isConfirmingOrder = useAtomValue(isConfirmingOrderAtom)
   const onDismiss = () => orderConfirmation('dismiss')
 
   return (
     <>
-      <motion.button
-        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg  font-bold text-white shadow-lg"
+      <button
+        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg py-2 font-bold text-white shadow-lg"
         disabled={disabled}
         onClick={() => orderConfirmation('ask')}
       >
         {label}
-      </motion.button>
-      <Modal isOpen={isConfirmingOrder} onClose={onDismiss}>
-        <ConfirmOrderDialog onClose={onDismiss} />
+      </button>
+      <Modal isOpen={!!order} onClose={onDismiss}>
+        {order && <ConfirmOrderDialog order={order} onClose={onDismiss} />}
       </Modal>
     </>
   )

@@ -10,6 +10,7 @@ import { format } from 'utils/format'
 import { useMarginDetails } from './MarginDetails'
 import { orderSizeUsdAtom } from './OrderFormPanel'
 import { InputState, orderInputAtom } from './OrderSizeInput'
+import { sideAtom } from './SideSelector'
 
 const useInterpolateLiquidationRiskColor = (value: number, max: number) => {
   const v = useMotionValue(value)
@@ -121,8 +122,10 @@ function usePositionSizeForLiquidation() {
     toNumber(details.notionalValue, 2),
   )
   const sizeUsd = useAtomValue(orderSizeUsdAtom)
+  const side = useAtomValue(sideAtom)
+  const size = side === 'long' ? sizeUsd : -sizeUsd
 
-  return sizeUsd + inPositionUsd
+  return size + inPositionUsd
 }
 
 const riskLevelLabel = (value: number, max: number, remainingMargin: number) => {

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.13",
+    "@pcnv/txs-react": "^0.0.7",
     "@pythnetwork/pyth-evm-js": "^1.1.0",
     "@radix-ui/react-slider": "^1.1.1",
     "@rainbow-me/rainbowkit": "^0.12.1",
