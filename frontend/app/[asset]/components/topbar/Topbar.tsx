@@ -2,11 +2,12 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { ChevronIcon, NotificationIcon } from '@tradex/icons'
-import { Modal } from '@tradex/interface'
+import { Modal, cx } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { ExchangeCard } from 'app/exchange/components/SwapCard'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import Image from 'next/image'
+import { usePathname, useRouter } from 'next/navigation'
 import { useLayout } from 'utils/contants/breakpoints'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { truncateAddress } from 'utils/truncateAddress'
@@ -47,6 +48,7 @@ export function Topbar() {
   const { t } = useTranslation()
   const { isMobile } = useLayout()
   const swapModal = useQueryModal({ modalType: 'swap' })
+
   return (
     <div className="sm:px- flex items-center justify-between px-0">
       <div className=" flex h-full items-center gap-2">
@@ -63,21 +65,10 @@ export function Topbar() {
 
         {!isMobile && (
           <>
-            <button className="btn btn-underline  centered ml-6 h-full rounded-none px-5 text-xs font-medium">
-              {t('dashboard')}
-            </button>
-            <button className="btn btn-bottom-glow  centered  h-full rounded-none px-5 py-1 text-xs font-medium">
-              {t('futures')}
-            </button>
-            <button
-              onClick={swapModal.onOpen}
-              className="btn btn-underline centered text-blue-accent h-full rounded-none px-5 text-xs font-medium"
-            >
-              Swap
-            </button>
-            <button className="btn btn-underline centered h-full rounded-none px-5 text-xs  font-medium">
-              Leaderboard
-            </button>
+            <NavButton href="/dashboard" label={t('dashboard')} disabled />
+            <NavButton href="/" label={t('futures')} />
+            <NavButton label="Swap" onClick={swapModal.onOpen} />
+            <NavButton label="Leaderboard" href="/leaderboard" />
           </>
         )}
       </div>
@@ -92,5 +83,32 @@ export function Topbar() {
         <ExchangeCard />
       </Modal>
     </div>
+  )
+}
+
+interface NavButtonProps {
+  label: string
+  href?: string
+  disabled?: boolean
+  onClick?(): void
+}
+function NavButton(props: NavButtonProps) {
+  const router = useRouter()
+  const path = usePathname()
+  const { href, label, disabled = false } = props
+
+  const selected = path === href
+  return (
+    <button
+      disabled={disabled}
+      aria-selected={selected}
+      onClick={() => (href ? router.push(href) : props.onClick?.())}
+      className={cx(
+        'btn centered h-full rounded-none px-5 text-xs font-medium ',
+        'btn-underline aria-selected:btn-bottom-glow aria-selected:py-1',
+      )}
+    >
+      {label}
+    </button>
   )
 }

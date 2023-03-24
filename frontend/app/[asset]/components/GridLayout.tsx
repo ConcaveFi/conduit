@@ -1,6 +1,6 @@
 'use client'
 
-import { DivProps } from '@tradex/interface'
+import { ChevronIcon } from '@tradex/icons'
 import { useGridLayout } from 'hooks/useGridLayout'
 import { useMemo } from 'react'
 import RGL, { WidthProvider } from 'react-grid-layout'
@@ -9,7 +9,7 @@ import { useWidgets } from '../../providers/WidgetsProvider'
 
 const ReactGridLayout = WidthProvider(RGL)
 const GRID_COLS = 12
-const GRID_ROW_HEIGHT = 145
+const GRID_ROW_HEIGHT = 30
 
 export function GridLayout() {
   const { handleChange, layout } = useGridLayout()
@@ -17,17 +17,16 @@ export function GridLayout() {
 
   const panels = useMemo(() => {
     return widgets.map((widget) => {
-      const Panel = GridWidget.toPanel(widget) as React.FC<DivProps>
-      return <Panel key={widget} />
+      const Panel = GridWidget.toPanel(widget)
+      return <Panel key={widget} onClose={() => removeWidget(widget)} />
     })
-  }, [widgets])
-
+  }, [widgets, removeWidget])
   if (!layout) return <></>
 
   return (
     <div className="ocean:bg-ocean-900 sm flex h-full w-full">
       <ReactGridLayout
-        className="relative h-full w-full transition-all"
+        className="relative h-full w-full transition-all duration-700"
         draggableHandle="[data-draggable='true']"
         onLayoutChange={handleChange}
         rowHeight={GRID_ROW_HEIGHT}
@@ -35,6 +34,11 @@ export function GridLayout() {
         cols={GRID_COLS}
         useCSSTransforms
         layout={layout}
+        resizeHandle={
+          <button id="teste" className=" invisible absolute bottom-1 right-1 group-hover:visible ">
+            <ChevronIcon className="fill-dark-30 box-4  -rotate-45" />
+          </button>
+        }
       >
         {panels}
       </ReactGridLayout>

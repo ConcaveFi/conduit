@@ -7,9 +7,9 @@ import { DepositMarginToReduceRisk } from './DepositMarginToReduceRisk'
 import { LiquidationInfo } from './LiquidationInfo'
 import { MarginDetails } from './MarginDetails'
 import { OrderDetails } from './OrderDetails'
-import { OrderSizeInput, orderDerivedValuesAtom } from './OrderSizeInput'
+import { orderDerivedValuesAtom, OrderSizeInput } from './OrderSizeInput'
 import { PlaceOrderButton } from './PlaceOrder'
-import { SideSelector, sideAtom } from './SideSelector'
+import { sideAtom, SideSelector } from './SideSelector'
 import { TransferMarginButton } from './TransferMargin'
 
 export const orderSizeUsdAtom = selectAtom(orderDerivedValuesAtom, ({ usd }) =>
@@ -32,10 +32,12 @@ export const OrderFormPanel = forwardRef<HTMLDivElement, PanelProps>(function Or
       ref={ref}
       name="Order Form"
       bodyProps={{
-        className: 'p-3 md:overflow-y-scroll overflow-x-hidden justify-between sm:justify-start',
+        className:
+          'p-3 md:overflow-y-scroll overflow-x-hidden justify-between sm:justify-start group',
       }}
       {...props}
     >
+      {props.children}
       <TransferMarginButton />
       <MarginDetails />
 

@@ -1,4 +1,4 @@
-import { DivProps, Panel } from '@tradex/interface'
+import { Panel, PanelProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { forwardRef, useEffect, useRef } from 'react'
 import { useScript } from 'usehooks-ts'
@@ -11,7 +11,7 @@ const container_id = 'chart-container'
 const DEFAULT_MARKET = 'ETH'
 const SECOND_SYMBOL = 'USD'
 
-export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
+export const ChartPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   // const [widget, setWidget] = useState<TVWidget>()
   // const [asset, setAsset] = useState('')
   const { t } = useTranslation()
@@ -42,7 +42,10 @@ export const ChartPanel = forwardRef<HTMLDivElement, DivProps>((props, ref) => {
       variant="secondary"
       {...props}
       ref={ref}
-      bodyProps={{ id: container_id, className: 'p-0' }}
-    />
+      bodyProps={{ className: 'p-0 group' }}
+    >
+      <div id={container_id} className="h-full w-full"></div>
+      {props.children}
+    </Panel>
   )
 })

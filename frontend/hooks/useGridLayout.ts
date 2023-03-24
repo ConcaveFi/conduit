@@ -1,5 +1,6 @@
+import { useWidgets } from 'app/providers/WidgetsProvider'
 import { useAtomValue } from 'jotai'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Layout } from 'react-grid-layout'
 import { breakpointAtom } from 'utils/contants/breakpoints'
 import { GridLayout } from 'utils/grid/grid.layout'
@@ -10,19 +11,31 @@ export interface GridLayoutHook {
 }
 export function useGridLayout(props?: GridLayoutHook) {
   const breakpoint = useAtomValue(breakpointAtom)
-  const [layout, setLayout] = useState(props?.defaultLayout)
+  const { widgets } = useWidgets()
 
-  useEffect(() => {
-    if (breakpoint === undefined) return
-
+  const layout = useMemo(() => {
+    if (!breakpoint) return null
     const stored = GridLayout.getStoredlayout(breakpoint)
-    if (stored !== undefined) return setLayout(stored)
+    const defaultLayout = GridWidgetPresets.getByBreakpoint(breakpoint)
+    let layout = stored || defaultLayout
 
-    setLayout(GridWidgetPresets.getByBreakpoint(breakpoint))
-  }, [breakpoint])
+    const hasMissingWidgets = widgets.length > layout.length
+    const hasUnusedWidget = widgets.length < layout.length
+    if (hasMissingWidgets) {
+      const missingWidgets = widgets
+        .filter((widget) => !layout.find((wp) => wp.i === widget))
+        .map((widget) => GridWidgetPresets.getWidgetPreset(widget, breakpoint))
+
+      layout.push(...missingWidgets)
+    } else if (hasUnusedWidget) {
+      layout = layout.filter((wp) => widgets.includes(wp.i))
+    }
+
+    return layout
+  }, [breakpoint, widgets])
 
   const handleChange = useCallback(
-    function storeLayout(_layout: Layout[]) {
+    (_layout: Layout[]) => {
       if (!breakpoint) return
       GridLayout.storeLayout(_layout, breakpoint)
     },

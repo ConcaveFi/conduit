@@ -20,3 +20,14 @@
 .ocean #chart-container > div {
   filter: contrast(110%) saturate(250%) brightness(120%);
 }
+
+.react-grid-placeholder {
+  transition: all 200ms;
+  background: #ffffff60;
+  opacity: 0.2;
+  border-radius: 10px;
+}
+
+.ocean .react-grid-placeholder {
+  background-color: #00d0fe60;
+}

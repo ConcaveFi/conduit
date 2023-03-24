@@ -3,44 +3,44 @@ import { Breakpoints } from '../contants/breakpoints'
 import { GridWidgets } from './grid.widgets'
 
 const X_EXTRA_LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 3, y: 0, w: 6, h: 3.5 },
-  'news-panel': { x: 0, y: 6, w: 3, h: 2.5 },
-  'order-panel': { x: 12, y: 0, w: 3, h: 5 },
-  'trades-panel': { x: 0, y: 0, w: 3, h: 2.5 },
-  'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
+  'chart-panel': { x: 3, y: 0, w: 6, h: 10 },
+  'news-panel': { x: 0, y: 12, w: 3, h: 10 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 20 },
+  'trades-panel': { x: 0, y: 0, w: 3, h: 10 },
+  'views-panel': { x: 3, y: 30, w: 6, h: 6 },
 }
 
 const EXTRA_LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 9, h: 3.5 },
-  'news-panel': { x: 9, y: 0, w: 3, h: 2.4 },
-  'order-panel': { x: 12, y: 0, w: 3, h: 5.25 },
-  'trades-panel': { x: 0, y: 9, w: 3, h: 2.4 },
-  'views-panel': { x: 3, y: 15, w: 6, h: 1.5 },
+  'chart-panel': { x: 0, y: 0, w: 9, h: 8 },
+  'news-panel': { x: 9, y: 0, w: 3, h: 6 },
+  'order-panel': { x: 12, y: 0, w: 3, h: 14 },
+  'trades-panel': { x: 0, y: 18, w: 3, h: 6 },
+  'views-panel': { x: 3, y: 30, w: 6, h: 6 },
 }
 
 const LARGE_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 8, h: 3.5 },
-  'news-panel': { x: 4, y: 6, w: 4, h: 2.4 },
-  'order-panel': { x: 12, y: 0, w: 4, h: 5.25 },
-  'trades-panel': { x: 0, y: 9, w: 4, h: 2.4 },
-  'views-panel': { x: 0, y: 5, w: 8, h: 1.5 },
+  'chart-panel': { x: 0, y: 0, w: 8, h: 6 },
+  'news-panel': { x: 4, y: 12, w: 4, h: 6 },
+  'order-panel': { x: 12, y: 0, w: 4, h: 12 },
+  'trades-panel': { x: 0, y: 18, w: 4, h: 6 },
+  'views-panel': { x: 0, y: 10, w: 8, h: 6 },
 }
 
 const MEDIUM_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 7, h: 2 },
-  'news-panel': { x: 4, y: 6, w: 4, h: 2.4 },
-  'order-panel': { x: 12, y: 0, w: 5, h: 3.5 },
-  'trades-panel': { x: 0, y: 9, w: 4, h: 2.4 },
-  'views-panel': { x: 0, y: 5, w: 7, h: 1.5 },
+  'chart-panel': { x: 0, y: 0, w: 7, h: 6 },
+  'news-panel': { x: 4, y: 6, w: 4, h: 5 },
+  'order-panel': { x: 12, y: 0, w: 5, h: 12 },
+  'trades-panel': { x: 0, y: 18, w: 4, h: 6 },
+  'views-panel': { x: 0, y: 10, w: 7, h: 6 },
 }
 
 // This layout will be handled different in the future
 const SMALL_LAYOUT: WidgetPreset = {
-  'chart-panel': { x: 0, y: 0, w: 12, h: 2 },
-  'news-panel': { x: 0, y: 6, w: 12, h: 2 },
-  'order-panel': { x: 0, y: 2, w: 12, h: 4.5 },
-  'trades-panel': { x: 0, y: 12, w: 12, h: 2 },
-  'views-panel': { x: 0, y: 5, w: 12, h: 2 },
+  'chart-panel': { x: 0, y: 0, w: 12, h: 4 },
+  'news-panel': { x: 0, y: 6, w: 12, h: 4 },
+  'order-panel': { x: 0, y: 2, w: 12, h: 8 },
+  'trades-panel': { x: 0, y: 12, w: 12, h: 4 },
+  'views-panel': { x: 0, y: 5, w: 12, h: 4 },
 }
 
 /**
@@ -53,7 +53,7 @@ const SMALL_LAYOUT: WidgetPreset = {
  * @property layouts return all breakpoint layouts
  */
 export class GridWidgetPresets {
-  public static layouts = [
+  public static readonly layouts = [
     X_EXTRA_LARGE_LAYOUT,
     EXTRA_LARGE_LAYOUT,
     LARGE_LAYOUT,
@@ -62,8 +62,36 @@ export class GridWidgetPresets {
   ]
 
   public static toLayout(preset: WidgetPreset): Layout[] {
-    const formatted = Object.entries(preset).map(([i, remaining]) => ({ i, ...remaining }))
+    const formatted = Object.entries(preset).map(([i, remaining]) => {
+      return {
+        i,
+        resizeHandles: ['se'],
+        isResizable: true,
+        ...remaining,
+      } satisfies Layout
+    })
     return formatted
+  }
+
+  public static getWidgetPreset(widget: GridWidgets, breakpoint: Breakpoints): Layout {
+    const layoutPreset = GridWidgetPresets.getRawByBreakpoint(breakpoint)
+    const preset = layoutPreset[widget]
+    return { i: widget, ...preset, resizeHandles: ['se'], isResizable: true }
+  }
+
+  public static getRawByBreakpoint(breakpoint: Breakpoints) {
+    switch (breakpoint) {
+      case '2xl':
+        return X_EXTRA_LARGE_LAYOUT
+      case 'xl':
+        return EXTRA_LARGE_LAYOUT
+      case 'lg':
+        return LARGE_LAYOUT
+      case 'md':
+        return MEDIUM_LAYOUT
+      case 'sm':
+        return SMALL_LAYOUT
+    }
   }
 
   public static getByBreakpoint(breakpoint: Breakpoints): Layout[] {
@@ -82,11 +110,4 @@ export class GridWidgetPresets {
   }
 }
 
-export type WidgetPreset = {
-  [key in GridWidgets]: {
-    x: number
-    y: number
-    w: number
-    h: number
-  }
-}
+export type WidgetPreset = { [key in GridWidgets]: Omit<Layout, 'i'> }

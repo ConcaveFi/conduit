@@ -1,9 +1,9 @@
 'use client'
 
 import { createContext, useContext, useState } from 'react'
+
 import { GridWidget, GridWidgets } from 'utils/grid/grid.widgets'
 import { AddWidgetOverlay } from '../[asset]/components/widgets/AddWidgetOverlay'
-
 interface WidgetsContext {
   addWidgets(_widgets: GridWidgets[]): void
   removeWidget(widget: GridWidgets): Promise<GridWidgets | undefined>
@@ -16,22 +16,32 @@ const WidgetsContext = createContext<WidgetsContext>({
   addWidgets() {},
   widgets: [],
 })
-
 export const useWidgets = () => useContext(WidgetsContext)
+
 export function WidgetsProvider({ children }: any) {
   const [widgets, setWidgets] = useState(
     GridWidget.getStoredWidgets() || GridWidget.getDefaultWidgets(),
   )
 
-  function addWidgets(w: GridWidgets[]) {
-    const _widgets = [...widgets]
-    for (const newWidget of w) {
-      if (!_widgets.includes(newWidget)) _widgets.push(newWidget)
-    }
+  /**
+   * This function will change the state with the added widgets
+   * and store on the localstorage those added widgets
+   * after everything is done, events listeners are triggered
+   * @param _widgets is the array of widgets wanted to be added
+   */
+  function addWidgets(added: GridWidgets[]) {
+    added = added.filter((addedWidget) => !widgets.includes(addedWidget))
+    const _widgets = [...widgets, ...added]
     setWidgets(_widgets)
     GridWidget.storeWidgets(_widgets)
   }
 
+  /**
+   * This function will change the state with the removed widgets
+   * and store on the localstorage those removed widgets
+   * after everything is done, events listeners are triggered.
+   * @param widget is the object wanted to be removed
+   */
   async function removeWidget(widget: GridWidgets) {
     const _widgets = widgets.filter((w) => w !== widget)
     setWidgets(_widgets)

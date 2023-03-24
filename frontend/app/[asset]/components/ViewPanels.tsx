@@ -20,6 +20,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
         variant="secondary"
         ref={ref}
         headerProps={{ className: 'min-h-[36px] p-0 pr-2' }}
+        bodyProps={{ className: 'group p-2 overflow-y-auto' }}
         headerChild={<Tabs />}
       >
         <Tab.Panels>
@@ -36,6 +37,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
             <UserTransfers />
           </Tab.Panel>
         </Tab.Panels>
+        {props.children}
       </Panel>
     </Tab.Group>
   )
@@ -50,15 +52,15 @@ const Tabs = () => {
           <Tab key={index} className="h-full outline-none ">
             {({ selected }) => {
               return (
-                <button
+                <span
                   aria-selected={selected}
                   className={cx(
                     'btn centered flex rounded-md p-[5px_15px] text-xs outline-none ring-0',
-                    'aria-selected:btn-secondary aria-deselected:btn-underline',
+                    'aria-selected:btn-secondary aria-deselected:btn-underline ',
                   )}
                 >
                   {t(tab)}
-                </button>
+                </span>
               )
             }}
           </Tab>
