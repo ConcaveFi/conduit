@@ -29,13 +29,11 @@ export function WidgetsProvider({ children }: any) {
    * after everything is done, events listeners are triggered
    * @param _widgets is the array of widgets wanted to be added
    */
-  function addWidgets(_widgets: GridWidgets[]) {
-    const newWidgets = [...widgets]
-    for (const newWidget of _widgets) {
-      if (!newWidgets.includes(newWidget)) newWidgets.push(newWidget)
-    }
-    setWidgets(newWidgets)
-    GridWidget.storeWidgets(newWidgets)
+  function addWidgets(added: GridWidgets[]) {
+    added = added.filter((addedWidget) => !widgets.includes(addedWidget))
+    const _widgets = [...widgets, ...added]
+    setWidgets(_widgets)
+    GridWidget.storeWidgets(_widgets)
   }
 
   /**
