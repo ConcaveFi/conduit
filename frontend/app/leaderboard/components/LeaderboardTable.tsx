@@ -28,8 +28,6 @@ export function LeaderboardTable({ places, direction, pagination, search }: Lead
     })
   }, [pagination, places, direction, search, sort])
 
-  console.log(sort)
-
   return (
     <div className=" border-dark-30 ocean:border-blue-30 rounded-lg border">
       <table className=" w-full  overflow-hidden rounded-lg ">
