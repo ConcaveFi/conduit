@@ -49,7 +49,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
     >
       <body className="bg-dark-main-bg ocean:bg-blue-main-bg w-full">
         <AppProviders>{children}</AppProviders>
-        {/* <Bottombar /> */}
       </body>
     </html>
   )
