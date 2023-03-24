@@ -1,5 +1,6 @@
 import { ButtonProps, cx } from '@tradex/interface'
 import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react'
+import { Bridge } from './Bridge'
 
 export type DWSelectorType = 'deposit' | 'withdraw'
 const DEFAULT_SELECTOR: DWSelectorType = 'deposit'
@@ -20,6 +21,8 @@ export function DepositWithdrawSelector(props?: SelectorProps) {
         <button {...buttonProps('deposit')}>Deposit</button>
         <button {...buttonProps('withdraw')}>withdraw</button>
       </div>
+      <Bridge />
+
       {children}
     </Fragment>
   )

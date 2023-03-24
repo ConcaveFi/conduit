@@ -25,7 +25,6 @@ export default async function Layout({ children }: PropsWithChildren) {
       <div className="flex h-full w-full flex-col gap-4 p-4">
         <Sidebar />
         <Topbar />
-        {children}
       </div>
     </ReactQueryHydrate>
   )

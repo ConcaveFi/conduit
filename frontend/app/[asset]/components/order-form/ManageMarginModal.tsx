@@ -13,7 +13,7 @@ import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
-import { DepositWithdrawSelector, DWSelectorType } from '../DepositWithdrawSelector'
+import { DWSelectorType, DepositWithdrawSelector } from '../DepositWithdrawSelector'
 
 export function ManageMarginModal(props: ModalProps) {
   const [value, setValue] = useState<number>()
