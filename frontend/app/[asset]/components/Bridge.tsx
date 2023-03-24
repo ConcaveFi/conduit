@@ -24,12 +24,12 @@ const oceanTheme: Customize = {
 
 const darkTheme: Customize = {
   primary: 'rgb(21,23,32)',
-  secondary: 'rgb(18,15,58)',
+  secondary: 'rgb(21,23,32)',
   text: 'rgb(254,254,254)',
   secondaryText: 'rgb(254,254,254)',
   accent: 'rgb(254,254,254)',
   onAccent: 'rgb(0,0,0)',
-  interactive: 'rgb(15, 20, 66)',
+  interactive: 'rgb(47,49,62)',
   onInteractive: 'rgb(255,255,255)',
   fontFamily: 'var(--font-sans)',
 }
