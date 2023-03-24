@@ -69,15 +69,21 @@ export function UserPositions() {
     ? divide(positionDetails.notionalValue, remainingMargin)
     : from([0n, 0])
 
-  const sizeFormated = `${format(abs(size))} ($ ${format(abs(positionDetails.notionalValue))})`
+  const sizeFormated = `${format(abs(size), { digits: 2 })} ($ ${format(
+    abs(positionDetails.notionalValue),
+    { digits: 2 },
+  )})`
 
   return (
     <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border p-2  ">
       <div className="flex gap-2">
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo info={SideNAsset(side, market.asset)} value={format(market?.price || '0')} />
+          <PosItemInfo
+            info={SideNAsset(side, market.asset)}
+            value={format(market?.price || '0', { digits: 2 })}
+          />
           <PosItemInfo info={'Size'} value={sizeFormated} />
-          <PosItemInfo info={'Avg Entry'} value={format(position.lastPrice)} />
+          <PosItemInfo info={'Avg Entry'} value={format(position.lastPrice, { digits: 2 })} />
           <PosItemInfo info={'Realized P&L'} value={'-'} />
         </div>
         <div className="flex w-full flex-col gap-3">
