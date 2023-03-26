@@ -29,10 +29,10 @@ export function ManageMarginModal(props: ModalProps) {
   const { chain } = useNetwork()
   const chainId = chain?.id || optimism.id
   const sUSDBalance = useBalance({ address, token: sUSD_ADDRESS[chainId] })
-  const [type, setType] = useState<'deposit' | 'withdraw'>(DEFAULT_SELECTOR)
+  const [type, setType] = useState<'deposit' | 'withdraw'>('deposit')
 
   const buttonProps = useCallback(
-    (_type: DWSelectorType) => {
+    (_type: 'deposit' | 'withdraw') => {
       return {
         'aria-selected': type === _type,
         className: cx(
@@ -61,7 +61,6 @@ export function ManageMarginModal(props: ModalProps) {
       </div>
       <Bridge
         onBridgeSuccess={(data) => {
-          console.log(data)
           sUSDBalance.refetch()
         }}
       />
@@ -86,14 +85,11 @@ function SUSDInput(props: {
   onValueChange?: (e?: number) => void
   balance: ReturnType<typeof useBalance>
 }) {
-  const { address } = useAccount()
-
   const { data: sUSDBalance, isLoading } = props.balance
   const numBalance = useMemo(() => Number(sUSDBalance?.formatted || '0'), [sUSDBalance])
-
   if (isLoading) return <SUSDInputSkeleton />
-
   const balance = format(sUSDBalance?.formatted || '0')
+
   return (
     <div className=" ">
       {/* Info section */}
@@ -136,10 +132,3 @@ const SUSDInputSkeleton = () => (
     <div className="animate-skeleton skeleton-from-ocean-400 skeleton-to-ocean-200 h-12 w-full rounded-full"></div>
   </div>
 )
-
-export type DWSelectorType = 'deposit' | 'withdraw'
-const DEFAULT_SELECTOR: DWSelectorType = 'deposit'
-interface SelectorProps {
-  default?: DWSelectorType
-  onTypeChange?(type: DWSelectorType): void
-}
