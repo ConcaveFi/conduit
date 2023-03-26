@@ -1,5 +1,7 @@
 'use client'
 import { Customize } from '@socket.tech/plugin'
+import { ChevronIcon } from '@tradex/icons'
+import { atom, useAtom } from 'jotai'
 import dynamic from 'next/dynamic'
 import { useNetwork, useSigner } from 'wagmi'
 import { useTheme } from '../../providers/ThemeProvider'
@@ -34,10 +36,18 @@ const darkTheme: Customize = {
   fontFamily: 'var(--font-sans)',
 }
 
+export const sidebarOpen = atom(false)
+
 export function Bridge() {
   const { chain } = useNetwork()
   const signer = useSigner()
   const { theme } = useTheme()
+  const [isOpen, setOpen] = useAtom(sidebarOpen)
+
+  const handle = () => {
+    setOpen((v) => !v)
+  }
+
   const currentId = chain?.id || 10
   const defaultSourceToken = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
   const defaultDestToken = '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9'
@@ -46,14 +56,33 @@ export function Bridge() {
   const selectedTheme = theme === 'dark' ? darkTheme : oceanTheme
 
   return (
-    <DynamicComponent
-      API_KEY="645b2c8c-5825-4930-baf3-d9b997fcd88c"
-      provider={signer.data?.provider}
-      defaultSourceNetwork={defaultSourceNetwork}
-      defaultDestNetwork={defaultDestNetwork}
-      defaultSourceToken={defaultSourceToken}
-      defaultDestToken={defaultDestToken}
-      customize={{ ...baseTheme, ...selectedTheme }}
-    />
+    <div
+      className={` transition-max-height overflow-y-hidden duration-500  ${
+        isOpen ? 'max-h-screen' : 'max-h-8'
+      }`}
+    >
+      <div
+        onClick={handle}
+        className="ocean:text-blue-accent flex cursor-pointer justify-between p-2 text-xs font-bold text-white "
+      >
+        <span>Bridge</span>
+        <ChevronIcon
+          className={`fill-dark-accent ocean:fill-blue-accent mr-2 h-3  w-3 transition-transform  ${
+            isOpen ? 'rotate-180' : 'rotate-0'
+          }`}
+        />
+      </div>
+      <div>
+        <DynamicComponent
+          API_KEY="645b2c8c-5825-4930-baf3-d9b997fcd88c"
+          provider={signer.data?.provider}
+          defaultSourceNetwork={defaultSourceNetwork}
+          defaultDestNetwork={defaultDestNetwork}
+          defaultSourceToken={defaultSourceToken}
+          defaultDestToken={defaultDestToken}
+          customize={{ ...baseTheme, ...selectedTheme }}
+        />
+      </div>
+    </div>
   )
 }
