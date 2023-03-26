@@ -1,5 +1,5 @@
 'use client'
-import { Customize } from '@socket.tech/plugin'
+import { Customize, WidgetProps } from '@socket.tech/plugin'
 import { ChevronIcon } from '@tradex/icons'
 import { atom, useAtom } from 'jotai'
 import dynamic from 'next/dynamic'
@@ -38,7 +38,7 @@ const darkTheme: Customize = {
 
 export const sidebarOpen = atom(false)
 
-export function Bridge() {
+export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSuccess'>) {
   const { chain } = useNetwork()
   const signer = useSigner()
   const { theme } = useTheme()
@@ -81,6 +81,7 @@ export function Bridge() {
           defaultSourceToken={defaultSourceToken}
           defaultDestToken={defaultDestToken}
           customize={{ ...baseTheme, ...selectedTheme }}
+          {...bridgeProps}
         />
       </div>
     </div>
