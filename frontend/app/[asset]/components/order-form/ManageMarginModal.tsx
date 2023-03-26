@@ -1,3 +1,4 @@
+import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { CloseIcon } from '@tradex/icons'
 import { Modal, ModalProps, NumericInput } from '@tradex/interface'
 import { parseUnits } from 'ethers/lib/utils'
@@ -10,7 +11,6 @@ import { useRouteMarket } from '../../lib/market/useMarket'
 
 import { sUSD_ADDRESS } from '@tradex/core'
 import { cx } from '@tradex/interface'
-import { optimism } from 'wagmi/dist/chains'
 import { Bridge } from '../Bridge'
 
 export function ManageMarginModal(props: ModalProps) {
@@ -27,7 +27,7 @@ export function ManageMarginModal(props: ModalProps) {
   const { address } = useAccount()
   const { write: depositMargin } = useMarketTransferMargin(config)
   const { chain } = useNetwork()
-  const chainId = chain?.id || optimism.id
+  const chainId = chain?.id || 10
   const sUSDBalance = useBalance({ address, token: sUSD_ADDRESS[chainId] })
   const [type, setType] = useState<'deposit' | 'withdraw'>('deposit')
 
@@ -45,6 +45,7 @@ export function ManageMarginModal(props: ModalProps) {
     },
     [type, setType],
   )
+  const registerTransaction = useAddRecentTransaction()
 
   return (
     <Modal
@@ -62,6 +63,15 @@ export function ManageMarginModal(props: ModalProps) {
       <Bridge
         onBridgeSuccess={(data) => {
           sUSDBalance.refetch()
+        }}
+        onSubmit={(data) => {
+          const tx = data.txData[0]
+          registerTransaction({
+            hash: tx.hash,
+            meta: {
+              description: `Bridge ${data.sourceToken} to ${data.destinationToken}`,
+            },
+          })
         }}
       />
 
