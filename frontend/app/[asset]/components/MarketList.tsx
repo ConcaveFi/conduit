@@ -36,12 +36,12 @@ export const MarketList = function MarketList() {
   if (!market || !markets) return MenuButtonSkeleton
 
   return (
-    <Menu className={'centered my-auto flex h-fit md:block'}>
+    <Menu className={'flex w-full flex-row justify-around '}>
       <Menu.Button className="btn centered gap-6 outline-none">
         <SelectedMarket marketKey={market.key} asset={handleSynth(market?.asset)} />
         <ChevronIcon className="box-3 fill-dark-accent ocean:fill-blue-accent" />
       </Menu.Button>
-      <Menu.Items className="card card-translucent-glass h-[500px] w-[360px] origin-top overflow-y-auto p-2  md:left-10 md:origin-top-left md:rounded-tl-sm">
+      <Menu.Items className="card card-translucent-glass  h-[500px] w-full origin-top-left overflow-y-auto rounded-tl-sm p-2 sm:w-[360px]">
         {markets &&
           markets.map(({ key, asset }) => (
             <Menu.Item key={key}>
