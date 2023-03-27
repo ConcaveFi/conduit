@@ -17,7 +17,7 @@ export class GridWidget {
     return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel' /*, 'news-panel'*/]
   }
 
-  public static getAllWidgers(): GridWidgets[] {
+  public static getAllWidgets(): GridWidgets[] {
     return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel', 'news-panel']
   }
 
