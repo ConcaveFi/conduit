@@ -2,7 +2,7 @@
 
 import { CloseIcon } from '@tradex/icons'
 import { cx, Modal, ModalProps, NumericInput } from '@tradex/interface'
-import { from } from 'dnum'
+import { Dnum, equal, from, lessThan } from 'dnum'
 import { BigNumber } from 'ethers'
 import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
 import { useState } from 'react'
@@ -12,26 +12,106 @@ import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
 
+const getDepositButtonLabel = (
+  input: string,
+  balance: Dnum | undefined,
+  type: 'deposit' | 'withdraw',
+) => {
+  if (!balance) return 'Loading...'
+  if (equal(balance, 0)) return 'Not enough sUSD'
+  if (!input) return 'Enter an amount'
+  if (lessThan(balance, input)) return 'Not enough sUSD'
+  return type
+}
+
+const useSUsdBalance = () => {
+  const { address } = useAccount()
+  const { chain } = useNetwork()
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
+
+  const { data: sUSDBalance } = useBalance({ address, token: susdAddress[chainId] })
+
+  return sUSDBalance && from([sUSDBalance.value.toBigInt(), sUSDBalance.decimals])
+}
+
+function SUSDInput({
+  onValueChange,
+  value,
+}: {
+  value: string
+  onValueChange: (e: string) => void
+}) {
+  const balance = useSUsdBalance()
+
+  return (
+    <>
+      <div className="text-dark-accent ocean:text-blue-accent mb-1 flex items-center justify-between px-3 ">
+        <span className="text-xs ">Balance:</span>
+        <span className="text-sm ">
+          {balance ? format(balance) : '0.00'}
+          &nbsp; sUSD
+        </span>
+      </div>
+
+      <NumericInput
+        value={value}
+        onValueChange={(e) => onValueChange(e.value)}
+        className="placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent w-full"
+        placeholder="0.0"
+        right={() => (
+          <button
+            onClick={() => onValueChange(format(balance, undefined))}
+            className="text-dark-30 text-xs font-bold hover:underline"
+          >
+            MAX
+          </button>
+        )}
+      />
+    </>
+  )
+}
+
+function SubmitMarginTransferButton({
+  value,
+  type,
+}: {
+  value: string
+  type: 'deposit' | 'withdraw'
+}) {
+  const market = useRouteMarket()
+
+  const { config } = usePrepareMarketTransferMargin({
+    address: market?.address,
+    enabled: !!value,
+    args: [BigNumber.from(value).mul(type === 'withdraw' ? -1 : 1)],
+  })
+  const { write: transferMargin } = useMarketTransferMargin(config)
+
+  const balance = useSUsdBalance()
+
+  return (
+    <button
+      onClick={transferMargin}
+      disabled={!transferMargin}
+      className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
+    >
+      {getDepositButtonLabel(value, balance, type)}
+    </button>
+  )
+}
+
 export function ManageMarginModal(props: ModalProps) {
   const [transferType, setTransferType] = useState<'deposit' | 'withdraw'>('deposit')
 
   const [value, setValue] = useState('')
-  const market = useRouteMarket()
-
   const debouncedValue = useDebounce(value, 150)
-  const { config } = usePrepareMarketTransferMargin({
-    address: market?.address,
-    enabled: !!debouncedValue,
-    args: [BigNumber.from(value).mul(transferType === 'withdraw' ? -1 : 1)],
-  })
-  const { write: transferMargin } = useMarketTransferMargin(config)
 
   return (
     <Modal
       {...props}
       className="card card-secondary-outlined  relative h-fit w-[400px] gap-4 p-[16px_12px]"
     >
-      <span className="text-dark-accent ocean:text-blue-accent font-medium ">Deposit</span>
+      <span className="text-dark-accent ocean:text-blue-accent font-medium ">Transfer Margin</span>
       <button onClick={props.onClose} className="outline-none ">
         <CloseIcon className="box-4 fill-ocean-200 absolute top-5 right-4" />
       </button>
@@ -63,58 +143,7 @@ export function ManageMarginModal(props: ModalProps) {
           A $50 margin minimum is required to open a position.
         </p>
       )}
-      <button
-        onClick={transferMargin}
-        disabled={!transferMargin || transferType === 'withdraw'}
-        className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
-      >
-        {transferType} margin
-      </button>
+      <SubmitMarginTransferButton value={debouncedValue} type={transferType} />
     </Modal>
-  )
-}
-
-function SUSDInput({
-  onValueChange,
-  value,
-}: {
-  value: string
-  onValueChange: (e: string) => void
-}) {
-  const { address } = useAccount()
-  const { chain } = useNetwork()
-  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
-
-  const { data: sUSDBalance } = useBalance({ address, token: susdAddress[chainId] })
-
-  const balance = sUSDBalance
-    ? format(from([sUSDBalance.value.toBigInt(), sUSDBalance.decimals]), undefined)
-    : '0'
-
-  return (
-    <>
-      <div className="text-dark-accent ocean:text-blue-accent mb-1 flex items-center justify-between px-3 ">
-        <span className="text-xs ">Balance:</span>
-        <span className="text-sm ">
-          {balance}
-          &nbsp; sUSD
-        </span>
-      </div>
-
-      <NumericInput
-        value={value}
-        onValueChange={(e) => onValueChange(e.value)}
-        className="placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent w-full"
-        placeholder="0.0"
-        right={() => (
-          <button
-            onClick={() => onValueChange(balance)}
-            className="text-dark-30 text-xs font-bold hover:underline"
-          >
-            MAX
-          </button>
-        )}
-      />
-    </>
   )
 }
