@@ -1,7 +1,7 @@
 import { cx, Modal, ModalProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useWidgets } from 'app/providers/WidgetsProvider'
-import { useMemo, useReducer } from 'react'
+import { useReducer } from 'react'
 import { GridWidget, GridWidgets } from 'utils/grid/grid.widgets'
 function reducer(state: string[], action: string) {
   if (action === 'wipe') return []
@@ -25,7 +25,7 @@ export function AddWidgetModal(props: ModalProps) {
     (widget) => !widgets.includes(widget as GridWidgets),
   )
 
-  const hasWidgetsToAdd = useMemo(() => notAdded.length > 0, [notAdded])
+  const hasWidgetsToAdd = notAdded.length > 0
   return (
     <Modal
       {...props}
