@@ -1,3 +1,5 @@
+'use client'
+
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { Modal } from '@tradex/interface'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'

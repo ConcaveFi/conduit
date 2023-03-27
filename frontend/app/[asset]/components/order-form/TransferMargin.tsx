@@ -1,3 +1,5 @@
+'use client'
+
 import { NumericInput } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'

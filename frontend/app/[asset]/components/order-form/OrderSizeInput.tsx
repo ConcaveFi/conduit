@@ -1,3 +1,5 @@
+'use client'
+
 import { NumericInput } from '@tradex/interface'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { divide, Dnum, equal, greaterThan, isDnum, multiply } from 'dnum'

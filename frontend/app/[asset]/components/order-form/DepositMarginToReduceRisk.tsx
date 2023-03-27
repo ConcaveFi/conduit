@@ -1,3 +1,5 @@
+'use client'
+
 import { useQueryModal } from 'utils/enum/urlModal'
 
 export function DepositMarginToReduceRisk() {

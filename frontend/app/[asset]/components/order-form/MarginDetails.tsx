@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '@tradex/interface'
 import { Address, getContract, Provider } from '@wagmi/core'
