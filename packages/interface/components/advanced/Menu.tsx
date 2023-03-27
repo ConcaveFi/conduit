@@ -25,7 +25,7 @@ const MenuItems = forwardRef<HTMLDivElement, DivProps>(({ className, ...props },
       leaveTo="opacity-0 scale-75"
     >
       <PrimitiveMenu.Items
-        className={`static top-full mt-2 sm:absolute ${className}`}
+        className={`absolute top-8 left-0 mt-2 ${className}`}
         {...props}
         as={'div'}
         ref={ref}

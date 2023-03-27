@@ -13,7 +13,6 @@ export default async function Layout({ children }: PropsWithChildren) {
   const queryClient = getQueryClient()
   await queryClient.prefetchQuery(marketsQueryKey(optimism.id), () => getAllMarkets(optimism.id))
   const dehydratedState = dehydrate(queryClient)
-
   // next can't serialize bigints,
   // this lib seens cool https://www.npmjs.com/package/next-superjson-plugin
   // but adding the swcPlugin breaks dev mode, TODO: circle back later

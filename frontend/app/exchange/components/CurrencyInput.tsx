@@ -45,7 +45,7 @@ export const SwapInput = ({
   return (
     <div className="flex w-full items-end gap-2">
       <div className="flex w-full flex-col">
-        <span className="text-dark-30 ocean:text-blue-30 ml-3 mb-1 text-sm ">{label} </span>
+        <span className="text-dark-30 ocean:text-blue-accent ml-3 mb-1 text-sm ">{label} </span>
         <NumericInput
           className="w-full"
           decimalScale={6}

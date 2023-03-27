@@ -1,5 +1,6 @@
 'use client'
 
+import { useAddRecentTransaction } from '@pcnv/txs-react/.'
 import { CloseIcon } from '@tradex/icons'
 import { cx, Modal, ModalProps, NumericInput } from '@tradex/interface'
 import { Dnum, equal, from, lessThan } from 'dnum'
@@ -11,6 +12,7 @@ import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
+import { Bridge } from '../Bridge'
 
 const getDepositButtonLabel = (
   input: string,
@@ -68,6 +70,30 @@ function SUSDInput({
         )}
       />
     </>
+  )
+}
+
+function WrappedBridge() {
+  const { address } = useAccount()
+  const { chain } = useNetwork()
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
+  const { refetch } = useBalance({ address, token: susdAddress[chainId] })
+
+  const registerTransaction = useAddRecentTransaction()
+
+  return (
+    <Bridge
+      onBridgeSuccess={() => refetch()}
+      onSubmit={(data) => {
+        const tx = data.txData[0]
+        registerTransaction({
+          hash: tx.hash,
+          meta: {
+            description: `Bridge ${data.sourceToken} to ${data.destinationToken}`,
+          },
+        })
+      }}
+    />
   )
 }
 
@@ -137,6 +163,7 @@ export function ManageMarginModal(props: ModalProps) {
           Withdraw
         </button>
       </div>
+      <WrappedBridge />
       <SUSDInput value={value} onValueChange={setValue} />
       {transferType === 'deposit' && (
         <p className="text-dark-accent ocean:text-blue-accent text-center text-sm">
