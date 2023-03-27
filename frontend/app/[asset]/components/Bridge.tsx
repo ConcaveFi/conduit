@@ -1,12 +1,10 @@
 'use client'
-
 import { Customize, WidgetProps } from '@socket.tech/plugin'
 import { ChevronIcon } from '@tradex/icons'
 import { atom, useAtom } from 'jotai'
 import dynamic from 'next/dynamic'
 import { useNetwork, useSigner } from 'wagmi'
 import { useTheme } from '../../providers/ThemeProvider'
-
 const DynamicComponent = dynamic(() => import('@socket.tech/plugin').then((mod) => mod.Bridge))
 
 const baseTheme: Customize = {
