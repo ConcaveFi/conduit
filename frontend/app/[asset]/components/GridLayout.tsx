@@ -23,8 +23,6 @@ export function GridLayout() {
   }, [widgets, removeWidget])
   if (!layout) return <></>
 
-  console.log(layout)
-
   return (
     <div className="ocean:bg-ocean-900 sm flex h-full w-full">
       <ReactGridLayout

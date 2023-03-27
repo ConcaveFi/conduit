@@ -21,10 +21,10 @@ export function AddWidgetModal(props: ModalProps) {
     props.onClose()
   }
 
-  const notAdded = useMemo(
-    () => GridWidget.getAllWidgets().filter((widget) => !widgets.includes(widget as GridWidgets)),
-    [widgets],
+  const notAdded = GridWidget.getAllWidgets().filter(
+    (widget) => !widgets.includes(widget as GridWidgets),
   )
+
   const hasWidgetsToAdd = useMemo(() => notAdded.length > 0, [notAdded])
   return (
     <Modal
