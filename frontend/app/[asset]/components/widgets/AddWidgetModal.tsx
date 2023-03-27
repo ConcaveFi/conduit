@@ -1,7 +1,7 @@
 import { cx, Modal, ModalProps } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { useWidgets } from 'app/providers/WidgetsProvider'
-import { useReducer } from 'react'
+import { useMemo, useReducer } from 'react'
 import { GridWidget, GridWidgets } from 'utils/grid/grid.widgets'
 function reducer(state: string[], action: string) {
   if (action === 'wipe') return []
@@ -14,14 +14,18 @@ export function AddWidgetModal(props: ModalProps) {
   const { t } = useTranslation()
   function handleApply() {
     addWidgets(selecteds as GridWidgets[])
+    handleClose()
+  }
+  function handleClose() {
     dispatch('wipe')
     props.onClose()
   }
 
-  const notAdded = GridWidget.getDefaultWidgets().filter(
-    (widget) => !widgets.includes(widget as GridWidgets),
+  const notAdded = useMemo(
+    () => GridWidget.getAllWidgets().filter((widget) => !widgets.includes(widget as GridWidgets)),
+    [widgets],
   )
-  const hasWidgetsToAdd = notAdded.length > 0
+  const hasWidgetsToAdd = useMemo(() => notAdded.length > 0, [notAdded])
   return (
     <Modal
       {...props}
@@ -37,7 +41,7 @@ export function AddWidgetModal(props: ModalProps) {
       </div>
       <div className="flex justify-end gap-3">
         <button className="btn btn-secondary centered h-9 w-[80px] rounded-lg ">
-          <span className="text-heading" onClick={props.onClose}>
+          <span className="text-heading" onClick={handleClose}>
             Cancel
           </span>
         </button>
