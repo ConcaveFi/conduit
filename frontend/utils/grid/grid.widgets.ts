@@ -17,6 +17,10 @@ export class GridWidget {
     return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel' /*, 'news-panel'*/]
   }
 
+  public static getAllWidgets(): GridWidgets[] {
+    return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel', 'news-panel']
+  }
+
   public static toPanel(panel: GridWidgets) {
     switch (panel) {
       case 'chart-panel':

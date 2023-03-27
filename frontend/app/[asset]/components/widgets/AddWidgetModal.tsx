@@ -14,13 +14,17 @@ export function AddWidgetModal(props: ModalProps) {
   const { t } = useTranslation()
   function handleApply() {
     addWidgets(selecteds as GridWidgets[])
+    handleClose()
+  }
+  function handleClose() {
     dispatch('wipe')
     props.onClose()
   }
 
-  const notAdded = GridWidget.getDefaultWidgets().filter(
+  const notAdded = GridWidget.getAllWidgets().filter(
     (widget) => !widgets.includes(widget as GridWidgets),
   )
+
   const hasWidgetsToAdd = notAdded.length > 0
   return (
     <Modal
@@ -37,7 +41,7 @@ export function AddWidgetModal(props: ModalProps) {
       </div>
       <div className="flex justify-end gap-3">
         <button className="btn btn-secondary centered h-9 w-[80px] rounded-lg ">
-          <span className="text-heading" onClick={props.onClose}>
+          <span className="text-heading" onClick={handleClose}>
             Cancel
           </span>
         </button>
