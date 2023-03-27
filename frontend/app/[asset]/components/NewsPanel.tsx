@@ -22,9 +22,10 @@ export const NewsPanel = forwardRef<HTMLDivElement, PanelProps>((props, ref) => 
       {...props}
       name={t('news')}
       variant="secondary"
-      className="h-[300px] w-full"
-      bodyProps={{ className: 'justify-around' }}
+      className="overflow-hidden"
+      bodyProps={{ className: 'justify-around overflow-y-auto group' }}
     >
+      {props.children}
       {news?.map((_new, index) => {
         return (
           <NewsButton
@@ -52,11 +53,11 @@ function NewsButton(props: NewsButtonProps) {
       <a
         target="_blank"
         href={props.link}
-        className="text-light-500 ocean:text-ocean-100 cursor-pointer hover:underline"
+        className="text-dark-accent ocean:text-blue-accent cursor-pointer hover:underline"
       >
         {props.title}
       </a>
-      <span className="text-light-400 ocean:text-ocean-300 text-xs font-medium">
+      <span className="text-dark-30 ocean:text-blue-30 text-xs font-medium">
         {props.owner} • {props.tmp} ago
       </span>
     </div>
