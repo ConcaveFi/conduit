@@ -14,7 +14,7 @@ export type GridWidgets =
 export class GridWidget {
   public static storageItem: 'grid.widgets'
   public static getDefaultWidgets(): GridWidgets[] {
-    return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel' /*, 'news-panel'*/]
+    return ['order-panel', 'chart-panel', 'trades-panel' /*, 'news-panel'*/]
   }
 
   public static getAllWidgets(): GridWidgets[] {
