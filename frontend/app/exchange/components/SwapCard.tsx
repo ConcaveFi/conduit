@@ -190,13 +190,13 @@ export const ExchangeCard = () => {
   const { inputIn, inputOut, maxIn, error, quoteInfo, swapCurrencies } = swapState
   return (
     <>
-      <Card className="w-full gap-2 rounded-3xl px-2 py-2 sm:w-auto sm:px-5 sm:py-4">
+      <Card className="w:full gap-2 rounded-3xl px-2 py-2 sm:px-5 sm:py-4 md:w-4/5 xl:w-1/3 ">
         <SwapInput
           {...inputIn}
           label={'From'}
           right={(prop) => {
             return (
-              <button className="text-dark-30 ocean:text-blue-30 font-bold" onClick={maxIn}>
+              <button className="text-dark-30 ocean:text-blue-accent font-bold" onClick={maxIn}>
                 MAX
               </button>
             )
