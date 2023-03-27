@@ -79,7 +79,11 @@ export function Topbar() {
         <NotificationIcon className="fill-dark-accent ocean:fill-blue-accent box-4" />
         <ConnectedAccount />
       </div>
-      <Modal className="w-full sm:w-auto" isOpen={swapModal.isOpen} onClose={swapModal.onClose}>
+      <Modal
+        className="flex w-full justify-center"
+        isOpen={swapModal.isOpen}
+        onClose={swapModal.onClose}
+      >
         <ExchangeCard />
       </Modal>
     </div>
