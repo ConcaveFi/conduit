@@ -1,30 +1,19 @@
 'use client'
 
-import { useAddRecentTransaction } from '@pcnv/txs-react/.'
+import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { CloseIcon } from '@tradex/icons'
 import { cx, Modal, ModalProps, NumericInput } from '@tradex/interface'
 import { Dnum, equal, from, lessThan } from 'dnum'
 import { BigNumber } from 'ethers'
 import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
-import { useState } from 'react'
+import { PropsWithChildren, useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
 import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
 import { Bridge } from '../Bridge'
-
-const getDepositButtonLabel = (
-  input: string,
-  balance: Dnum | undefined,
-  type: 'deposit' | 'withdraw',
-) => {
-  if (!balance) return 'Loading...'
-  if (equal(balance, 0)) return 'Not enough sUSD'
-  if (!input) return 'Enter an amount'
-  if (lessThan(balance, input)) return 'Not enough sUSD'
-  return type
-}
+import { useMarginDetails } from './MarginDetails'
 
 const useSUsdBalance = () => {
   const { address } = useAccount()
@@ -36,23 +25,54 @@ const useSUsdBalance = () => {
   return sUSDBalance && from([sUSDBalance.value.toBigInt(), sUSDBalance.decimals])
 }
 
-function SUSDInput({
+const SelectTransferTypeButtonStyle = cx(
+  'centered h-full basis-full rounded-full text-sm font-medium transition-none',
+  'btn btn-underline aria-pressed:btn-primary',
+)
+
+function SelectTranferType({
+  type,
+  onChange,
+}: {
+  type: 'deposit' | 'withdraw'
+  onChange: (t: 'deposit' | 'withdraw') => void
+}) {
+  return (
+    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex h-11 w-full gap-2 rounded-full bg-opacity-50 p-1 ">
+      <button
+        aria-pressed={type === 'deposit'}
+        onClick={() => onChange('deposit')}
+        className={SelectTransferTypeButtonStyle}
+      >
+        Deposit
+      </button>
+      <button
+        aria-pressed={type === 'withdraw'}
+        onClick={() => onChange('withdraw')}
+        className={SelectTransferTypeButtonStyle}
+      >
+        Withdraw
+      </button>
+    </div>
+  )
+}
+
+function TransferMarginInput({
   onValueChange,
   value,
+  label,
+  max,
 }: {
   value: string
+  label: string
+  max: string
   onValueChange: (e: string) => void
 }) {
-  const balance = useSUsdBalance()
-
   return (
-    <>
-      <div className="text-dark-accent ocean:text-blue-accent mb-1 flex items-center justify-between px-3 ">
-        <span className="text-xs ">Balance:</span>
-        <span className="text-sm ">
-          {balance ? format(balance) : '0.00'}
-          &nbsp; sUSD
-        </span>
+    <div className="flex flex-col gap-1">
+      <div className="text-dark-accent ocean:text-blue-accent mb-1 flex items-center justify-between px-3 text-xs">
+        <span>{label}</span>
+        <span>{format(max) || '0.00'} sUSD</span>
       </div>
 
       <NumericInput
@@ -62,14 +82,54 @@ function SUSDInput({
         placeholder="0.0"
         right={() => (
           <button
-            onClick={() => onValueChange(format(balance, undefined))}
+            onClick={() => onValueChange(max)}
             className="text-dark-30 text-xs font-bold hover:underline"
           >
             MAX
           </button>
         )}
       />
-    </>
+    </div>
+  )
+}
+
+function WithdrawInput({
+  onValueChange,
+  value,
+}: {
+  value: string
+  onValueChange: (e: string) => void
+}) {
+  const { data: accessibleMargin = '0' } = useMarginDetails((m) =>
+    format(m.accessibleMargin, undefined),
+  )
+
+  return (
+    <TransferMarginInput
+      onValueChange={onValueChange}
+      value={value}
+      max={accessibleMargin}
+      label="Accessible margin:"
+    />
+  )
+}
+
+function DepositInput({
+  onValueChange,
+  value,
+}: {
+  value: string
+  onValueChange: (e: string) => void
+}) {
+  const balance = useSUsdBalance()
+
+  return (
+    <TransferMarginInput
+      onValueChange={onValueChange}
+      value={value}
+      max={format(balance, undefined)}
+      label="Balance:"
+    />
   )
 }
 
@@ -98,32 +158,60 @@ function WrappedBridge() {
 }
 
 function SubmitMarginTransferButton({
+  disabled,
   value,
-  type,
-}: {
-  value: string
-  type: 'deposit' | 'withdraw'
-}) {
+  children,
+}: PropsWithChildren<{ disabled: boolean; value?: BigNumber }>) {
   const market = useRouteMarket()
 
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
     enabled: !!value,
-    args: [BigNumber.from(value).mul(type === 'withdraw' ? -1 : 1)],
+    args: value && [value],
   })
   const { write: transferMargin } = useMarketTransferMargin(config)
-
-  const balance = useSUsdBalance()
 
   return (
     <button
       onClick={transferMargin}
-      disabled={!transferMargin}
+      disabled={!transferMargin || disabled}
       className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
     >
-      {getDepositButtonLabel(value, balance, type)}
+      {children}
     </button>
   )
+}
+
+const getTransferMarginButtonProps = (
+  value: string,
+  balance: Dnum | undefined,
+  type: 'deposit' | 'withdraw',
+): Parameters<typeof SubmitMarginTransferButton>[0] => {
+  if (!balance) return { children: 'Loading...', disabled: true }
+
+  let label: string = type
+  if (equal(balance, 0)) label = 'Not enough sUSD'
+  if (!value) label = 'Enter an amount'
+  if (lessThan(balance, value)) label = 'Not enough sUSD'
+  return {
+    children: label,
+    disabled: label !== type,
+    value: BigNumber.from(value).mul(type === 'withdraw' ? -1 : 1),
+  }
+}
+
+function WithdrawButton({ value }: { value: string }) {
+  const { data: accessibleMargin } = useMarginDetails((m) => m.accessibleMargin)
+  return (
+    <SubmitMarginTransferButton
+      {...getTransferMarginButtonProps(value, accessibleMargin, 'withdraw')}
+    />
+  )
+}
+
+function DepositButton({ value }: { value: string }) {
+  const balance = useSUsdBalance()
+  return <SubmitMarginTransferButton {...getTransferMarginButtonProps(value, balance, 'deposit')} />
 }
 
 export function ManageMarginModal(props: ModalProps) {
@@ -135,42 +223,32 @@ export function ManageMarginModal(props: ModalProps) {
   return (
     <Modal
       {...props}
-      className="card card-secondary-outlined  relative h-fit w-[400px] gap-4 p-[16px_12px]"
+      className="card card-secondary-outlined relative h-fit w-[400px] gap-4 py-3 px-4"
     >
-      <span className="text-dark-accent ocean:text-blue-accent font-medium ">Transfer Margin</span>
-      <button onClick={props.onClose} className="outline-none ">
-        <CloseIcon className="box-4 fill-ocean-200 absolute top-5 right-4" />
+      <button onClick={props.onClose} className="box-4 absolute top-5 right-4 outline-none">
+        <CloseIcon className="fill-dark-90 ocean:to-blue-300 box-4" />
       </button>
-      <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex h-11 w-full gap-2 rounded-full bg-opacity-50 p-[4px] ">
-        <button
-          aria-pressed={transferType === 'deposit'}
-          onClick={() => setTransferType('deposit')}
-          className={cx(
-            'centered h-full basis-full rounded-full text-sm font-medium transition-none',
-            'btn btn-underline aria-pressed:btn-primary',
-          )}
-        >
-          Deposit
-        </button>
-        <button
-          aria-pressed={transferType === 'withdraw'}
-          onClick={() => setTransferType('withdraw')}
-          className={cx(
-            'centered h-full basis-full rounded-full text-sm font-medium transition-none',
-            'btn btn-underline aria-pressed:btn-primary',
-          )}
-        >
-          Withdraw
-        </button>
+      <div className="flex flex-col gap-2">
+        <span className="text-dark-accent ocean:text-blue-accent font-medium ">
+          Transfer Margin
+        </span>
+        <SelectTranferType type={transferType} onChange={setTransferType} />
       </div>
-      <WrappedBridge />
-      <SUSDInput value={value} onValueChange={setValue} />
-      {transferType === 'deposit' && (
-        <p className="text-dark-accent ocean:text-blue-accent text-center text-sm">
-          A $50 margin minimum is required to open a position.
-        </p>
+      {transferType === 'deposit' ? (
+        <>
+          <WrappedBridge />
+          <DepositInput value={value} onValueChange={setValue} />
+          <p className="text-dark-90 ocean:text-blue-accent text-center text-xs">
+            A $50 margin minimum is required to open a position.
+          </p>
+          <DepositButton value={debouncedValue} />
+        </>
+      ) : (
+        <>
+          <WithdrawInput value={value} onValueChange={setValue} />
+          <WithdrawButton value={debouncedValue} />
+        </>
       )}
-      <SubmitMarginTransferButton value={debouncedValue} type={transferType} />
     </Modal>
   )
 }

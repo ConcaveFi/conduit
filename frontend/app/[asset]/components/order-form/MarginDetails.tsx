@@ -32,6 +32,7 @@ const fetchMarginDetails = async (
   return {
     buyingPower,
     available: subtract(buyingPower, details.notionalValue),
+    accessibleMargin: details.accessibleMargin,
     notionalValue: details.notionalValue,
     remainingMargin: details.remainingMargin,
   }
@@ -47,7 +48,8 @@ export function useMarginDetails<TSelect = TMarginDetails>(
   const market = useRouteMarket()
   const { address: account } = useAccount()
 
-  const provider = useProvider({ chainId })
+  const provider = useProvider<Provider>({ chainId })
+
   return useQuery(
     ['market position details', market?.key, account, chainId],
     () => fetchMarginDetails(account, chainId, provider, market!.key),

@@ -1,10 +1,12 @@
 'use client'
+
 import { Customize, WidgetProps } from '@socket.tech/plugin'
 import { ChevronIcon } from '@tradex/icons'
 import { atom, useAtom } from 'jotai'
 import dynamic from 'next/dynamic'
 import { useNetwork, useSigner } from 'wagmi'
 import { useTheme } from '../../providers/ThemeProvider'
+
 const DynamicComponent = dynamic(() => import('@socket.tech/plugin').then((mod) => mod.Bridge))
 
 const baseTheme: Customize = {
@@ -57,17 +59,17 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
 
   return (
     <div
-      className={` transition-max-height overflow-y-hidden duration-500  ${
+      className={`transition-max-height overflow-y-hidden duration-500 ${
         isOpen ? 'max-h-screen' : 'max-h-8'
       }`}
     >
       <div
         onClick={handle}
-        className="ocean:text-blue-accent flex cursor-pointer justify-between p-2 text-xs font-bold text-white "
+        className="ocean:text-blue-accent hover:bg-dark-30 flex cursor-pointer items-center justify-between rounded-xl p-2 text-xs font-bold text-white"
       >
         <span>Bridge</span>
         <ChevronIcon
-          className={`fill-dark-accent ocean:fill-blue-accent mr-2 h-3  w-3 transition-transform  ${
+          className={`fill-dark-accent ocean:fill-blue-accent h-3 w-3 transition-transform ${
             isOpen ? 'rotate-180' : 'rotate-0'
           }`}
         />
