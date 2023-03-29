@@ -1,3 +1,5 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '@tradex/interface'
 import { Address, getContract, Provider } from '@wagmi/core'
@@ -30,6 +32,7 @@ const fetchMarginDetails = async (
   return {
     buyingPower,
     available: subtract(buyingPower, details.notionalValue),
+    accessibleMargin: details.accessibleMargin,
     notionalValue: details.notionalValue,
     remainingMargin: details.remainingMargin,
   }
@@ -45,7 +48,8 @@ export function useMarginDetails<TSelect = TMarginDetails>(
   const market = useRouteMarket()
   const { address: account } = useAccount()
 
-  const provider = useProvider({ chainId })
+  const provider = useProvider<Provider>({ chainId })
+
   return useQuery(
     ['market position details', market?.key, account, chainId],
     () => fetchMarginDetails(account, chainId, provider, market!.key),
@@ -63,7 +67,7 @@ export function MarginDetails() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-dark-30 ocean:bg-blue-30 flex w-full flex-col gap-1 rounded-lg p-2 text-xs sm:w-auto">
           <span className="text-dark-accent ocean:text-blue-accent">Deposited</span>
           {isLoading ? (

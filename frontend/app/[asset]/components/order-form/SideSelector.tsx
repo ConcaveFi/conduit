@@ -1,3 +1,5 @@
+'use client'
+
 import { cx } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 

@@ -1,3 +1,5 @@
+'use client'
+
 import { Panel, PanelProps } from '@tradex/interface'
 import { from, multiply, toNumber } from 'dnum'
 import { selectAtom } from 'jotai/utils'
@@ -7,9 +9,9 @@ import { DepositMarginToReduceRisk } from './DepositMarginToReduceRisk'
 import { LiquidationInfo } from './LiquidationInfo'
 import { MarginDetails } from './MarginDetails'
 import { OrderDetails } from './OrderDetails'
-import { orderDerivedValuesAtom, OrderSizeInput } from './OrderSizeInput'
+import { OrderSizeInput, orderDerivedValuesAtom } from './OrderSizeInput'
 import { PlaceOrderButton } from './PlaceOrder'
-import { sideAtom, SideSelector } from './SideSelector'
+import { SideSelector, sideAtom } from './SideSelector'
 import { TransferMarginButton } from './TransferMargin'
 
 export const orderSizeUsdAtom = selectAtom(orderDerivedValuesAtom, ({ usd }) =>
