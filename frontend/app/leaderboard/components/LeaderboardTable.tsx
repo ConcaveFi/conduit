@@ -16,7 +16,7 @@ interface LeaderboardTable {
   search: string
 }
 export function LeaderboardTable({ places, direction, pagination, search }: LeaderboardTable) {
-  const [sort, setSort] = useState<LeaderboardSort>({ sort: 'None', order: 'ASC' })
+  const [sort, setSort] = useState<LeaderboardSort>({ sort: 'P&L', order: 'ASC' })
   const placesRow = useMemo(() => {
     let directionArray = mapPlaces(
       places[direction].slice(0 + (pagination - 1) * 10, 10 * pagination),
