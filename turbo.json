@@ -1,16 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NEXT_PUBLIC_APP_SECRET"],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "env": ["NEXT_PUBLIC_APP_SECRET"]
     },
     "lint": {
       "outputs": []
     },
     "frontend": {
-      "outputs": [
-      ]
+      "outputs": []
     },
     "dev": {
       "cache": false
