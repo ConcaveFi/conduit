@@ -2,6 +2,7 @@ import { Tab } from '@headlessui/react'
 import { cx, Panel, PanelProps } from '@tradex/interface'
 import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
+import { useRouteMarket } from '../lib/market/useMarket'
 import { UserPositions } from './positions/UserPositions'
 import { UserTrades } from './positions/UserTrades'
 import { UserTransfers } from './positions/UserTransfers'
@@ -45,8 +46,12 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
 
 const Tabs = () => {
   const { t } = useTranslation()
+  const market = useRouteMarket()
   return (
     <Tab.List className={'centered flex h-full gap-2 px-1 '}>
+      <span className="text-dark-accent ocean:text-blue-30 pl-2 text-xs font-light">
+        {market?.asset}/sUSD Perp:
+      </span>
       {TABS.map((tab, index) => {
         return (
           <Tab key={index} className="h-full outline-none ">
@@ -55,7 +60,7 @@ const Tabs = () => {
                 <span
                   aria-selected={selected}
                   className={cx(
-                    'btn centered flex rounded-md p-[5px_15px] text-xs outline-none ring-0',
+                    'btn centered flex rounded-md p-[5px_15px] text-xs font-light outline-none ring-0',
                     'aria-selected:btn-secondary aria-deselected:btn-underline ',
                   )}
                 >

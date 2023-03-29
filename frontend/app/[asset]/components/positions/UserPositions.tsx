@@ -81,6 +81,7 @@ export function UserPositions() {
           <PosItemInfo
             info={SideNAsset(side, market.asset)}
             value={format(market?.price || '0', { digits: 2 })}
+            modifirer={side === 'SHORT' ? 'negative' : 'positive'}
           />
           <PosItemInfo info={'Size'} value={sizeFormated} />
           <PosItemInfo info={'Avg Entry'} value={format(position.lastPrice, { digits: 2 })} />
@@ -88,15 +89,20 @@ export function UserPositions() {
         </div>
         <div className="flex w-full flex-col gap-3">
           <PosItemInfo
+            info={'Leverage'}
+            value={`${format(leverage, { digits: 2 })}x`}
+            modifirer={greaterThan(leverage, 0) ? 'positive' : 'negative'}
+          />
+          <PosItemInfo
             info={'Unrealized P&L'}
             value={format(positionDetails.profitLoss, { digits: 2 })}
+            modifirer={greaterThan(positionDetails.profitLoss, 0) ? 'positive' : 'negative'}
           />
           <PosItemInfo
             info={'Liq Price'}
             value={format(positionDetails.liquidationPrice, { digits: 2 })}
           />
           <PosItemInfo info={'Net Funding'} value={'-'} />
-          <PosItemInfo info={'Leverage'} value={format(leverage, { digits: 2 })} />
         </div>
       </div>
       <button
@@ -124,8 +130,8 @@ function PosItemInfo(props: {
 }) {
   const { modifirer, info, value } = props
   return (
-    <div className="bg-dark-30 ocean:bg-blue-30 flex h-[22px] w-full  items-center justify-between rounded-sm px-2 text-xs">
-      <span className="font-medium text-white">{info}</span>
+    <div className="bg-dark-30 ocean:bg-blue-30 flex h-[22px] w-full items-center justify-between rounded-sm px-2 text-xs font-light">
+      <span className="text-white">{info}</span>
       <span
         className={cx(
           modifirer ? (modifirer === 'positive' ? 'text-positive' : 'text-negative') : 'text-white',
