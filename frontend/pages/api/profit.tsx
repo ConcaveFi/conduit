@@ -20,8 +20,8 @@ const MontSerratFontsPromise = fontUrls.map(async (url) => {
 
 export default async function (prop: { nextUrl: any }) {
   domain = prop.nextUrl.origin
-  const width = 720
-  const height = 405
+  const width = 800
+  const height = 400
   const [MontserratRegular, MontserratSemi, MontserratBold] = await Promise.all(
     MontSerratFontsPromise,
   )
