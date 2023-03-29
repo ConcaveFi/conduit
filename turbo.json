@@ -9,11 +9,11 @@
       "outputs": []
     },
     "frontend": {
-      "outputs": [
-      ]
+      "outputs": []
     },
     "dev": {
       "cache": false
     }
-  }
+  },
+  "globalEnv": ["VERCEL_URL"]
 }
