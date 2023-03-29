@@ -3,6 +3,7 @@ import { forwardRef, Fragment } from 'react'
 import { ButtonProps, DivProps } from '../../types/primitives'
 
 export function Popover({ className, ...props }: DivProps) {
+  //@ts-ignore headles ui types are cray?????
   return <PrimitivePopover className={`relative z-[10] ${className}`} as={'div'} {...props} />
 }
 

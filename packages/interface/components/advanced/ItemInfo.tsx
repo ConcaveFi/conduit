@@ -11,7 +11,7 @@ const styles = cva(cva('')(), {
     modifier: {
       positive: 'text-positive',
       negative: 'text-negative',
-      none: 'text-bright-text ',
+      none: 'text-white ',
     },
   },
   defaultVariants: {
@@ -28,12 +28,14 @@ export interface ItemInfoProps {
 }
 export function ItemInfo({ Icon, info, value, align = 'start', modifier }: ItemInfoProps) {
   return (
-    <div className="flex items-center gap-4 ">
+    <div className="flex items-center gap-4">
       {Icon}
       <div className={`flex flex-col ${styles({ align })}`}>
-        <span className="text-ocean-200 whitespace-nowrap text-[10px] font-medium ">{info}</span>
+        <span className="text-dark-accent ocean:text-ocean-200 whitespace-nowrap text-[10px] font-medium ">
+          {info}
+        </span>
         <span
-          className={`-mt-1 whitespace-nowrap text-sm  font-semibold ${styles({
+          className={`-mt-1 whitespace-nowrap font-mono text-sm  font-semibold  ${styles({
             modifier,
           })}`}
         >

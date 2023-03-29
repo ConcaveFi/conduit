@@ -1,18 +1,16 @@
-import { CloseIcon, ExpandIcon } from '@tradex/icons'
-import { VariantProps } from 'class-variance-authority'
-import { forwardRef, ReactNode, useState } from 'react'
+import { CloseIcon } from '@tradex/icons'
+import { ReactNode, forwardRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
 import { DivProps } from '../../../types/primitives'
-export type PanelHeaderAttributes = VariantProps<typeof panelHeaderStyles>
-export interface PanelHeaderProps extends PanelHeaderAttributes, DivProps {
+export type PanelHeaderProps = {
   children?: ReactNode
   onMaximize?: VoidFunction
   onClose?: VoidFunction
   onMinimize?: VoidFunction
-}
+} & DivProps
 export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
-  ({ children, variant, onMaximize, onClose, onMinimize, className, ...props }, ref) => {
+  ({ children, onMaximize, onClose, onMinimize, className, ...props }, ref) => {
     const [isFull, setIsFull] = useState(false)
     function handleToggle() {
       if (isFull && onMinimize) {
@@ -23,7 +21,7 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
         onMaximize()
       }
     }
-    className = twMerge(panelHeaderStyles({ variant }), 'cursor-move', className)
+    className = twMerge(panelHeaderStyles, 'cursor-move', className)
     return (
       <div
         ref={ref}
@@ -34,11 +32,11 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
       >
         {children}
         <div className="right-3 z-10 flex items-center gap-3">
-          <button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
-            <ExpandIcon className="fill-light-400 ocean:fill-ocean-200 h-4 w-4" />
-          </button>
+          {/* <button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
+            <ExpandIcon className="fill-dark-accent ocean:fill-blue-accent box-3" />
+          </button> */}
           <button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
-            <CloseIcon className="fill-light-400 ocean:fill-ocean-200 h-3 w-3" />
+            <CloseIcon className="stroke-dark-accent ocean:fill-blue-accent box-2.5 " />
           </button>
         </div>
       </div>

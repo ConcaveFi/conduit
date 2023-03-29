@@ -1,17 +1,37 @@
 import { VariantProps } from 'class-variance-authority'
-import React, { forwardRef } from 'react'
+import { NumericFormat, NumericFormatProps } from 'react-number-format'
+import { twMerge } from 'tailwind-merge'
 import { inputStyles } from '../../styles/primitives/inputStyles'
 import { PrimitiveInputProps } from '../../types/primitives'
 
-export type InputAttributes = VariantProps<typeof inputStyles>
-export interface InputProps extends InputAttributes, PrimitiveInputProps {}
-export const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
-  const { variant, className, type = 'text', ...inputProps } = props
-  const _styles = inputStyles({ className, variant })
-  return React.createElement('input', { type, ref, className: _styles, ...inputProps })
-})
+export type InputAttributes = VariantProps<typeof inputStyles> & {
+  left?: (prop: { className?: string }) => JSX.Element
+  right?: (prop: { className?: string }) => JSX.Element
+  bottom?: (prop: { className?: string }) => JSX.Element
+}
+export type InputProps = InputAttributes & PrimitiveInputProps
 
-import { NumericFormat, NumericFormatProps } from 'react-number-format'
+export const Input = ({ left, right, bottom, className, variant, ...inputProps }: InputProps) => {
+  const _styles = inputStyles({ variant })
+  return (
+    <div className={_styles.container}>
+      {!left ? null : (
+        <div className="flex flex-col justify-center">{left({ className: _styles.icon })}</div>
+      )}
+      <div className="flex w-full flex-col">
+        <input {...inputProps} className={twMerge(_styles.input, className)} />
+        {bottom ? bottom({ className: 'ml-1 -mb-1 mt-0.5 leading-none' }) : null}
+      </div>
+      {!right ? (
+        <></>
+      ) : (
+        <div className="leading-0 flex flex-col justify-center">
+          {right({ className: _styles.icon })}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export type NumericInputProps = InputProps & NumericFormatProps
 export const NumericInput = (props: NumericInputProps) => {

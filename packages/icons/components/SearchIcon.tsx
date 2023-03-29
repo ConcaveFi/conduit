@@ -1,17 +1,16 @@
 import { SVGProps } from 'react'
 
-export function SearchIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
+export function SearchIcon({ className }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      width="22"
-      height="19"
-      viewBox="0 0 14 14"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className || 'fill-ocean-200 w-8 h-8'}
-      {...props}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      className={className}
     >
-      <path d="M6.11389 0.333313C9.42589 0.333313 12.1139 3.02131 12.1139 6.33331C12.1139 9.64531 9.42589 12.3333 6.11389 12.3333C2.80189 12.3333 0.113892 9.64531 0.113892 6.33331C0.113892 3.02131 2.80189 0.333313 6.11389 0.333313ZM6.11389 11C8.69189 11 10.7806 8.91131 10.7806 6.33331C10.7806 3.75465 8.69189 1.66665 6.11389 1.66665C3.53522 1.66665 1.44722 3.75465 1.44722 6.33331C1.44722 8.91131 3.53522 11 6.11389 11ZM11.7706 11.0473L13.6566 12.9326L12.7132 13.876L10.8279 11.99L11.7706 11.0473Z" />
+      <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
     </svg>
   )
 }

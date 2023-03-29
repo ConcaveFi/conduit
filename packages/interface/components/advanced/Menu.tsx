@@ -1,13 +1,15 @@
 import { Menu as PrimitiveMenu, Transition } from '@headlessui/react'
-import React, { forwardRef, Fragment } from 'react'
+import React, { Fragment, forwardRef } from 'react'
 import { ButtonProps, DivProps } from '../../types/primitives'
 
 export function Menu({ ...props }: DivProps) {
   props.className = `relative z-10 ${props.className}`
+  // @ts-ignore headlessui types not good
   return React.createElement(PrimitiveMenu, { as: 'div', ...props })
 }
 
 const MenuButton = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  // @ts-ignore
   return <PrimitiveMenu.Button as={'button'} ref={ref} {...props} />
 })
 
@@ -23,7 +25,7 @@ const MenuItems = forwardRef<HTMLDivElement, DivProps>(({ className, ...props },
       leaveTo="opacity-0 scale-75"
     >
       <PrimitiveMenu.Items
-        className={`absolute top-full mt-2 ${className}`}
+        className={`absolute top-8 left-0 mt-2 ${className}`}
         {...props}
         as={'div'}
         ref={ref}

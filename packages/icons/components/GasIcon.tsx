@@ -7,7 +7,7 @@ export function GasIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
       height="18"
       viewBox="0 0 20 18"
       xmlns="http://www.w3.org/2000/svg"
-      className={className || 'fill-ocean-100 w-8 h-8'}
+      className={className || 'fill-ocean-100 h-8 w-8'}
       {...props}
     >
       <path

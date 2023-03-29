@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef } from 'react'
+import React from 'react'
 import { PrimitiveTRProps } from '../../../types/primitives'
 
 type ModifiedTRProps = Omit<PrimitiveTRProps, 'children'>

@@ -1,4 +1,7 @@
+export * from './Avatar'
+export * from './Card'
 export * from './CheckBox'
+export * from './Icon'
 export * from './Input'
 export * from './Modal'
 export * from './Slider'

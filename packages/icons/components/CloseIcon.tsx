@@ -3,15 +3,12 @@ import { SVGProps } from 'react'
 export function CloseIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      width="22"
-      height="19"
-      viewBox="0 0 6 6"
-      fill="none"
+      viewBox="0 0 10 10"
       xmlns="http://www.w3.org/2000/svg"
-      className={className || 'fill-ocean-200 w-8 h-8'}
       {...props}
+      className={className || 'fill-ocean-100 h-3 w-3'}
     >
-      <path d="M2.99999 2.41083L5.06249 0.348328L5.65166 0.937494L3.58916 2.99999L5.65166 5.06249L5.06249 5.65166L2.99999 3.58916L0.937494 5.65166L0.348328 5.06249L2.41083 2.99999L0.348328 0.937494L0.937494 0.348328L2.99999 2.41083Z" />
+      <path d="M1 1 L9 9 M1 9 L9 1" strokeWidth="1" />
     </svg>
   )
 }
