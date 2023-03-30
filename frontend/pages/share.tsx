@@ -13,7 +13,9 @@ export default function Page() {
             // `VERCEL_URL` environment variable to get the deployment’s URL.
             // More info:
             // https://vercel.com/docs/concepts/projects/environment-variables
-            `${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : ''}/api/profit`
+            `${
+              process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : ''
+            }/api/profit?profit=2.12&leverage=23.1&asset=btc&type=long`
           }
         />
       </Head>
