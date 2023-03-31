@@ -3,6 +3,7 @@ import { ProfitCard } from './transactioncard'
 
 export default async function Page({ searchParams }) {
   const { profit, leverage, asset, type } = searchParams
+  const search = new URLSearchParams({ profit, leverage, asset, type })
   return (
     <>
       <Head>
@@ -17,7 +18,7 @@ export default async function Page({ searchParams }) {
             // https://vercel.com/docs/concepts/projects/environment-variables
             `${
               process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : ''
-            }/api/profit?profit=2.12&leverage=23.1&asset=btc&type=long`
+            }/api/profit?${search.toString()}`
           }
         />
       </Head>
