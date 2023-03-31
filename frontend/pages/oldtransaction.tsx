@@ -1,11 +1,17 @@
 import Head from 'next/head'
+import { NextRequest } from 'next/server'
 
-export default function Page() {
+export default function Page(req: NextRequest) {
+  // const { searchParams } = new URL(req.url)
+  // const profit = searchParams.get('profit') || '0'
+  // const leverage = searchParams.get('leverage') || '0'
+  // const asset = searchParams.get('asset') || 'eth'
+  // const type = searchParams.get('type') || 'short'
   return (
     <div>
       <Head>
         <meta name="og:title" content="Conduit profit" />
-        <meta name="og:description" content="Heyy, take a look on this!" />
+        <meta name="og:description" content="Take a " />
         <meta
           name="og:image"
           content={
@@ -19,7 +25,7 @@ export default function Page() {
           }
         />
       </Head>
-      <h1>A page with Open Graph Image.</h1>
+      <h1>WIP </h1>
     </div>
   )
 }
