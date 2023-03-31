@@ -1,6 +1,19 @@
+'use client'
 import { HTMLAttributes } from 'react'
 
-export const ProfitCard = ({ profit, domain, asset, leverage, type }) => {
+export const ProfitCard = ({
+  profit,
+  asset,
+  leverage,
+  type,
+  domain = '',
+}: {
+  profit: string
+  asset: string
+  leverage: string
+  type: string
+  domain?: string
+}) => {
   return (
     <div
       style={{
@@ -45,7 +58,7 @@ const Icon = ({
   size,
   domain,
 }: { asset: string; size: number; domain: string } & HTMLAttributes<HTMLImageElement>) => {
-  const url = new URL(`/assets/tokens/${asset}.png`, domain)
+  const url = `${domain}/assets/tokens/${asset}.png`
   return <img src={url.toString()} tw="rounded-full" width={size} height={size} />
 }
 
@@ -66,7 +79,6 @@ const backgrounds = {
 
 const Footer = ({ leverage, asset, type, domain }) => {
   const background = backgrounds[type.toLowerCase()]
-  console.log(background)
   return (
     <Flex className="h-fit w-full items-center justify-between">
       <Flex className="flex-col gap-8">
