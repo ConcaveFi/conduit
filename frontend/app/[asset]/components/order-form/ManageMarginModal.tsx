@@ -5,6 +5,7 @@ import { CloseIcon } from '@tradex/icons'
 import { cx, Modal, ModalProps, NumericInput } from '@tradex/interface'
 import { Dnum, equal, from, lessThan } from 'dnum'
 import { BigNumber } from 'ethers'
+import { parseUnits } from 'ethers/lib/utils.js'
 import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
 import { PropsWithChildren, useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
@@ -77,7 +78,7 @@ function TransferMarginInput({
 
       <NumericInput
         value={value}
-        onValueChange={(e) => onValueChange(e.value)}
+        onValueChange={(e) => onValueChange(e.floatValue?.toString() ?? '')}
         className="placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent w-full"
         placeholder="0.0"
         right={() => (
@@ -191,12 +192,12 @@ const getTransferMarginButtonProps = (
 
   let label: string = type
   if (equal(balance, 0)) label = 'Not enough sUSD'
-  if (!value) label = 'Enter an amount'
+  if (!value) (label = 'Enter an amount'), (value = '0')
   if (lessThan(balance, value)) label = 'Not enough sUSD'
   return {
     children: label,
     disabled: label !== type,
-    value: BigNumber.from(value).mul(type === 'withdraw' ? -1 : 1),
+    value: parseUnits(value).mul(type === 'withdraw' ? -1 : 1),
   }
 }
 
@@ -236,7 +237,8 @@ export function ManageMarginModal(props: ModalProps) {
       </div>
       {transferType === 'deposit' ? (
         <>
-          <WrappedBridge />
+          {/* TODO: remove black background on modal & fix the header size breaking when opens modal with bridge  */}
+          {/* <WrappedBridge /> */}
           <DepositInput value={value} onValueChange={setValue} />
           <p className="text-dark-90 ocean:text-blue-accent text-center text-xs">
             A $50 margin minimum is required to open a position.
