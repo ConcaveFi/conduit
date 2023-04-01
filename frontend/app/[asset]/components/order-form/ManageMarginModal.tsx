@@ -78,7 +78,7 @@ function TransferMarginInput({
 
       <NumericInput
         value={value}
-        onValueChange={(e) => onValueChange(e.value)}
+        onValueChange={(e) => onValueChange(e.floatValue?.toString() ?? '')}
         className="placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent w-full"
         placeholder="0.0"
         right={() => (
