@@ -237,7 +237,8 @@ export function ManageMarginModal(props: ModalProps) {
       </div>
       {transferType === 'deposit' ? (
         <>
-          <WrappedBridge />
+          {/* TODO: remove black background on modal & fix the header size breaking when opens modal with bridge  */}
+          {/* <WrappedBridge /> */}
           <DepositInput value={value} onValueChange={setValue} />
           <p className="text-dark-90 ocean:text-blue-accent text-center text-xs">
             A $50 margin minimum is required to open a position.
