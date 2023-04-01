@@ -5,6 +5,7 @@ import { CloseIcon } from '@tradex/icons'
 import { cx, Modal, ModalProps, NumericInput } from '@tradex/interface'
 import { Dnum, equal, from, lessThan } from 'dnum'
 import { BigNumber } from 'ethers'
+import { parseUnits } from 'ethers/lib/utils.js'
 import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
 import { PropsWithChildren, useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
@@ -191,12 +192,12 @@ const getTransferMarginButtonProps = (
 
   let label: string = type
   if (equal(balance, 0)) label = 'Not enough sUSD'
-  if (!value) label = 'Enter an amount'
+  if (!value) (label = 'Enter an amount'), (value = '0')
   if (lessThan(balance, value)) label = 'Not enough sUSD'
   return {
     children: label,
     disabled: label !== type,
-    value: BigNumber.from(value).mul(type === 'withdraw' ? -1 : 1),
+    value: parseUnits(value).mul(type === 'withdraw' ? -1 : 1),
   }
 }
 
