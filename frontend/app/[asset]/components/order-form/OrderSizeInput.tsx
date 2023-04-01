@@ -1,3 +1,5 @@
+'use client'
+
 import { NumericInput } from '@tradex/interface'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { divide, Dnum, equal, greaterThan, isDnum, multiply } from 'dnum'
@@ -14,8 +16,6 @@ export const orderInputAtom = atom<InputState>({ value: '', type: 'usd' })
 export const orderDerivedValuesAtom = atom((get) => {
   const { value, type } = get(orderInputAtom)
   if (!value) return { usd: '', asset: '' } as const
-
-  // if (get(orderLockAtom) === 'locked') return get(orderDerivedValuesAtom)
 
   const price = get(routeMarketPriceAtom)
 
@@ -64,8 +64,10 @@ export const OrderSizeInput = () => {
           <AnimatePresence mode="popLayout">
             <motion.div
               key={`order-size-${amountDenominator}`}
-              layout="position"
-              layoutId={`order-size-${amountDenominator}`}
+              {...(isFocused.current && {
+                layout: 'position',
+                layoutId: `order-size-${amountDenominator}`,
+              })}
               initial={{ y: 4 }}
               animate={{ y: 0 }}
               exit={{ y: -4, opacity: 0 }}
@@ -109,10 +111,10 @@ export const OrderSizeInput = () => {
                   layout
                   layoutId={`order-size-${other}`}
                   onClick={toggleAmountDenominator}
-                  initial={{ opacity: 0, y: -8, height: inputs[other] ? 'auto' : 0 }}
+                  initial={{ opacity: 0, y: -4, height: inputs[other] ? 'auto' : 0 }}
                   animate={{ opacity: 1, y: 0, height: 'auto' }}
                   transition={{ layout: { ease: 'backOut' } }}
-                  exit={{ opacity: 0, y: -8, height: isOverBuyingPower ? 'auto' : 0 }}
+                  exit={{ opacity: 0, y: -4, height: isOverBuyingPower ? 'auto' : 0 }}
                   className="text-dark-30 ocean:text-blue-30 min-h-0 max-w-full text-ellipsis text-start font-mono text-xs outline-none transition-all duration-500 hover:text-white"
                 >
                   <span className="text-ellipsis font-medium">{format(inputs[other], 9)}</span>

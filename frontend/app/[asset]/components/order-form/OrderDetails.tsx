@@ -1,3 +1,5 @@
+'use client'
+
 import { routeMarketKeyAtom, useMarketSettings } from 'app/[asset]/lib/market/useMarket'
 import { useCurrentTradePreview } from 'app/[asset]/lib/useTradePreview'
 import { useAtomValue } from 'jotai'

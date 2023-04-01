@@ -1,3 +1,5 @@
+'use client'
+
 import { cx } from '@tradex/interface'
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useCurrentTradePreview } from 'app/[asset]/lib/useTradePreview'
