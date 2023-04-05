@@ -17,7 +17,7 @@ import { sideAtom } from './SideSelector'
 const useInterpolateLiquidationRiskColor = (value: number, max: number) => {
   const v = useMotionValue(value)
   useEffect(() => v.set(value), [value, v])
-  return useTransform(v, [max, max / 2, 0], ['#f87171', '#facc15', '#4ade80'])
+  return useTransform(v, [max, max / 2, 0], ['#98AA29', '#20B881', '#539FCA'])
 }
 
 function SizeSlider({
@@ -56,7 +56,7 @@ function SizeSlider({
         aria-disabled={disabled}
         className={cx(
           'h-1 flex-1 rounded-full',
-          'aria-enabled:bg-gradient-to-r from-green-400 via-yellow-400 to-red-400',
+          'aria-enabled:bg-gradient-to-r from-[#539FCA] via-[#20B881] to-[#98AA29]',
           'aria-disabled:bg-dark-20 ocean:aria-disabled:bg-blue-20',
         )}
       />
@@ -88,12 +88,12 @@ function LiquidationSlider() {
         <span
           className={cx(
             'text-xs',
-            buyingPower ? 'text-green-500' : 'text-dark-30 ocean:text-blue-30',
+            buyingPower ? 'text-[#539FCA]' : 'text-dark-30 ocean:text-blue-30',
           )}
         >
           $0
         </span>
-        {!!buyingPower && <span className="text-xs text-orange-500">$ {format(buyingPower)}</span>}
+        {!!buyingPower && <span className="text-xs text-[#98AA29]">$ {format(buyingPower)}</span>}
       </div>
     </>
   )
@@ -101,19 +101,27 @@ function LiquidationSlider() {
 
 function LiquidationPrice() {
   const { data } = useCurrentTradePreview()
+  const liquidationPrice = toNumber(data?.liquidationPrice || [0n, 0], 2)
+  const entryPrice = toNumber(data?.entryPrice || [0n, 0], 2)
+  const percent = liquidationPrice && ((liquidationPrice - entryPrice) / entryPrice) * 100
+  const color = useInterpolateLiquidationRiskColor(5, Math.abs(percent))
+
   return (
     <span
       className={cx(
         'min-w-0 overflow-ellipsis font-mono text-xl outline-none',
-        !data || equal(data.liquidationPrice, 0) ? 'text-dark-30 ocean:text-blue-30' : 'text-white',
+        equal(liquidationPrice, 0) ? 'text-dark-30 ocean:text-blue-30' : 'text-white',
       )}
     >
       $
-      <NumberEasing
-        value={data ? toNumber(data.liquidationPrice, 2) : 0}
-        decimals={2}
-        ease="cubicInOut"
-      />
+      <NumberEasing value={liquidationPrice} decimals={2} ease="cubicInOut" />
+      <motion.span
+        style={{ color: entryPrice === 0 ? undefined : color }}
+        className="text-dark-30 ocean:text-blue-30 ml-1 text-sm"
+      >
+        (<NumberEasing value={percent} decimals={2} ease="cubicInOut" />
+        %)
+      </motion.span>
     </span>
   )
 }
@@ -130,48 +138,14 @@ function usePositionSizeForLiquidation() {
   return Math.abs(size + inPositionUsd)
 }
 
-const riskLevelLabel = (value: number, max: number, remainingMargin: number) => {
-  if (!remainingMargin || !value || value < remainingMargin) return 'NONE'
-  if (value <= max * 0.25) return 'LOW'
-  if (value <= max * 0.75) return 'MEDIUM'
-  return 'HIGH'
-}
-
-function LiquidationPriceRisk() {
-  const { data: buyingPower = 0 } = useMarginDetails((details) => toNumber(details.buyingPower, 2))
-  const { data: remainingMargin = 0 } = useMarginDetails((details) =>
-    toNumber(details.remainingMargin, 2),
-  )
-
-  const size = usePositionSizeForLiquidation()
-
-  const color = useInterpolateLiquidationRiskColor(size, buyingPower)
-  const riskLabel = riskLevelLabel(size, buyingPower, remainingMargin)
-
-  return (
-    <>
-      <LiquidationPrice />
-      <motion.span
-        style={{ color: riskLabel === 'NONE' ? undefined : color }}
-        className="text-dark-30 ocean:text-blue-30 font-bold"
-      >
-        {riskLabel}
-      </motion.span>
-    </>
-  )
-}
-
 export function LiquidationInfo() {
   return (
-    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col gap-1 rounded-lg px-3 py-2 transition-all">
-      <div className="flex justify-between">
-        <span className="ocean:text-blue-accent text-dark-accent text-xs">Liquidation Price:</span>
-        <span className="ocean:text-blue-accent text-dark-accent text-xs">Risk Level</span>
+    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col items-center gap-1 rounded-lg px-3 py-2 transition-all">
+      <span className="ocean:text-blue-accent text-dark-accent text-xs">Liquidation Price</span>
+      <div className="h-8">
+        <LiquidationPrice />
       </div>
-      <div className="flex flex-col gap-2 font-mono">
-        <div className="flex h-7 items-center justify-between">
-          <LiquidationPriceRisk />
-        </div>
+      <div className="flex w-full flex-col gap-2 font-mono">
         <LiquidationSlider />
       </div>
     </div>
