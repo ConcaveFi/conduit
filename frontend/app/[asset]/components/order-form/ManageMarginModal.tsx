@@ -139,7 +139,6 @@ function WrappedBridge() {
   const { chain } = useNetwork()
   const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
   const { refetch } = useBalance({ address, token: susdAddress[chainId] })
-
   const registerTransaction = useAddRecentTransaction()
 
   return (
@@ -238,7 +237,7 @@ export function ManageMarginModal(props: ModalProps) {
       {transferType === 'deposit' ? (
         <>
           {/* TODO: remove black background on modal & fix the header size breaking when opens modal with bridge  */}
-          {/* <WrappedBridge /> */}
+          <WrappedBridge />
           <DepositInput value={value} onValueChange={setValue} />
           <p className="text-dark-90 ocean:text-blue-accent text-center text-xs">
             A $50 margin minimum is required to open a position.

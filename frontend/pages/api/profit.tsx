@@ -1,5 +1,5 @@
 import { ImageResponse } from '@vercel/og'
-import { ProfitCard } from 'app/transaction/transactioncard'
+import { ProfitCard } from 'app/profit/transactioncard'
 import { NextRequest } from 'next/server'
 
 export const config = {

@@ -14,6 +14,7 @@ export const ProfitCard = ({
   type: string
   domain?: string
 }) => {
+  console.log('profit')
   return (
     <div
       style={{
@@ -34,7 +35,7 @@ export const ProfitCard = ({
           backgroundSize: `cover`,
         }}
       >
-        <Flex className={' w-full flex-col justify-between'}>
+        <Flex className={'w-full flex-col justify-between'}>
           <Header />
           <Content profit={profit} />
           <Footer domain={domain} asset={asset} leverage={leverage} type={type} />
@@ -103,7 +104,7 @@ const Content = ({ profit }) => {
         <Flex>
           <Span
             style={{
-              backgroundImage: 'linear-gradient(to bottom,#34edb3,#00d1ff)', // 🤡 backgroundClip: 'text',
+              backgroundImage: 'linear-gradient(to bottom,#34edb3,#00d1ff)',
               backgroundClip: 'text', // 🤡 backgroundClip: 'text',
             }}
             className=" bg-clip-text  text-[175px] font-bold text-transparent"

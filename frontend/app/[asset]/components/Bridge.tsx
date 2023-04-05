@@ -1,8 +1,10 @@
 'use client'
 import { Customize, WidgetProps } from '@socket.tech/plugin'
 import { ChevronIcon } from '@tradex/icons'
+import { bridgeChains } from 'app/providers/wagmi-config'
 import { atom, useAtom } from 'jotai'
 import dynamic from 'next/dynamic'
+import { useEffect } from 'react'
 import { useNetwork, useSigner } from 'wagmi'
 import { useTheme } from '../../providers/ThemeProvider'
 const DynamicComponent = dynamic(() => import('@socket.tech/plugin').then((mod) => mod.Bridge))
@@ -47,14 +49,10 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
   const handle = () => {
     setOpen((v) => !v)
   }
-
-  const currentId = chain?.id || 10
-  const defaultSourceToken = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-  const defaultDestToken = '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9'
-  const defaultSourceNetwork = currentId
-  const defaultDestNetwork = currentId === 10 ? 1 : 10
   const selectedTheme = theme === 'dark' ? darkTheme : oceanTheme
-
+  useEffect(() => {
+    signer.data?.provider?.getNetwork().then(console.log)
+  }, [])
   return (
     <div
       className={`transition-max-height overflow-y-hidden duration-500 ${
@@ -65,7 +63,7 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
         onClick={handle}
         className="ocean:text-blue-accent hover:bg-dark-30 flex cursor-pointer items-center justify-between rounded-xl p-2 text-xs font-bold text-white"
       >
-        <span>Bridge</span>
+        <span>Bridge {} </span>
         <ChevronIcon
           className={`fill-dark-accent ocean:fill-blue-accent h-3 w-3 transition-transform ${
             isOpen ? 'rotate-180' : 'rotate-0'
@@ -73,16 +71,16 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
         />
       </div>
       <div>
-        <DynamicComponent
-          API_KEY="645b2c8c-5825-4930-baf3-d9b997fcd88c"
-          provider={signer.data?.provider}
-          defaultSourceNetwork={defaultSourceNetwork}
-          defaultDestNetwork={defaultDestNetwork}
-          defaultSourceToken={defaultSourceToken}
-          defaultDestToken={defaultDestToken}
-          customize={{ ...baseTheme, ...selectedTheme }}
-          {...bridgeProps}
-        />
+        {signer.data?.provider && (
+          <DynamicComponent
+            API_KEY="cddb2f1f-f78a-4079-865a-e969a44d4b20"
+            provider={signer.data?.provider}
+            sourceNetworks={bridgeChains.map((b) => b.id)}
+            destNetworks={bridgeChains.map((b) => b.id)}
+            customize={{ ...baseTheme, ...selectedTheme }}
+            {...bridgeProps}
+          />
+        )}
       </div>
     </div>
   )
