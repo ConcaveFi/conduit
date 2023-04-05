@@ -127,7 +127,7 @@ function usePositionSizeForLiquidation() {
   const side = useAtomValue(sideAtom)
   const size = side === 'long' ? sizeUsd : -sizeUsd
 
-  return size + inPositionUsd
+  return Math.abs(size + inPositionUsd)
 }
 
 const riskLevelLabel = (value: number, max: number, remainingMargin: number) => {
