@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
 import { useEffect } from 'react'
 import { useNetwork, useSigner } from 'wagmi'
 import { useTheme } from '../../providers/ThemeProvider'
-const DynamicComponent = dynamic(() => import('@socket.tech/plugin').then((mod) => mod.Bridge))
+const SocketBridge = dynamic(() => import('@socket.tech/plugin').then((mod) => mod.Bridge))
 
 const baseTheme: Customize = {
   fontFamily: 'var(--font-sans)',
@@ -63,7 +63,7 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
         onClick={handle}
         className="ocean:text-blue-accent hover:bg-dark-30 flex cursor-pointer items-center justify-between rounded-xl p-2 text-xs font-bold text-white"
       >
-        <span>Bridge {} </span>
+        <span>Bridge</span>
         <ChevronIcon
           className={`fill-dark-accent ocean:fill-blue-accent h-3 w-3 transition-transform ${
             isOpen ? 'rotate-180' : 'rotate-0'
@@ -72,8 +72,8 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
       </div>
       <div>
         {signer.data?.provider && (
-          <DynamicComponent
-            API_KEY="cddb2f1f-f78a-4079-865a-e969a44d4b20"
+          <SocketBridge
+            API_KEY={process.env.SOCKET_PLUGIN_KEY || ''}
             provider={signer.data?.provider}
             sourceNetworks={bridgeChains.map((b) => b.id)}
             destNetworks={bridgeChains.map((b) => b.id)}

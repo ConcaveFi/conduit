@@ -15,10 +15,9 @@ export function keyBy<T>(array: T[], key: keyof T): Record<string, T> {
     }
   }, {})
 }
-export const CONDUIT_REFERRAL_ADDRESS =
-  process.env.CONDUIT_REFERRAL_ADDRESS || '0x886148a6bd2c71db59ab3aad230af9f3254173ee'
+export const INCH_REFERRAL_ADDRESS = process.env.INCH_REFERRAL_ADDRESS || ''
 
-interface Provider {}
+interface Provider { }
 export class OneInch implements Provider {
   private readonly endpoint: string //
   private readonly chainId: number
@@ -94,7 +93,7 @@ export class OneInch implements Provider {
         fromAddress: walletAddress,
         slippage: DEFAULT_1INCH_SLIPPAGE,
         PROTOCOLS,
-        referrerAddress: CONDUIT_REFERRAL_ADDRESS,
+        referrerAddress: INCH_REFERRAL_ADDRESS,
         disableEstimate: true,
       },
     })
