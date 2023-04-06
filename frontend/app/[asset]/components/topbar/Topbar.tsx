@@ -23,14 +23,14 @@ function ConnectedAccount() {
       {({ chain, openAccountModal, openChainModal, openConnectModal, account }) => {
         if (!account || !isHydrated) {
           return (
-            <button onClick={openConnectModal} className="btn btn-green-gradient py-2 px-4">
+            <button onClick={openConnectModal} className="btn btn-green-gradient px-4 py-2">
               Connect wallet
             </button>
           )
         }
         return (
           <>
-            <button onClick={openChainModal} className="btn btn-underline centered gap-2  text-xs">
+            <button onClick={openChainModal} className="btn btn-underline centered gap-2 text-xs">
               {chain?.name}
               <ChevronIcon className="fill-dark-30 ocean:fill-blue-30 h-3 w-3" />
             </button>
@@ -51,7 +51,7 @@ export function Topbar() {
 
   return (
     <div className="sm:px- flex items-center justify-between px-0">
-      <div className=" flex h-full items-center gap-2">
+      <div className="flex h-full items-center gap-2 ">
         {isMobile && <SidebarButton />}
 
         <Image

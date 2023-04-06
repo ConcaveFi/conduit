@@ -15,5 +15,5 @@
       "cache": false
     }
   },
-  "globalEnv": ["VERCEL_URL"]
+  "globalEnv": ["VERCEL_URL", "SOCKET_PLUGIN_KEY", "INCH_REFERRAL_ADDRESS"]
 }

@@ -1,7 +1,7 @@
 import { darkTheme, getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { PropsWithChildren } from 'react'
 import { createClient, WagmiConfig } from 'wagmi'
-import { chains, futuresChains, provider, webSocketProvider } from './wagmi-config'
+import { chains, provider, webSocketProvider } from './wagmi-config'
 
 export type SupportedChainId = (typeof chains)[number]['id']
 
@@ -20,7 +20,7 @@ export const wagmiClient = createClient({
 export function WagmiProvider({ children }: PropsWithChildren) {
   return (
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider theme={darkTheme()} chains={futuresChains}>
+      <RainbowKitProvider theme={darkTheme()} chains={chains}>
         {children}
       </RainbowKitProvider>
     </WagmiConfig>

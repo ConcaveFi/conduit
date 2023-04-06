@@ -14,7 +14,6 @@ export const ProfitCard = ({
   type: string
   domain?: string
 }) => {
-  console.log('profit')
   return (
     <div
       style={{
