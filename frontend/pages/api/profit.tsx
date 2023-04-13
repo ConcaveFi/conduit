@@ -28,8 +28,6 @@ export default async function handler(req: NextRequest) {
   const type = searchParams.get('type') || 'short'
   const width = 1920
   const height = 1080
-  console.log(domain)
-  //localhost:3000/assets/tokens/btc.png
   http: return new ImageResponse(
     (
       <>

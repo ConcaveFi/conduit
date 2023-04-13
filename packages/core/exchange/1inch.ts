@@ -17,8 +17,7 @@ export function keyBy<T>(array: T[], key: keyof T): Record<string, T> {
 }
 export const INCH_REFERRAL_ADDRESS = process.env.INCH_REFERRAL_ADDRESS || ''
 
-interface Provider { }
-export class OneInch implements Provider {
+export class OneInch {
   private readonly endpoint: string //
   private readonly chainId: number
   private cacheTokens?: OneInchTokenListResponse
