@@ -24,8 +24,8 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
         bodyProps={{ className: 'group p-2 overflow-y-auto' }}
         headerChild={<Tabs />}
       >
-        <Tab.Panels>
-          <Tab.Panel>
+        <Tab.Panels className={'h-full w-full '}>
+          <Tab.Panel className={'h-full w-full '}>
             <UserPositions />
           </Tab.Panel>
           <Tab.Panel>
