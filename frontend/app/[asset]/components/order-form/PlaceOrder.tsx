@@ -1,7 +1,8 @@
 'use client'
 
 import { useAddRecentTransaction } from '@pcnv/txs-react'
-import { Modal } from '@tradex/interface'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { Modal, cx } from '@tradex/interface'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { MarketSummary } from 'app/[asset]/lib/market/markets'
 import { routeMarketAtom, useMarketSettings } from 'app/[asset]/lib/market/useMarket'
@@ -16,6 +17,7 @@ import {
 } from 'perps-hooks'
 import { format } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
+import { useAccount } from 'wagmi'
 import { useMarginDetails } from './MarginDetails'
 import { orderSizeUsdAtom, sizeDeltaAtom } from './OrderFormPanel'
 import { sideAtom } from './SideSelector'
@@ -133,6 +135,9 @@ const confirmOrderAtom = atom(null, (get, set, action: 'ask' | 'dismiss') => {
 })
 
 export function PlaceOrderButton() {
+  const { isConnected } = useAccount()
+  const { openConnectModal } = useConnectModal()
+
   const sizeUsd = useAtomValue(orderSizeUsdAtom)
   const { data: isOverBuyingPower } = useMarginDetails(
     ({ buyingPower }) => !!sizeUsd && greaterThan(sizeUsd, buyingPower),
@@ -143,8 +148,9 @@ export function PlaceOrderButton() {
   let label = `Place ${side}`
   if (!sizeUsd || equal(sizeUsd, 0)) label = 'Enter an amount'
   if (isOverBuyingPower) label = 'Not enough margin'
+  if (!isConnected) label = 'Connect to continue'
 
-  const disabled = !sizeUsd || equal(sizeUsd, 0) || isOverBuyingPower
+  const disabled = isConnected && (!sizeUsd || equal(sizeUsd, 0) || isOverBuyingPower)
 
   const order = useAtomValue(orderToBeConfirmedAtom)
   const orderConfirmation = useSetAtom(confirmOrderAtom)
@@ -153,9 +159,13 @@ export function PlaceOrderButton() {
   return (
     <>
       <button
-        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg py-2 font-bold text-white shadow-lg"
+        className={cx(
+          'btn centered h-11 rounded-lg py-2 font-bold text-white shadow-lg',
+          'disabled:bg-dark-30 ocean:disabled:bg-blue-30 disabled:text-dark-20 ocean:disabled:text-blue-20',
+          disabled ? '' : 'bg-dark-green-gradient',
+        )}
         disabled={disabled}
-        onClick={() => orderConfirmation('ask')}
+        onClick={() => (isConnected ? orderConfirmation('ask') : openConnectModal?.())}
       >
         {label}
       </button>
