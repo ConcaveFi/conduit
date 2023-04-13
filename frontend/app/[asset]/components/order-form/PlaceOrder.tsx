@@ -17,7 +17,8 @@ import {
 } from 'perps-hooks'
 import { format } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useMarginDetails } from './MarginDetails'
 import { orderSizeUsdAtom, sizeDeltaAtom } from './OrderFormPanel'
 import { sideAtom } from './SideSelector'
@@ -78,9 +79,13 @@ type Order = { market: MarketSummary; sizeDelta: Dnum; side: 'long' | 'short' }
 function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFunction }) {
   const registerTransaction = useAddRecentTransaction()
 
+  const { chain } = useNetwork()
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
+
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: order.market.address,
     enabled: !equal(order.sizeDelta, 0),
+    chainId,
     args: [toBigNumber(order.sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT), TRACKING_CODE],
   })
   const {
