@@ -17,8 +17,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function Page({ searchParams, ...others }) {
-  console.log(others.headers)
+export default async function Page({ searchParams }) {
   const { profit, leverage, asset, type } = searchParams
   return (
     <div className="font-mono">

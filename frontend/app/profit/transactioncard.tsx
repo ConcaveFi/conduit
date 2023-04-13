@@ -5,13 +5,13 @@ export const ProfitCard = ({
   profit,
   asset,
   leverage,
-  type,
+  type = '',
   domain = '',
 }: {
   profit: string
   asset: string
   leverage: string
-  type: string
+  type?: string
   domain?: string
 }) => {
   return (
@@ -28,7 +28,7 @@ export const ProfitCard = ({
       }}
     >
       <Flex
-        className="h-full w-full bg-gray-50 p-8 font-sans"
+        className="w-full h-full p-8 font-sans bg-gray-50"
         style={{
           backgroundImage: `url('${domain}/assets/background.png')`,
           backgroundSize: `cover`,
@@ -65,7 +65,7 @@ const Icon = ({
 const Assets = ({ asset, domain }) => {
   return (
     <Flex className="flex-row-reverse items-center justify-center">
-      <Flex className="-ml-4 items-center justify-center rounded-full bg-white align-middle">
+      <Flex className="items-center justify-center -ml-4 align-middle bg-white rounded-full">
         <Icon size={100} asset={asset} domain={domain} />
       </Flex>
     </Flex>
@@ -80,13 +80,13 @@ const backgrounds = {
 const Footer = ({ leverage, asset, type, domain }) => {
   const background = backgrounds[type.toLowerCase()]
   return (
-    <Flex className="h-fit w-full items-center justify-between">
+    <Flex className="items-center justify-between w-full h-fit">
       <Flex className="flex-col gap-8">
         <Span
           style={{
             backgroundImage: background, // 🤡 backgroundClip: 'text',
           }}
-          className="rounded-lg p-10 py-5 text-3xl "
+          className="p-10 py-5 text-3xl rounded-lg "
         >
           {`${type.toLowerCase() === 'long' ? 'Long' : 'Short'} position leverage ${leverage}x`}
         </Span>
@@ -98,7 +98,7 @@ const Footer = ({ leverage, asset, type, domain }) => {
 
 const Content = ({ profit }) => {
   return (
-    <Flex className="w-full flex-col items-center justify-center ">
+    <Flex className="flex-col items-center justify-center w-full ">
       <Flex className="flex-col ">
         <Flex>
           <Span
@@ -115,7 +115,7 @@ const Content = ({ profit }) => {
               backgroundImage: 'linear-gradient(180deg,#34edb3,#00d1ff)',
               backgroundClip: 'text',
             }}
-            className="mt-auto mb-3 bg-clip-text text-8xl font-bold text-transparent"
+            className="mt-auto mb-3 font-bold text-transparent bg-clip-text text-8xl"
           >
             %
           </Span>
@@ -126,7 +126,7 @@ const Content = ({ profit }) => {
 }
 const Header = () => {
   return (
-    <Flex className="h-44 w-full justify-between ">
+    <Flex className="justify-between w-full h-44 ">
       <Flex className={' h-fit   '}>
         {/* <QRCode
           size={128}

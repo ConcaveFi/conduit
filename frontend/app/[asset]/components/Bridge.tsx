@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 import { useNetwork, useSigner } from 'wagmi'
 import { useTheme } from '../../providers/ThemeProvider'
 const SocketBridge = dynamic(() => import('@socket.tech/plugin').then((mod) => mod.Bridge))
-
+const SOCKET_PLUGIN_KEY = process.env.SOCKET_PLUGIN_KEY || ''
 const baseTheme: Customize = {
   fontFamily: 'var(--font-sans)',
   responsiveWidth: true,
@@ -61,7 +61,7 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
     >
       <div
         onClick={handle}
-        className="ocean:text-blue-accent hover:bg-dark-30 flex cursor-pointer items-center justify-between rounded-xl p-2 text-xs font-bold text-white"
+        className="flex items-center justify-between p-2 text-xs font-bold text-white cursor-pointer ocean:text-blue-accent hover:bg-dark-30 rounded-xl"
       >
         <span>Bridge</span>
         <ChevronIcon
@@ -71,9 +71,9 @@ export function Bridge(bridgeProps: Pick<WidgetProps, 'onSubmit' | 'onBridgeSucc
         />
       </div>
       <div>
-        {signer.data?.provider && (
+        {isOpen && (
           <SocketBridge
-            API_KEY={process.env.SOCKET_PLUGIN_KEY || ''}
+            API_KEY={SOCKET_PLUGIN_KEY}
             provider={signer.data?.provider}
             sourceNetworks={bridgeChains.map((b) => b.id)}
             destNetworks={bridgeChains.map((b) => b.id)}
