@@ -45,22 +45,20 @@ export const SwapInput = ({
   return (
     <div className="flex w-full items-end gap-2">
       <div className="flex w-full flex-col">
-        <span className="text-dark-30 ocean:text-blue-accent ml-3 mb-1 text-sm ">{label} </span>
+        <span className="text-dark-30 ocean:text-blue-accent mb-1 ml-3 text-sm ">{label} </span>
         <NumericInput
           className="w-full"
           decimalScale={6}
           variant={'primary'}
           bottom={({ className }) => (
-            <p className={`${className} text-dark-30 ocean:text-blue-30 text-xs `}>
+            <p className={`${className} text-dark-30 ocean:text-blue-30 text-xs`}>
               ${price.amountPrice || 0}
             </p>
           )}
           {...inputProps}
         />
-
         {children}
       </div>
-      {/* <CurrencySelector currency={inputProps.currency} disabled onSelect={setCurrency} /> */}
       <CurrencySelector currency={inputProps.currency} disabled onSelect={setCurrency} />
     </div>
   )

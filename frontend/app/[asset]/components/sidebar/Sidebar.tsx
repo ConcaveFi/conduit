@@ -36,11 +36,11 @@ export const Sidebar = () => {
         >
           <div className="flex h-full w-full flex-col justify-center">
             <button className="absolute top-0 right-0 z-40 p-4" onClick={() => setOpen(false)}>
-              <CloseIcon className="stroke-dark-30 ocean:stroke-blue-30 text-blue-blue h-4 w-4 text-sm hover:underline" />
+              <CloseIcon className="stroke-dark-30 ocean:stroke-blue-30 ocean:text-blue-accent h-4 w-4 text-sm text-white hover:underline" />
             </button>
-            <div className=" p-8">
+            <div className="p-8 ">
               <nav className="bg-blackz flex h-full w-full flex-col justify-center gap-8 py-20">
-                <button className="btn btn-underline centered  h-full w-full rounded-none px-5 text-sm font-medium">
+                <button className="btn btn-underline centered h-full w-full rounded-none px-5 text-sm font-medium">
                   Dashboard
                 </button>
 
