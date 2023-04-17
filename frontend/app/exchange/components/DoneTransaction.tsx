@@ -17,8 +17,8 @@ export const DoneTransaction = ({
           <CheckIcon className="h-4 w-4 stroke-black" />
         </Avatar>
       </div>
-      <div className="flex  justify-center">
-        <span className="text-blue-blue ">Transaction successfully done</span>
+      <div className="flex justify-center">
+        <span className="ocean:text-blue-accent text-white">Transaction successfully done</span>
       </div>
     </Card>
   )

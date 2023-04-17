@@ -35,7 +35,7 @@ export const svgIconStyle = cva(baseStyles(), {
   variants: {
     variant: {
       none: '',
-      primary: 'stroke-dark-30 ocean:stroke-blue-30 text-blue-blue text-sm hover:underline w-fit ',
+      primary: 'stroke-dark-30 ocean:stroke-blue-30 text-sm hover:underline w-fit ',
       simple: '',
       'simple.high': '',
     },

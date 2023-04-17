@@ -95,6 +95,7 @@ export const useSwap = () => {
   useEffect(() => {
     if (quoteInfo.data) amountOut.setValue(quoteInfo.data)
   }, [quoteInfo.data, amountOut])
+
   const swapCurrencies = () => {
     const inputOld = amountIn
     const outputOld = amountOut
