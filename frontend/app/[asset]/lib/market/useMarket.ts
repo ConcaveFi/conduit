@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { Provider } from '@wagmi/core'
-import { SupportedChainId } from 'app/providers/WagmiProvider'
 import { atom, useAtomValue } from 'jotai'
 import { atomsWithQuery, queryClientAtom } from 'jotai-tanstack-query'
 import { atomFamily } from 'jotai/utils'
 import { marketDataAddress } from 'perps-hooks'
 import { useNetwork, useProvider } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { connectedChainAtom, providerAtom } from '../jotai-wagmi'
 import { MarketKey } from '../price/pyth'
 import {
@@ -27,8 +26,7 @@ export function useMarkets<TSelectData = MarketSummaries>({
   select?: (markets: MarketSummaries) => TSelectData
 } = {}) {
   const { chain } = useNetwork()
-  const chainId =
-    _chainId || (!chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId))
+  const chainId = _chainId || chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
 
   const provider = useProvider<Provider>({ chainId })
 
@@ -47,7 +45,7 @@ export const routeMarketKeyAtom = atom<MarketSummary['key']>('sETHPERP')
 export const marketAtoms = atomFamily((marketKey: MarketKey) => {
   const [, marketAtom] = atomsWithQuery<MarketSummary>((get) => {
     const chain = get(connectedChainAtom)
-    const chainId = !chain || chain?.unsupported ? optimism.id : (chain.id as SupportedChainId)
+    const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
     const provider = get(providerAtom)
     const queryClient = get(queryClientAtom)
     return {
@@ -70,7 +68,7 @@ export const useRouteMarket = () => useAtomValue(routeMarketAtom).data
 export const marketSettingsAtoms = atomFamily((marketKey: MarketKey | undefined) => {
   const [, queryAtom] = atomsWithQuery((get) => {
     const chain = get(connectedChainAtom)
-    const chainId = !chain || chain?.unsupported ? optimism.id : (chain.id as SupportedChainId)
+    const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
     const provider = get(providerAtom)
     return {
       queryKey: marketSettingsQueryKey(marketKey, chainId),

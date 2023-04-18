@@ -13,7 +13,7 @@ import { marketData } from 'perps-hooks/contracts'
 import { parsePositionDetails } from 'perps-hooks/parsers'
 import { format } from 'utils/format'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 
 const fetchMarginDetails = async (
   account: Address | undefined,
@@ -43,7 +43,7 @@ export function useMarginDetails<TSelect = TMarginDetails>(
   select?: (m: TMarginDetails) => TSelect,
 ) {
   const { chain } = useNetwork()
-  const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
+  const chainId = chain?.id === optimismGoerli.id ?optimismGoerli.id: optimism.id
 
   const market = useRouteMarket()
   const { address: account } = useAccount()
