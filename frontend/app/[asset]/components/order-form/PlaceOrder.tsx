@@ -144,18 +144,18 @@ export function PlaceOrderButton() {
   const { openConnectModal } = useConnectModal()
 
   const sizeUsd = useAtomValue(orderSizeUsdAtom)
-  const { data: isOverBuyingPower } = useMarginDetails(
-    ({ buyingPower }) => !!sizeUsd && greaterThan(sizeUsd, buyingPower),
+  const { data: hasEnoughMargin } = useMarginDetails(
+    (m) => greaterThan(m.remainingMargin, 50) && !!sizeUsd && greaterThan(sizeUsd, m.buyingPower),
   )
 
   const side = useAtomValue(sideAtom)
 
   let label = `Place ${side}`
   if (!sizeUsd || equal(sizeUsd, 0)) label = 'Enter an amount'
-  if (isOverBuyingPower) label = 'Not enough margin'
+  if (!hasEnoughMargin) label = 'Not enough margin'
   if (!isConnected) label = 'Connect to continue'
 
-  const disabled = isConnected && (!sizeUsd || equal(sizeUsd, 0) || isOverBuyingPower)
+  const disabled = isConnected && (!sizeUsd || equal(sizeUsd, 0) || !hasEnoughMargin)
 
   const order = useAtomValue(orderToBeConfirmedAtom)
   const orderConfirmation = useSetAtom(confirmOrderAtom)
