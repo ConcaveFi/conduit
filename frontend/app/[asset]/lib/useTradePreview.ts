@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, getContract, Provider, ReadContractResult } from '@wagmi/core'
-import { SupportedChainId } from 'app/providers/WagmiProvider'
 import { Dnum, from, toJSON } from 'dnum'
 import { BigNumber } from 'ethers'
 import { useAtomValue } from 'jotai'
@@ -9,7 +8,7 @@ import { market as marketContract } from 'perps-hooks/contracts'
 import { valuesToBigInt } from 'perps-hooks/parsers'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { sizeDeltaAtom } from '../components/order-form/OrderFormPanel'
 import { useRouteMarket } from './market/useMarket'
 
@@ -69,7 +68,7 @@ export function useTradePreview<TSelect = TradePreview>({
 }) {
   const { chain } = useNetwork()
   const { address: account } = useAccount()
-  const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
 
   const provider = useProvider({ chainId })
 

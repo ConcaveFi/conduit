@@ -1,14 +1,15 @@
 'use client'
 
 import { useAddRecentTransaction } from '@pcnv/txs-react'
-import { Modal } from '@tradex/interface'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { Modal, cx } from '@tradex/interface'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { MarketSummary } from 'app/[asset]/lib/market/markets'
 import { routeMarketAtom, useMarketSettings } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useTradePreview } from 'app/[asset]/lib/useTradePreview'
-import { Dnum, abs, equal, greaterThan, multiply } from 'dnum'
+import { Dnum, abs, equal, greaterThan, lessThan, multiply } from 'dnum'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
   useMarketSubmitOffchainDelayedOrderWithTracking,
@@ -16,6 +17,8 @@ import {
 } from 'perps-hooks'
 import { format } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useMarginDetails } from './MarginDetails'
 import { orderSizeUsdAtom, sizeDeltaAtom } from './OrderFormPanel'
 import { sideAtom } from './SideSelector'
@@ -75,17 +78,18 @@ type Order = { market: MarketSummary; sizeDelta: Dnum; side: 'long' | 'short' }
 
 function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFunction }) {
   const registerTransaction = useAddRecentTransaction()
+  const { switchNetwork } = useSwitchNetwork()
+  const { chain } = useNetwork()
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
+  const wrongChain = chainId !== chain?.id
 
   const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: order.market.address,
     enabled: !equal(order.sizeDelta, 0),
+    chainId,
     args: [toBigNumber(order.sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT), TRACKING_CODE],
   })
-  const {
-    write: submitOrder,
-    isIdle,
-    isLoading,
-  } = useMarketSubmitOffchainDelayedOrderWithTracking({
+  const { write: submitOrder, isIdle } = useMarketSubmitOffchainDelayedOrderWithTracking({
     ...config,
     onSuccess: (tx) => {
       onClose()
@@ -98,6 +102,20 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
     },
   })
 
+  const orderButtonStates = {
+    wrongChain: {
+      onClick: () => {
+        switchNetwork?.(chainId)
+      },
+      children: 'Switch to Optimism',
+    },
+    allowToSubmit: {
+      children: `Submit ${order.side} order`,
+      onClick: submitOrder,
+      disabled: !submitOrder || !isIdle,
+    },
+  }
+
   return (
     <div className="bg-dark-20 border-dark-10 ocean:bg-blue-30 ocean:border-blue-20 flex w-96 flex-col gap-2 rounded-xl border p-3 text-white shadow-xl">
       <span className="text-bold text-md text-center">Review your operation</span>
@@ -106,11 +124,8 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
 
       <button
         className="btn disabled:bg-dark-30 ocean:disabled:bg-blue-30 centered h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
-        disabled={!submitOrder || !isIdle}
-        onClick={() => submitOrder?.()}
-      >
-        {isLoading ? `Confirm in your wallet` : `Submit ${order.side} order`}
-      </button>
+        {...orderButtonStates[wrongChain ? 'wrongChain' : 'allowToSubmit']}
+      />
     </div>
   )
 }
@@ -133,18 +148,22 @@ const confirmOrderAtom = atom(null, (get, set, action: 'ask' | 'dismiss') => {
 })
 
 export function PlaceOrderButton() {
+  const { isConnected } = useAccount()
+  const { openConnectModal } = useConnectModal()
+
   const sizeUsd = useAtomValue(orderSizeUsdAtom)
-  const { data: isOverBuyingPower } = useMarginDetails(
-    ({ buyingPower }) => !!sizeUsd && greaterThan(sizeUsd, buyingPower),
+  const { data: hasEnoughMargin } = useMarginDetails(
+    (m) => greaterThan(m.remainingMargin, 50) && !!sizeUsd && lessThan(sizeUsd, m.buyingPower),
   )
 
   const side = useAtomValue(sideAtom)
 
   let label = `Place ${side}`
   if (!sizeUsd || equal(sizeUsd, 0)) label = 'Enter an amount'
-  if (isOverBuyingPower) label = 'Not enough margin'
+  if (!hasEnoughMargin) label = 'Not enough margin'
+  if (!isConnected) label = 'Connect to continue'
 
-  const disabled = !sizeUsd || equal(sizeUsd, 0) || isOverBuyingPower
+  const disabled = isConnected && (!sizeUsd || equal(sizeUsd, 0) || !hasEnoughMargin)
 
   const order = useAtomValue(orderToBeConfirmedAtom)
   const orderConfirmation = useSetAtom(confirmOrderAtom)
@@ -153,9 +172,13 @@ export function PlaceOrderButton() {
   return (
     <>
       <button
-        className="btn centered bg-dark-green-gradient disabled:text-coal ocean:disabled:text-ocean-300 h-11 rounded-lg py-2 font-bold text-white shadow-lg"
+        className={cx(
+          'btn centered h-11 rounded-lg py-2 font-bold text-white shadow-lg',
+          'disabled:bg-dark-30 ocean:disabled:bg-blue-30 disabled:text-dark-20 ocean:disabled:text-blue-20',
+          disabled ? '' : 'bg-dark-green-gradient',
+        )}
         disabled={disabled}
-        onClick={() => orderConfirmation('ask')}
+        onClick={() => (isConnected ? orderConfirmation('ask') : openConnectModal?.())}
       >
         {label}
       </button>

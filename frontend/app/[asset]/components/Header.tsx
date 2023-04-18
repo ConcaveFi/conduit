@@ -5,14 +5,13 @@ import { BalanceIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { Address, FetchBalanceResult } from '@wagmi/core'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
-import { SupportedChainId } from 'app/providers/wagmi-config'
 import { add, divide, from, multiply, sub } from 'dnum'
 import Image from 'next/image'
 import { PropsWithChildren, ReactNode } from 'react'
 import { useLayout } from 'utils/contants/breakpoints'
 import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useMarketSettings, useRouteMarket } from '../lib/market/useMarket'
 import { useMarketIndexPrice } from '../lib/price/price'
 import { MarketKey } from '../lib/price/pyth'
@@ -113,7 +112,7 @@ export function StrategyHeader() {
   const { t } = useTranslation()
   const { chain } = useNetwork()
   const { isMobile, isDesktop } = useLayout()
-  const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
 
   const market = useRouteMarket()
   const { data: marketSettings } = useMarketSettings({ marketKey: market?.key })

@@ -3,7 +3,7 @@
 import { cx } from '@tradex/interface'
 import * as Slider from '@tradex/interface/components/primitives/Slider'
 import { useCurrentTradePreview } from 'app/[asset]/lib/useTradePreview'
-import { equal, toNumber } from 'dnum'
+import { equal, lessThan, toNumber } from 'dnum'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect } from 'react'
@@ -138,7 +138,24 @@ function usePositionSizeForLiquidation() {
   return Math.abs(size + inPositionUsd)
 }
 
+function InsufficientMargin() {
+  return (
+    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col items-center gap-1 rounded-lg px-3 py-2 transition-all">
+      <span className="ocean:text-blue-accent text-dark-accent text-xs font-bold">
+        Insufficient margin
+      </span>
+      <span className="ocean:text-blue-30 text-dark-30 text-xs">
+        You need at least 50 sUsd margin
+      </span>
+    </div>
+  )
+}
+
 export function LiquidationInfo() {
+  const { data: margin } = useMarginDetails((m) => m.remainingMargin)
+
+  if (margin && lessThan(margin, 50)) return <InsufficientMargin />
+
   return (
     <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex w-full max-w-full flex-col items-center gap-1 rounded-lg px-3 py-2 transition-all">
       <span className="ocean:text-blue-accent text-dark-accent text-xs">Liquidation Price</span>
