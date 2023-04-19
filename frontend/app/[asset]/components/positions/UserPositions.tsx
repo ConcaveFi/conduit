@@ -2,8 +2,10 @@ import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
+import { useMarketPrice } from 'app/[asset]/lib/price/price'
+import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
-import { abs, divide, equal, format, from, greaterThan } from 'dnum'
+import { abs, divide, Dnum, equal, format, from, greaterThan, mul, sub } from 'dnum'
 import {
   useMarketClosePositionWithTracking,
   useMarketDataPositionDetails,
@@ -15,26 +17,29 @@ import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
 import { optimism } from 'wagmi/chains'
 
+type Position = {
+  id: bigint
+  lastFundingIndex: bigint
+  lastPrice: Dnum
+  margin: Dnum
+  size: Dnum
+}
+
 export function UserPositions() {
   const { address, isConnected } = useAccount()
   const market = useRouteMarket()
-
   const { t } = useTranslation()
-
   const { data: positionDetails } = useMarketDataPositionDetails({
     args: market && address && [market.address, address],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })
+
   const position = positionDetails?.position
   const { config } = usePrepareMarketClosePositionWithTracking({
     address: market?.address,
     chainId: optimism.id,
-    args: position && [
-      // BigNumber.from(position.size).mul(-1),
-      toBigNumber(DEFAULT_PRICE_IMPACT),
-      TRACKING_CODE,
-    ],
+    args: position && [toBigNumber(DEFAULT_PRICE_IMPACT), TRACKING_CODE],
   })
   const { write: closePosition } = useMarketClosePositionWithTracking(config)
 
@@ -77,17 +82,12 @@ export function UserPositions() {
   )})`
 
   return (
-    <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border p-2  ">
+    <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border p-2 ">
       <div className="flex gap-2">
         <div className="flex w-full flex-col gap-3">
-          <PosItemInfo
-            info={SideNAsset(side, market.asset)}
-            value={format(market?.price || '0', { digits: 2 })}
-            modifirer={side === 'SHORT' ? 'negative' : 'positive'}
-          />
+          <PositionMarketPrice side={side} market={market} />
           <PosItemInfo info={'Size'} value={sizeFormated} />
           <PosItemInfo info={'Avg Entry'} value={format(position.lastPrice, { digits: 2 })} />
-          <PosItemInfo info={'Realized P&L'} value={'-'} />
         </div>
         <div className="flex w-full flex-col gap-3">
           <PosItemInfo
@@ -95,16 +95,11 @@ export function UserPositions() {
             value={`${format(leverage, { digits: 2 })}x`}
             modifirer={greaterThan(leverage, 0) ? 'positive' : 'negative'}
           />
-          <PosItemInfo
-            info={'Unrealized P&L'}
-            value={format(positionDetails.profitLoss, { digits: 2 })}
-            modifirer={greaterThan(positionDetails.profitLoss, 0) ? 'positive' : 'negative'}
-          />
+          <PositionPL market={market} position={position} />
           <PosItemInfo
             info={'Liq Price'}
             value={format(positionDetails.liquidationPrice, { digits: 2 })}
           />
-          <PosItemInfo info={'Net Funding'} value={'-'} />
         </div>
       </div>
       <button
@@ -122,6 +117,40 @@ function SideNAsset(side: string, asset: string) {
       <span className={cx(side === 'SHORT' ? 'text-negative' : 'text-positive')}>{side}</span>{' '}
       {asset}
     </React.Fragment>
+  )
+}
+
+const PositionMarketPrice = ({
+  side,
+  market,
+}: {
+  side: string
+  market: { asset: string; key: MarketKey }
+}) => {
+  const price = useMarketPrice({ marketKey: market?.key })
+  return (
+    <PosItemInfo
+      info={SideNAsset(side, market.asset)}
+      value={format(price || '0', { digits: 2 })}
+      modifirer={side === 'SHORT' ? 'negative' : 'positive'}
+    />
+  )
+}
+const PositionPL = ({
+  market,
+  position,
+}: {
+  market: { asset: string; key: MarketKey }
+  position: Position
+}) => {
+  const price = useMarketPrice({ marketKey: market?.key })
+  const profit = mul(sub(price, position?.lastPrice), position.size)
+  return (
+    <PosItemInfo
+      info={'Unrealized P&L'}
+      value={format(profit, { digits: 2 })}
+      modifirer={greaterThan(profit, 0) ? 'positive' : 'negative'}
+    />
   )
 }
 
