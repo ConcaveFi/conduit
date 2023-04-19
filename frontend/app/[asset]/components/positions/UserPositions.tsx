@@ -13,6 +13,7 @@ import { parsePositionDetails } from 'perps-hooks/parsers'
 import React from 'react'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
+import { optimism } from 'wagmi/chains'
 
 export function UserPositions() {
   const { address, isConnected } = useAccount()
@@ -28,6 +29,7 @@ export function UserPositions() {
   const position = positionDetails?.position
   const { config } = usePrepareMarketClosePositionWithTracking({
     address: market?.address,
+    chainId: optimism.id,
     args: position && [
       // BigNumber.from(position.size).mul(-1),
       toBigNumber(DEFAULT_PRICE_IMPACT),
