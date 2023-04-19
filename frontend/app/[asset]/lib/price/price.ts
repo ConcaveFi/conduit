@@ -86,5 +86,5 @@ export function useMarketIndexPrice({ marketKey }: { marketKey?: MarketKey }) {
 }
 
 export function useMarketPrice({ marketKey }: { marketKey?: MarketKey }) {
-  return useAtomValue(marketIndexPriceAtom(marketKey))
+  return useAtomValue(marketPriceAtom(marketKey))
 }
