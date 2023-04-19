@@ -24,7 +24,7 @@ const useSUsdBalance = () => {
   const { data: sUSDBalance } = useBalance({ address, token: susdAddress[chainId] })
 
   if (!sUSDBalance) return undefined
-  return from(sUSDBalance.formatted)
+  return from([sUSDBalance.value.toBigInt(), sUSDBalance.decimals])
 }
 
 const SelectTransferTypeButtonStyle = cx(
@@ -172,7 +172,6 @@ function SubmitMarginTransferButton({
     args: value && [value],
   })
   const { write: transferMargin } = useMarketTransferMargin(config)
-
   return (
     <button
       onClick={transferMargin}
