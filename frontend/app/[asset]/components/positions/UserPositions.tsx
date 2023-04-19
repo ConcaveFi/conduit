@@ -85,7 +85,7 @@ export function UserPositions() {
     <div className="border-dark-30 ocean:border-blue-30 flex flex-col justify-center gap-1 overflow-hidden rounded-lg border p-2 ">
       <div className="flex gap-2">
         <div className="flex w-full flex-col gap-3">
-          <PositionPerp side={side} market={market} />
+          <PositionMarketPrice side={side} market={market} />
           <PosItemInfo info={'Size'} value={sizeFormated} />
           <PosItemInfo info={'Avg Entry'} value={format(position.lastPrice, { digits: 2 })} />
         </div>
@@ -120,7 +120,7 @@ function SideNAsset(side: string, asset: string) {
   )
 }
 
-const PositionPerp = ({
+const PositionMarketPrice = ({
   side,
   market,
 }: {
