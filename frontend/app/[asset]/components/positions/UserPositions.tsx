@@ -3,6 +3,7 @@ import { useTranslation } from '@tradex/languages'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
+import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { abs, divide, Dnum, equal, format, from, greaterThan, mul, sub } from 'dnum'
 import {
@@ -119,7 +120,13 @@ function SideNAsset(side: string, asset: string) {
   )
 }
 
-const PositionPerp = ({ side, market }) => {
+const PositionPerp = ({
+  side,
+  market,
+}: {
+  side: string
+  market: { asset: string; key: MarketKey }
+}) => {
   const price = useMarketPrice({ marketKey: market?.key })
   return (
     <PosItemInfo
@@ -129,7 +136,13 @@ const PositionPerp = ({ side, market }) => {
     />
   )
 }
-const PositionPL = ({ market, position }: { market: any; position: Position }) => {
+const PositionPL = ({
+  market,
+  position,
+}: {
+  market: { asset: string; key: MarketKey }
+  position: Position
+}) => {
   const price = useMarketPrice({ marketKey: market?.key })
   const profit = mul(sub(price, position?.lastPrice), position.size)
   return (
