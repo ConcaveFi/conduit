@@ -3,7 +3,12 @@ import { NewsPanel } from 'app/[asset]/components/NewsPanel'
 import { OrderFormPanel } from 'app/[asset]/components/order-form/OrderFormPanel'
 import { ViewPanels } from 'app/[asset]/components/ViewPanels'
 
-export type GridWidgets = 'order-panel' | 'news-panel' | 'chart-panel' | 'views-panel'
+export type GridWidgets =
+  | 'order-panel'
+  | 'news-panel'
+  | 'chart-panel'
+  | 'trades-panel'
+  | 'views-panel'
 
 export class GridWidget {
   public static storageItem: 'grid.widgets'
