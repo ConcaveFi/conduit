@@ -12,7 +12,6 @@ import { useLayout } from 'utils/contants/breakpoints'
 import { useQueryModal } from 'utils/enum/urlModal'
 import { truncateAddress } from 'utils/truncateAddress'
 import { SidebarButton } from '../sidebar/SidebarButton'
-import { LocationSelector } from './LocationSelector'
 import { ThemeSelector } from './ThemeSelector'
 // import { ThemeSelector } from './ThemeSelector'
 
@@ -65,15 +64,15 @@ export function Topbar() {
 
         {!isMobile && (
           <>
-            <NavButton href="/dashboard" label={t('dashboard')} disabled />
+            {/* <NavButton href="/dashboard" label={t('dashboard')} disabled /> */}
             <NavButton href="/" label={t('futures')} />
             <NavButton label="Swap" onClick={swapModal.onOpen} />
-            <NavButton label="Leaderboard" href="/leaderboard" />
+            {/* <NavButton label="Leaderboard" href="/leaderboard" /> */}
           </>
         )}
       </div>
       <div className="flex w-fit items-center gap-3 ">
-        {!isMobile && <LocationSelector />}
+        {/* {!isMobile && <LocationSelector />} */}
         <ThemeSelector />
 
         <NotificationIcon className="fill-dark-accent ocean:fill-blue-accent box-4" />
