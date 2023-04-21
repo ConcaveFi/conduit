@@ -3,7 +3,6 @@ import { optimism } from '@wagmi/core/chains'
 import { PropsWithChildren } from 'react'
 import { serialize } from 'superjson'
 import { ReactQueryHydrate } from './HydrateProviders'
-import { PageTitleWithPrice } from './PageTitleWithPrice'
 import { Sidebar } from './components/sidebar/Sidebar'
 import { Topbar } from './components/topbar/Topbar'
 import { marketsQueryKey } from './lib/market/markets'
@@ -20,7 +19,6 @@ export default async function Layout({ children }: PropsWithChildren) {
 
   return (
     <ReactQueryHydrate dehydratedState={serializedDehydratedState}>
-      <PageTitleWithPrice />
       <div className="flex h-full w-full flex-col gap-4 p-4">
         <Sidebar />
         <Topbar />

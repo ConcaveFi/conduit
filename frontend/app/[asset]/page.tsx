@@ -3,6 +3,7 @@ import { optimism } from '@wagmi/core/chains'
 import { serialize } from 'superjson'
 import { WidgetsProvider } from '../providers/WidgetsProvider'
 import { HydrateAtoms, JotaiProvider, ReactQueryHydrate } from './HydrateProviders'
+import { PageTitleWithPrice } from './PageTitleWithPrice'
 import { GridLayout } from './components/GridLayout'
 import { StrategyHeader } from './components/Header'
 import { MarketSummaries, fetchMarketSettings, marketSettingsQueryKey } from './lib/market/markets'
@@ -45,6 +46,7 @@ export default async function Page({ params }) {
     <ReactQueryHydrate dehydratedState={serializedDehydratedState}>
       <JotaiProvider>
         <HydrateAtoms routeMarket={serializedRouteMarket} />
+        <PageTitleWithPrice />
         <StrategyHeader />
         <WidgetsProvider>
           <GridLayout />
