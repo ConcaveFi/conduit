@@ -1,7 +1,6 @@
 import { ChartPanel } from 'app/[asset]/components/chart/ChartPanel'
 import { NewsPanel } from 'app/[asset]/components/NewsPanel'
 import { OrderFormPanel } from 'app/[asset]/components/order-form/OrderFormPanel'
-import { RecentTradesPanel } from 'app/[asset]/components/RecentTradesPanel'
 import { ViewPanels } from 'app/[asset]/components/ViewPanels'
 
 export type GridWidgets =
@@ -14,11 +13,11 @@ export type GridWidgets =
 export class GridWidget {
   public static storageItem: 'grid.widgets'
   public static getDefaultWidgets(): GridWidgets[] {
-    return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel' /*, 'news-panel'*/]
+    return ['order-panel', 'views-panel', 'chart-panel' /* 'trades-panel', 'news-panel'*/]
   }
 
   public static getAllWidgets(): GridWidgets[] {
-    return ['order-panel', 'views-panel', 'chart-panel', 'trades-panel', 'news-panel']
+    return ['order-panel', 'views-panel', 'chart-panel', 'news-panel']
   }
 
   public static toPanel(panel: GridWidgets) {
@@ -29,8 +28,6 @@ export class GridWidget {
         return NewsPanel
       case 'order-panel':
         return OrderFormPanel
-      case 'trades-panel':
-        return RecentTradesPanel
       case 'views-panel':
         return ViewPanels
     }
