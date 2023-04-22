@@ -1,4 +1,3 @@
-import { CloseIcon } from '@tradex/icons'
 import { ReactNode, forwardRef, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { panelHeaderStyles } from '../../../styles/advanced/panelStyles'
@@ -35,9 +34,9 @@ export const PanelHeader = forwardRef<HTMLDivElement, PanelHeaderProps>(
           {/* <button onMouseDown={(e) => e.stopPropagation()} onClick={handleToggle}>
             <ExpandIcon className="fill-dark-accent ocean:fill-blue-accent box-3" />
           </button> */}
-          <button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
+          {/* <button onMouseDown={(e) => e.stopPropagation()} onClick={onClose}>
             <CloseIcon className="stroke-dark-accent ocean:fill-blue-accent box-2.5 " />
-          </button>
+          </button> */}
         </div>
       </div>
     )
