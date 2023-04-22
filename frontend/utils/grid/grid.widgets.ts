@@ -7,13 +7,13 @@ export type GridWidgets =
   | 'order-panel'
   | 'news-panel'
   | 'chart-panel'
-  | 'trades-panel'
+  // | 'trades-panel'
   | 'views-panel'
 
 export class GridWidget {
   public static storageItem: 'grid.widgets'
   public static getDefaultWidgets(): GridWidgets[] {
-    return ['order-panel', 'views-panel', 'chart-panel' /* 'trades-panel', 'news-panel'*/]
+    return ['order-panel', 'views-panel', 'chart-panel' /*'trades-panel'  'news-panel'*/]
   }
 
   public static getAllWidgets(): GridWidgets[] {
@@ -30,6 +30,8 @@ export class GridWidget {
         return OrderFormPanel
       case 'views-panel':
         return ViewPanels
+      // case 'trades-panel':
+      //   return RecentTradesPanel
     }
   }
 
