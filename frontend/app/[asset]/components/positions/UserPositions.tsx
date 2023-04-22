@@ -1,3 +1,4 @@
+import { useAddRecentTransaction } from '@pcnv/txs-react/.'
 import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
@@ -29,6 +30,7 @@ export function UserPositions() {
   const { address, isConnected } = useAccount()
   const market = useRouteMarket()
   const { t } = useTranslation()
+  const registerTx = useAddRecentTransaction()
   const { data: positionDetails } = useMarketDataPositionDetails({
     args: market && address && [market.address, address],
     select: parsePositionDetails,
@@ -41,7 +43,13 @@ export function UserPositions() {
     chainId: optimism.id,
     args: position && [toBigNumber(DEFAULT_PRICE_IMPACT), TRACKING_CODE],
   })
-  const { write: closePosition } = useMarketClosePositionWithTracking(config)
+  const { write: closePosition } = useMarketClosePositionWithTracking({
+    ...config,
+    onSuccess({ hash }) {
+      const meta = { description: `Close position for ${market?.asset}.` }
+      registerTx({ hash, meta })
+    },
+  })
 
   const isHydrated = useIsHydrated()
   if (!isConnected) return notConnected
