@@ -23,7 +23,8 @@ const useSUsdBalance = () => {
 
   const { data: sUSDBalance } = useBalance({ address, token: susdAddress[chainId] })
 
-  return sUSDBalance && from([sUSDBalance.value.toBigInt(), sUSDBalance.decimals])
+  if (!sUSDBalance) return undefined
+  return from([sUSDBalance.value.toBigInt(), sUSDBalance.decimals])
 }
 
 const SelectTransferTypeButtonStyle = cx(
@@ -162,15 +163,28 @@ function SubmitMarginTransferButton({
   disabled,
   value,
   children,
-}: PropsWithChildren<{ disabled: boolean; value?: BigNumber }>) {
+  type,
+}: PropsWithChildren<{ disabled: boolean; value?: BigNumber; type?: 'withdraw' | 'deposit' }>) {
   const market = useRouteMarket()
 
+  const registerTx = useAddRecentTransaction()
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
     enabled: !!value,
     args: value && [value],
   })
-  const { write: transferMargin } = useMarketTransferMargin(config)
+  const { write: transferMargin } = useMarketTransferMargin({
+    ...config,
+    onSuccess({ hash }) {
+      if (typeof value?.toBigInt() !== 'bigint') return
+      const amount = format(from([value?.toBigInt(), 18]), { digits: 2 })
+      let description
+
+      if (type === 'deposit') description = `Deposit ${amount} to ${market?.asset}`
+      else description = `Withdraw ${amount} to ${market?.asset}`
+      registerTx({ hash, meta: { description } })
+    },
+  })
 
   return (
     <button
@@ -198,6 +212,7 @@ const getTransferMarginButtonProps = (
     children: label,
     disabled: label !== type,
     value: parseUnits(value).mul(type === 'withdraw' ? -1 : 1),
+    type,
   }
 }
 

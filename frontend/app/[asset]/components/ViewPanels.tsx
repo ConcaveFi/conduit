@@ -4,12 +4,10 @@ import { LanguageKeys, useTranslation } from '@tradex/languages'
 import { forwardRef } from 'react'
 import { useRouteMarket } from '../lib/market/useMarket'
 import { UserPositions } from './positions/UserPositions'
-import { UserTrades } from './positions/UserTrades'
-import { UserTransfers } from './positions/UserTransfers'
 
 // CONSTANTS -------------------------------------------------------------------
 
-const TABS = ['trade', 'orders', 'trading_history', 'transfers'] as LanguageKeys[]
+const TABS = ['trade' /*, 'orders', 'trading_history', 'transfers'*/] as LanguageKeys[]
 
 // COMPONENT ---------------------------------------------------------------------
 
@@ -24,11 +22,11 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
         bodyProps={{ className: 'group p-2 overflow-y-auto' }}
         headerChild={<Tabs />}
       >
-        <Tab.Panels>
-          <Tab.Panel>
+        <Tab.Panels className={'h-full w-full '}>
+          <Tab.Panel className={'h-full w-full '}>
             <UserPositions />
           </Tab.Panel>
-          <Tab.Panel>
+          {/* <Tab.Panel>
             <></>
           </Tab.Panel>
           <Tab.Panel>
@@ -36,7 +34,7 @@ export const ViewPanels = forwardRef<HTMLDivElement, PanelProps>((props, ref) =>
           </Tab.Panel>
           <Tab.Panel>
             <UserTransfers />
-          </Tab.Panel>
+          </Tab.Panel> */}
         </Tab.Panels>
         {props.children}
       </Panel>

@@ -18,7 +18,7 @@ export const ConfirmTransaction = ({
         <ConfirmIcon label={'Into'} currency={props.inputOut?.currency} />
       </div>
       <div className="flex justify-center">
-        <span className="text-blue-blue text-base">
+        <span className="ocean:text-blue-accent text-base text-white">
           Confirm your transaction through your wallet
         </span>
       </div>
@@ -31,7 +31,7 @@ export const ConfirmTransaction = ({
 const ConfirmIcon = ({ label, currency }: { label: string; currency: CurrencyAmount }) => {
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="text-blue-blue text-sm">{label}</span>
+      <span className="ocean:text-blue-accent text-sm text-white">{label}</span>
       <ImageIcon src={currency?.logoURI} size={48} />
     </div>
   )
@@ -39,8 +39,8 @@ const ConfirmIcon = ({ label, currency }: { label: string; currency: CurrencyAmo
 
 const PoweredBy = () => {
   return (
-    <div className=" flex justify-center">
-      <span className="text-blue-blue text-base">Powered by</span>
+    <div className="flex justify-center ">
+      <span className="ocean:text-blue-accent text-base text-white">Powered by</span>
     </div>
   )
 }
@@ -54,12 +54,20 @@ const ConfirmSwapDetails = ({
   return (
     <div className="flex w-full flex-col p-3">
       <div className="flex justify-between">
-        <span className="text-Blue/main-dim  text-base">{amountIn.symbol} Amount</span>
-        <span className="text-blue-blue text-base font-medium">{amountIn.formattedValue}</span>
+        <span className="ocean:text-blue-accent text-base text-white">
+          {amountIn.symbol} Amount
+        </span>
+        <span className="ocean:text-blue-accent text-base font-medium text-white">
+          {amountIn.formattedValue}
+        </span>
       </div>
       <div className="flex justify-between">
-        <span className="text-Blue/main-dim  text-base">{amountOut.symbol} Amount</span>
-        <span className="text-blue-blue text-base font-medium">{amountOut.formattedValue}</span>
+        <span className="ocean:text-blue-accent text-base text-white">
+          {amountOut.symbol} Amount
+        </span>
+        <span className="ocean:text-blue-accent text-base font-medium text-white">
+          {amountOut.formattedValue}
+        </span>
       </div>
     </div>
   )

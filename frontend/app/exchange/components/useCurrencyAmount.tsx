@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react'
 
 export const useCurrencyAmount = (options: { currency: Currency }) => {
   const [currency, setCurrency] = useState<Currency>(options.currency)
-
   const [formattedValue, setFormattedValue] = useState('')
   const value = useMemo(() => {
     if (+`0${formattedValue}` === 0) return BigNumber.from(0)

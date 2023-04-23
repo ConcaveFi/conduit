@@ -1,18 +1,16 @@
 'use client'
 
 import { OP_ADDRESS, SNX_ADDRESS, sUSD_ADDRESS } from '@tradex/core'
-import { BalanceIcon } from '@tradex/icons'
 import { useTranslation } from '@tradex/languages'
 import { Address, FetchBalanceResult } from '@wagmi/core'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
-import { SupportedChainId } from 'app/providers/wagmi-config'
 import { add, divide, from, multiply, sub } from 'dnum'
 import Image from 'next/image'
 import { PropsWithChildren, ReactNode } from 'react'
 import { useLayout } from 'utils/contants/breakpoints'
 import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
-import { optimism } from 'wagmi/chains'
+import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useMarketSettings, useRouteMarket } from '../lib/market/useMarket'
 import { useMarketIndexPrice } from '../lib/price/price'
 import { MarketKey } from '../lib/price/pyth'
@@ -113,7 +111,7 @@ export function StrategyHeader() {
   const { t } = useTranslation()
   const { chain } = useNetwork()
   const { isMobile, isDesktop } = useLayout()
-  const chainId = !chain || chain.unsupported ? optimism.id : (chain.id as SupportedChainId)
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
 
   const market = useRouteMarket()
   const { data: marketSettings } = useMarketSettings({ marketKey: market?.key })
@@ -149,7 +147,7 @@ export function StrategyHeader() {
       {isDesktop && (
         <div className="bg-dark-10 ocean:bg-blue-10 -order-1  flex min-h-[64px] w-full flex-wrap  items-center justify-around rounded-lg   md:flex-nowrap xl:order-[0] xl:w-[50%] 2xl:w-[55%] 2xl:px-6 ">
           <IndexPrice />
-          <div className="centered flex gap-2">
+          {/* <div className="centered flex gap-2">
             <BalanceIcon className="fill-dark-30 ocean:fill-blue-30 box-6" />
             <Info title={t('24h_change')}>
               <span className="ocean:text-blue-accent text-xs font-bold text-white">
@@ -159,7 +157,7 @@ export function StrategyHeader() {
           </div>
           <Info title={t('24h_change')}>
             <span className="text-negative text-xs font-bold"> -1.33%</span>
-          </Info>
+          </Info> */}
           <Info title={'1H Funding Rate'}>
             <span className="text-positive text-xs font-bold">{fundingRate}</span>
           </Info>
