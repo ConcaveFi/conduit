@@ -1,13 +1,16 @@
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { TRACKING_CODE } from 'app/[asset]/constants/perps-config'
+import {
+  DEFAULT_LONG_PRICE_IMPACT,
+  DEFAULT_SHORT_PRICE_IMPACT,
+  TRACKING_CODE,
+} from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { abs, divide, Dnum, equal, format, from, greaterThan, mul, sub } from 'dnum'
-import { BigNumber } from 'ethers'
 import {
   useMarketDataPositionDetails,
   useMarketModifyPositionWithTracking,
@@ -43,14 +46,25 @@ export function UserPositions() {
   const closePositionsizeDelta = currentPositionSizeDelta.mul(-1)
   const prepareClose = usePrepareMarketModifyPositionWithTracking({
     address: market?.address,
-    args: [closePositionsizeDelta, BigNumber.from('100000000000000000'), TRACKING_CODE],
+    args: [
+      closePositionsizeDelta,
+      closePositionsizeDelta.gt(0) ? DEFAULT_LONG_PRICE_IMPACT : DEFAULT_SHORT_PRICE_IMPACT,
+      TRACKING_CODE,
+    ],
   })
 
   const refetch = useCallback(() => {
+    console.log('start refetching positions')
     if (marketDataPosition.isFetching || prepareClose.isFetching) return
     marketDataPosition.refetch()
     prepareClose.refetch()
-  }, [marketDataPosition.refetch, prepareClose.refetch])
+    console.log('end refetching positions')
+  }, [
+    marketDataPosition.refetch,
+    prepareClose.refetch,
+    marketDataPosition.isFetching,
+    prepareClose.isFetching,
+  ])
 
   useInterval(refetch, 8000)
 
@@ -126,6 +140,14 @@ export function UserPositions() {
           className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
         >
           {'Close position'}
+        </button>
+      )}
+      {!prepareClose.isSuccess && (
+        <button
+          onClick={closePosition.write}
+          className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
+        >
+          {`error ${prepareClose.error?.['reason']}`}
         </button>
       )}
     </div>
