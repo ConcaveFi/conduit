@@ -1,4 +1,4 @@
-import { useAddRecentTransaction } from '@pcnv/txs-react/.'
+import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
 import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
