@@ -142,14 +142,6 @@ export function UserPositions() {
           {'Close position'}
         </button>
       )}
-      {!prepareClose.isSuccess && (
-        <button
-          onClick={closePosition.write}
-          className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
-        >
-          {`error ${prepareClose.error?.['reason']}`}
-        </button>
-      )}
     </div>
   )
 }
