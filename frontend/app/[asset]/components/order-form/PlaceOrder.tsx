@@ -3,7 +3,11 @@
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Modal, cx } from '@tradex/interface'
-import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
+import {
+  DEFAULT_LONG_PRICE_IMPACT,
+  DEFAULT_SHORT_PRICE_IMPACT,
+  TRACKING_CODE,
+} from 'app/[asset]/constants/perps-config'
 import { MarketSummary } from 'app/[asset]/lib/market/markets'
 import { routeMarketAtom, useMarketSettings } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
@@ -12,8 +16,8 @@ import { useTradePreview } from 'app/[asset]/lib/useTradePreview'
 import { Dnum, abs, equal, greaterThan, lessThan, multiply } from 'dnum'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
-  useMarketSubmitOffchainDelayedOrderWithTracking,
-  usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
+  useMarketModifyPositionWithTracking,
+  usePrepareMarketModifyPositionWithTracking,
 } from 'perps-hooks'
 import { format } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
@@ -82,14 +86,18 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
   const { chain } = useNetwork()
   const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
   const wrongChain = chainId !== chain?.id
-
-  const { config } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
+  const orderSize = toBigNumber(order.sizeDelta)
+  const { config, isError, error } = usePrepareMarketModifyPositionWithTracking({
     address: order.market.address,
     enabled: !equal(order.sizeDelta, 0),
     chainId,
-    args: [toBigNumber(order.sizeDelta), toBigNumber(DEFAULT_PRICE_IMPACT), TRACKING_CODE],
+    args: [
+      orderSize,
+      orderSize.gt(0) ? DEFAULT_LONG_PRICE_IMPACT : DEFAULT_SHORT_PRICE_IMPACT,
+      TRACKING_CODE,
+    ],
   })
-  const { write: submitOrder, isIdle } = useMarketSubmitOffchainDelayedOrderWithTracking({
+  const { write: submitOrder, isIdle } = useMarketModifyPositionWithTracking({
     ...config,
     onSuccess: (tx) => {
       onClose()
@@ -114,8 +122,11 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
       onClick: submitOrder,
       disabled: !submitOrder || !isIdle,
     },
+    error: {
+      children: error && 'reason' in error ? `${error.reason}` : '',
+      disabled: !submitOrder || !isIdle,
+    },
   }
-
   return (
     <div className="bg-dark-20 border-dark-10 ocean:bg-blue-30 ocean:border-blue-20 flex w-96 flex-col gap-2 rounded-xl border p-3 text-white shadow-xl">
       <span className="text-bold text-md text-center">Review your operation</span>
@@ -124,7 +135,7 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
 
       <button
         className="btn disabled:bg-dark-30 ocean:disabled:bg-blue-30 centered h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
-        {...orderButtonStates[wrongChain ? 'wrongChain' : 'allowToSubmit']}
+        {...orderButtonStates[wrongChain ? 'wrongChain' : isError ? 'error' : 'allowToSubmit']}
       />
     </div>
   )

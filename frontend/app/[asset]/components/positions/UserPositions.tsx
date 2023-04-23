@@ -1,22 +1,26 @@
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import { DEFAULT_PRICE_IMPACT, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
+import {
+  DEFAULT_LONG_PRICE_IMPACT,
+  DEFAULT_SHORT_PRICE_IMPACT,
+  TRACKING_CODE,
+} from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
 import { abs, divide, Dnum, equal, format, from, greaterThan, mul, sub } from 'dnum'
 import {
-  useMarketClosePositionWithTracking,
   useMarketDataPositionDetails,
-  usePrepareMarketClosePositionWithTracking,
+  useMarketModifyPositionWithTracking,
+  usePrepareMarketModifyPositionWithTracking,
 } from 'perps-hooks'
 import { parsePositionDetails } from 'perps-hooks/parsers'
-import React from 'react'
+import React, { useCallback } from 'react'
+import { useInterval } from 'usehooks-ts'
 import { toBigNumber } from 'utils/toBigNumber'
 import { useAccount } from 'wagmi'
-import { optimism } from 'wagmi/chains'
 
 type Position = {
   id: bigint
@@ -31,26 +35,46 @@ export function UserPositions() {
   const market = useRouteMarket()
   const { t } = useTranslation()
   const registerTx = useAddRecentTransaction()
-  const { data: positionDetails } = useMarketDataPositionDetails({
+  const marketDataPosition = useMarketDataPositionDetails({
     args: market && address && [market.address, address],
     select: parsePositionDetails,
     enabled: !!market && !!address,
   })
-
+  const positionDetails = marketDataPosition.data
   const position = positionDetails?.position
-  const { config } = usePrepareMarketClosePositionWithTracking({
+  const currentPositionSizeDelta = toBigNumber(position?.size || [0n, 18])
+  const closePositionsizeDelta = currentPositionSizeDelta.mul(-1)
+  const prepareClose = usePrepareMarketModifyPositionWithTracking({
     address: market?.address,
-    chainId: optimism.id,
-    args: position && [toBigNumber(DEFAULT_PRICE_IMPACT), TRACKING_CODE],
+    args: [
+      closePositionsizeDelta,
+      closePositionsizeDelta.gt(0) ? DEFAULT_LONG_PRICE_IMPACT : DEFAULT_SHORT_PRICE_IMPACT,
+      TRACKING_CODE,
+    ],
   })
-  const { write: closePosition } = useMarketClosePositionWithTracking({
-    ...config,
+
+  const refetch = useCallback(() => {
+    console.log('start refetching positions')
+    if (marketDataPosition.isFetching || prepareClose.isFetching) return
+    marketDataPosition.refetch()
+    prepareClose.refetch()
+    console.log('end refetching positions')
+  }, [
+    marketDataPosition.refetch,
+    prepareClose.refetch,
+    marketDataPosition.isFetching,
+    prepareClose.isFetching,
+  ])
+
+  useInterval(refetch, 8000)
+
+  const closePosition = useMarketModifyPositionWithTracking({
+    ...prepareClose.config,
     onSuccess({ hash }) {
       const meta = { description: `Close position for ${market?.asset}.` }
       registerTx({ hash, meta })
     },
   })
-
   const isHydrated = useIsHydrated()
   if (!isConnected) return notConnected
 
@@ -69,7 +93,7 @@ export function UserPositions() {
 
   const hasPosition = !equal(size, 0)
 
-  if (!hasPosition) {
+  if (!hasPosition && !prepareClose.isSuccess) {
     return (
       <div className="centered flex h-full ">
         <span className="text-dark-accent ocean:text-blue-accent text-sm font-medium">
@@ -110,12 +134,22 @@ export function UserPositions() {
           />
         </div>
       </div>
-      <button
-        onClick={closePosition}
-        className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
-      >
-        Close position
-      </button>
+      {prepareClose.isSuccess && (
+        <button
+          onClick={closePosition.write}
+          className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
+        >
+          {'Close position'}
+        </button>
+      )}
+      {!prepareClose.isSuccess && (
+        <button
+          onClick={closePosition.write}
+          className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
+        >
+          {`error ${prepareClose.error?.['reason']}`}
+        </button>
+      )}
     </div>
   )
 }
