@@ -52,9 +52,9 @@ export function UserPositions() {
     prepareClose.refetch()
   }, [marketDataPosition.refetch, prepareClose.refetch])
 
-  useInterval(refetch, 13000)
+  useInterval(refetch, 8000)
 
-  const closePosition2 = useMarketModifyPositionWithTracking({
+  const closePosition = useMarketModifyPositionWithTracking({
     ...prepareClose.config,
     onSuccess({ hash }) {
       const meta = { description: `Close position for ${market?.asset}.` }
@@ -118,15 +118,11 @@ export function UserPositions() {
             info={'Liq Price'}
             value={format(positionDetails.liquidationPrice, { digits: 2 })}
           />
-          <PosItemInfo info={'Size'} value={currentPositionSizeDelta.toString()} />
-          <PosItemInfo info={'ToClose'} value={closePositionsizeDelta.toString()} />
         </div>
       </div>
       {prepareClose.isSuccess && (
         <button
-          onClick={() => {
-            closePosition2.write?.()
-          }}
+          onClick={closePosition.write}
           className="btn border-negative text-negative centered mt-1 h-[26px] w-full rounded-sm border-2 text-xs"
         >
           {'Close position'}
