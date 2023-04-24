@@ -49,7 +49,11 @@ export default function RootLayout({ children }: PropsWithChildren) {
       className={` flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
     >
       <head>
-        <Script id="tag-manager" src="https://www.googletagmanager.com/gtag/js?id=G-NE1K73QGNY">
+        <Script
+          id="tag-manager"
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-NE1K73QGNY"
+        >
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
