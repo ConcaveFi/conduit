@@ -1,5 +1,6 @@
 import '@rainbow-me/rainbowkit/styles.css'
 import localFont from 'next/font/local'
+import Script from 'next/script'
 import { PropsWithChildren } from 'react'
 import 'tailwindcss/tailwind.css'
 import '../global.css'
@@ -47,6 +48,21 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html
       className={` flex h-screen overflow-y-auto overflow-x-hidden font-sans ${sans.variable} ${mono.variable}`}
     >
+      <head>
+        <Script
+          id="tag-manager"
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-NE1K73QGNY"
+        >
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-NE1K73QGNY');
+        `}
+        </Script>
+      </head>
       <body className="bg-dark-main-bg ocean:bg-blue-main-bg w-full">
         <AppProviders>{children}</AppProviders>
       </body>

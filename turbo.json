@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NEXT_PUBLIC_INFURA_KEY"],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
@@ -9,8 +10,7 @@
       "outputs": []
     },
     "frontend": {
-      "outputs": [
-      ]
+      "outputs": []
     },
     "dev": {
       "cache": false
