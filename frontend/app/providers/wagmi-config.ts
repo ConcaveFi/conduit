@@ -1,6 +1,6 @@
 import { configureChains } from '@wagmi/core'
 import { mainnet, optimism, optimismGoerli } from '@wagmi/core/chains'
-import { alchemyProvider } from '@wagmi/core/providers/alchemy'
+import { infuraProvider } from '@wagmi/core/providers/infura'
 import { multicallProvider } from 'multicall-provider/wagmi'
 
 export type SupportedChainId = (typeof chains)[number]['id']
@@ -11,7 +11,7 @@ export const {
   webSocketProvider,
 } = configureChains(
   [optimism, optimismGoerli, mainnet],
-  [alchemyProvider({ apiKey: 'Kng1p_dEJaldM51_qK6aqP9YvBY0cVxf' })],
+  [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY })],
 )
 
 export const provider = multicallProvider(_provider, { timeWindow: 1 })
