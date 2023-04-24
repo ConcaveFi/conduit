@@ -43,7 +43,7 @@ export function useMarginDetails<TSelect = TMarginDetails>(
   select?: (m: TMarginDetails) => TSelect,
 ) {
   const { chain } = useNetwork()
-  const chainId = chain?.id === optimismGoerli.id ?optimismGoerli.id: optimism.id
+  const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
 
   const market = useRouteMarket()
   const { address: account } = useAccount()
@@ -56,7 +56,7 @@ export function useMarginDetails<TSelect = TMarginDetails>(
     {
       select,
       enabled: !!account && !!market,
-      refetchInterval: 20 * 1000, // 20s
+      refetchInterval: 12 * 1000, // 12s
     },
   )
 }
