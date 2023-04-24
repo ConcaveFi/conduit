@@ -52,7 +52,8 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <Script
           id="tag-manager"
           strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-NE1K73QGNY"        >
+          src="https://www.googletagmanager.com/gtag/js?id=G-NE1K73QGNY"
+        >
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
