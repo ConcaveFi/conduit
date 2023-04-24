@@ -44,8 +44,12 @@ import { BigNumber } from 'ethers'
 import { formatBytes32String } from 'ethers/lib/utils'
 
 export const TRACKING_CODE = formatBytes32String('Conduit')
-export const KWENTA_PRICE_IMPACT = BigNumber.from('1890063300000000000000')
-export const DEFAULT_LONG_PRICE_IMPACT = KWENTA_PRICE_IMPACT.mul(2)
-export const DEFAULT_SHORT_PRICE_IMPACT = BigNumber.from('100000000000000000')
+
+export const calculatePriceImpact = (size: BigNumber, price: BigNumber) => {
+    return size.lt(0)
+        ? price.mul(995n).div(1000n)
+        : price.mul(1005n).div(1000n);
+}
+
 
 export const MAX_LEVERAGE = from(25, 18)
