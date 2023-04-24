@@ -3,11 +3,7 @@
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Modal, cx } from '@tradex/interface'
-import {
-  DEFAULT_LONG_PRICE_IMPACT,
-  DEFAULT_SHORT_PRICE_IMPACT,
-  TRACKING_CODE,
-} from 'app/[asset]/constants/perps-config'
+import { TRACKING_CODE, calculatePriceImpact } from 'app/[asset]/constants/perps-config'
 import { MarketSummary } from 'app/[asset]/lib/market/markets'
 import { routeMarketAtom, useMarketSettings } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
@@ -87,15 +83,12 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
   const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
   const wrongChain = chainId !== chain?.id
   const orderSize = toBigNumber(order.sizeDelta)
+  const priceImpact = calculatePriceImpact(orderSize, toBigNumber(order.market.price))
   const { config, isError, error } = usePrepareMarketModifyPositionWithTracking({
     address: order.market.address,
     enabled: !equal(order.sizeDelta, 0),
     chainId,
-    args: [
-      orderSize,
-      orderSize.gt(0) ? DEFAULT_LONG_PRICE_IMPACT : DEFAULT_SHORT_PRICE_IMPACT,
-      TRACKING_CODE,
-    ],
+    args: [orderSize, priceImpact, TRACKING_CODE],
   })
   const { write: submitOrder, isIdle } = useMarketModifyPositionWithTracking({
     ...config,

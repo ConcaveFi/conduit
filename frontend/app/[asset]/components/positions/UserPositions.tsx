@@ -1,11 +1,7 @@
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { cx, Skeleton } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
-import {
-  DEFAULT_LONG_PRICE_IMPACT,
-  DEFAULT_SHORT_PRICE_IMPACT,
-  TRACKING_CODE,
-} from 'app/[asset]/constants/perps-config'
+import { calculatePriceImpact, TRACKING_CODE } from 'app/[asset]/constants/perps-config'
 import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
@@ -44,21 +40,21 @@ export function UserPositions() {
   const position = positionDetails?.position
   const currentPositionSizeDelta = toBigNumber(position?.size || [0n, 18])
   const closePositionsizeDelta = currentPositionSizeDelta.mul(-1)
+
+  const priceImpact = calculatePriceImpact(
+    closePositionsizeDelta,
+    toBigNumber(market?.price || [0n, 18]),
+  )
+
   const prepareClose = usePrepareMarketModifyPositionWithTracking({
     address: market?.address,
-    args: [
-      closePositionsizeDelta,
-      closePositionsizeDelta.gt(0) ? DEFAULT_LONG_PRICE_IMPACT : DEFAULT_SHORT_PRICE_IMPACT,
-      TRACKING_CODE,
-    ],
+    args: [closePositionsizeDelta, priceImpact, TRACKING_CODE],
   })
 
   const refetch = useCallback(() => {
-    console.log('start refetching positions')
     if (marketDataPosition.isFetching || prepareClose.isFetching) return
     marketDataPosition.refetch()
     prepareClose.refetch()
-    console.log('end refetching positions')
   }, [
     marketDataPosition.refetch,
     prepareClose.refetch,
