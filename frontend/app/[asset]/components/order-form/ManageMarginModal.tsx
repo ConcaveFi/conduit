@@ -1,16 +1,16 @@
 'use client'
 
 import { useAddRecentTransaction } from '@pcnv/txs-react'
-import { CloseIcon } from '@tradex/icons'
-import { cx, Modal, ModalProps, NumericInput } from '@tradex/interface'
-import { Dnum, equal, from, lessThan } from 'dnum'
+import { CloseIcon, Spinner } from '@tradex/icons'
+import { Modal, ModalProps, NumericInput, cx } from '@tradex/interface'
+import { Dnum, equal, from, lessThan, toNumber } from 'dnum'
 import { BigNumber } from 'ethers'
 import { parseUnits } from 'ethers/lib/utils.js'
 import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
 import { PropsWithChildren, useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
 import { format } from 'utils/format'
-import { useAccount, useBalance, useNetwork } from 'wagmi'
+import { useAccount, useBalance, useNetwork, useSwitchNetwork } from 'wagmi'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
 import { Bridge } from '../Bridge'
@@ -62,12 +62,14 @@ function SelectTranferType({
 function TransferMarginInput({
   onValueChange,
   value,
+  isLoading,
   label,
   max,
 }: {
+  isLoading: boolean
   value: string
   label: string
-  max: string
+  max: Dnum
   onValueChange: (e: string) => void
 }) {
   return (
@@ -84,10 +86,13 @@ function TransferMarginInput({
         placeholder="0.0"
         right={() => (
           <button
-            onClick={() => onValueChange(max)}
+            onClick={() => {
+              if (isLoading) return
+              onValueChange(toNumber(max, 18).toString())
+            }}
             className="text-dark-30 text-xs font-bold hover:underline"
           >
-            MAX
+            {isLoading ? <Spinner /> : 'Max'}
           </button>
         )}
       />
@@ -102,15 +107,14 @@ function WithdrawInput({
   value: string
   onValueChange: (e: string) => void
 }) {
-  const { data: accessibleMargin = '0' } = useMarginDetails((m) =>
-    format(m.accessibleMargin, undefined),
-  )
+  const { data: accessibleMargin, isLoading } = useMarginDetails((m) => m.accessibleMargin)
 
   return (
     <TransferMarginInput
       onValueChange={onValueChange}
       value={value}
-      max={accessibleMargin}
+      max={accessibleMargin || [0n, 18]}
+      isLoading={isLoading}
       label="Accessible margin:"
     />
   )
@@ -127,9 +131,10 @@ function DepositInput({
 
   return (
     <TransferMarginInput
+      isLoading={false}
       onValueChange={onValueChange}
       value={value}
-      max={format(balance, undefined)}
+      max={balance || [0n, 18]}
       label="Balance:"
     />
   )
@@ -164,9 +169,13 @@ function SubmitMarginTransferButton({
   value,
   children,
   type,
-}: PropsWithChildren<{ disabled: boolean; value?: BigNumber; type?: 'withdraw' | 'deposit' }>) {
+}: PropsWithChildren<{
+  disabled: boolean
+  value?: BigNumber
+  type?: 'withdraw' | 'deposit'
+}>) {
   const market = useRouteMarket()
-
+  const network = useNetwork()
   const registerTx = useAddRecentTransaction()
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
@@ -185,6 +194,17 @@ function SubmitMarginTransferButton({
       registerTx({ hash, meta: { description } })
     },
   })
+
+  const { switchNetwork } = useSwitchNetwork()
+  if (network.chain?.id !== optimism.id && network.chain?.id !== optimismGoerli.id)
+    return (
+      <button
+        onClick={() => switchNetwork?.(optimism.id)}
+        className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
+      >
+        Switch to Optimism
+      </button>
+    )
 
   return (
     <button
