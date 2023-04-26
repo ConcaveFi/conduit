@@ -1,5 +1,5 @@
 import { configureChains } from '@wagmi/core'
-import { mainnet, optimism, optimismGoerli } from '@wagmi/core/chains'
+import { optimism, optimismGoerli } from '@wagmi/core/chains'
 import { infuraProvider } from '@wagmi/core/providers/infura'
 import { multicallProvider } from 'multicall-provider/wagmi'
 
@@ -10,7 +10,7 @@ export const {
   provider: _provider,
   webSocketProvider,
 } = configureChains(
-  [optimism, optimismGoerli, mainnet],
+  [optimism, optimismGoerli],
   [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY })],
 )
 

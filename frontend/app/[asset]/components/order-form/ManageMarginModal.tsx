@@ -10,7 +10,7 @@ import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } 
 import { PropsWithChildren, useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
 import { format } from 'utils/format'
-import { useAccount, useBalance, useNetwork } from 'wagmi'
+import { useAccount, useBalance, useNetwork, useSwitchNetwork } from 'wagmi'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
 import { Bridge } from '../Bridge'
@@ -169,9 +169,13 @@ function SubmitMarginTransferButton({
   value,
   children,
   type,
-}: PropsWithChildren<{ disabled: boolean; value?: BigNumber; type?: 'withdraw' | 'deposit' }>) {
+}: PropsWithChildren<{
+  disabled: boolean
+  value?: BigNumber
+  type?: 'withdraw' | 'deposit'
+}>) {
   const market = useRouteMarket()
-
+  const network = useNetwork()
   const registerTx = useAddRecentTransaction()
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
@@ -190,6 +194,17 @@ function SubmitMarginTransferButton({
       registerTx({ hash, meta: { description } })
     },
   })
+
+  const { switchNetwork } = useSwitchNetwork()
+  if (network.chain?.id !== optimism.id && network.chain?.id !== optimismGoerli.id)
+    return (
+      <button
+        onClick={() => switchNetwork?.(optimism.id)}
+        className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
+      >
+        Switch to Optimism
+      </button>
+    )
 
   return (
     <button
