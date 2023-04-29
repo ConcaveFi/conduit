@@ -1,6 +1,7 @@
 'use client'
 
 import { useAddRecentTransaction } from '@pcnv/txs-react'
+import { DefaultToastTransactionMeta } from '@pcnv/txs-react/dist/toasts/ToastsViewport'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Modal, cx } from '@tradex/interface'
 import { TRACKING_CODE, calculatePriceImpact } from 'app/[asset]/constants/perps-config'
@@ -12,8 +13,8 @@ import { useTradePreview } from 'app/[asset]/lib/useTradePreview'
 import { Dnum, abs, equal, greaterThan, lessThan, multiply } from 'dnum'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import {
-  useMarketModifyPositionWithTracking,
-  usePrepareMarketModifyPositionWithTracking,
+  useMarketSubmitOffchainDelayedOrderWithTracking,
+  usePrepareMarketSubmitOffchainDelayedOrderWithTracking,
 } from 'perps-hooks'
 import { format } from 'utils/format'
 import { toBigNumber } from 'utils/toBigNumber'
@@ -77,20 +78,23 @@ function OrderSummary({ order }: { order: Order }) {
 type Order = { market: MarketSummary; sizeDelta: Dnum; side: 'long' | 'short' }
 
 function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFunction }) {
-  const registerTransaction = useAddRecentTransaction()
+  const registerTransaction = useAddRecentTransaction<
+    DefaultToastTransactionMeta & { method: string; args: string[] }
+  >()
+
   const { switchNetwork } = useSwitchNetwork()
   const { chain } = useNetwork()
   const chainId = chain?.id === optimismGoerli.id ? optimismGoerli.id : optimism.id
   const wrongChain = chainId !== chain?.id
   const orderSize = toBigNumber(order.sizeDelta)
   const priceImpact = calculatePriceImpact(orderSize, toBigNumber(order.market.price))
-  const { config, isError, error } = usePrepareMarketModifyPositionWithTracking({
+  const { config, isError, error } = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: order.market.address,
     enabled: !equal(order.sizeDelta, 0),
     chainId,
     args: [orderSize, priceImpact, TRACKING_CODE],
   })
-  const { write: submitOrder, isIdle } = useMarketModifyPositionWithTracking({
+  const { write: submitOrder, isIdle } = useMarketSubmitOffchainDelayedOrderWithTracking({
     ...config,
     onSuccess: (tx) => {
       onClose()
@@ -98,6 +102,8 @@ function ConfirmOrderDialog({ onClose, order }: { order: Order; onClose: VoidFun
         hash: tx.hash,
         meta: {
           description: `Open ${order.side} ${order.market.asset} position`,
+          method: 'submitOffchainDelayedOrderWithTracking',
+          args: [orderSize, priceImpact, TRACKING_CODE].map((i) => '' + i),
         },
       })
     },
