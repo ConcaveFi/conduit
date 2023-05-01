@@ -88,11 +88,17 @@ function TransferMarginInput({
           <button
             onClick={() => {
               if (isLoading) return
-              onValueChange(toNumber(max, 18).toString())
+              const maxAmount = toNumber(max, 18)
+              if (maxAmount < 0.0001) {
+                onValueChange('0')
+                return
+              }
+              const decimals = 1000000000
+              onValueChange((Math.floor(maxAmount * decimals) / decimals).toString())
             }}
             className="text-dark-30 text-xs font-bold hover:underline"
           >
-            {isLoading ? <Spinner /> : 'Max'}
+            {isLoading ? <Spinner /> : 'MAX'}
           </button>
         )}
       />
@@ -179,7 +185,7 @@ function SubmitMarginTransferButton({
   const registerTx = useAddRecentTransaction()
   const { config } = usePrepareMarketTransferMargin({
     address: market?.address,
-    enabled: !!value,
+    enabled: !!value && value.gt(0),
     args: value && [value],
   })
   const { write: transferMargin } = useMarketTransferMargin({
@@ -209,7 +215,7 @@ function SubmitMarginTransferButton({
   return (
     <button
       onClick={transferMargin}
-      disabled={!transferMargin || disabled}
+      disabled={!transferMargin || disabled || value?.eq(0)}
       className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
     >
       {children}
@@ -226,7 +232,7 @@ const getTransferMarginButtonProps = (
 
   let label: string = type
   if (equal(balance, 0)) label = 'Not enough sUSD'
-  if (!value) (label = 'Enter an amount'), (value = '0')
+  if (!value || +value === 0) (label = 'Enter an amount'), (value = '0')
   if (lessThan(balance, value)) label = 'Not enough sUSD'
   return {
     children: label,
