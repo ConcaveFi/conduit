@@ -88,13 +88,11 @@ function TransferMarginInput({
           <button
             onClick={() => {
               if (isLoading) return
-              const maxAmount = toNumber(max, 18)
-              if (maxAmount < 0.0001) {
+              if (lessThan(max, '0.0001')) {
                 onValueChange('0')
                 return
               }
-              const decimals = 1000000000
-              onValueChange((Math.floor(maxAmount * decimals) / decimals).toString())
+              onValueChange(format(max, { digits: undefined }))
             }}
             className="text-dark-30 text-xs font-bold hover:underline"
           >
