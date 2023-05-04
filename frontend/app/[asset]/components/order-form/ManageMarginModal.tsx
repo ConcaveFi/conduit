@@ -2,14 +2,15 @@
 
 import { useAddRecentTransaction } from '@pcnv/txs-react'
 import { CloseIcon, Spinner } from '@tradex/icons'
-import { Modal, ModalProps, NumericInput, cx } from '@tradex/interface'
-import { Dnum, equal, from, lessThan, toNumber } from 'dnum'
+import { Modal, ModalProps, NumericInput, cx, twMerge } from '@tradex/interface'
+import { Dnum, equal, from, lessThan } from 'dnum'
 import { BigNumber } from 'ethers'
+import { format } from 'utils/format'
+
 import { parseUnits } from 'ethers/lib/utils.js'
 import { susdAddress, useMarketTransferMargin, usePrepareMarketTransferMargin } from 'perps-hooks'
-import { PropsWithChildren, useState } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 import { useDebounce } from 'usehooks-ts'
-import { format } from 'utils/format'
 import { useAccount, useBalance, useNetwork, useSwitchNetwork } from 'wagmi'
 import { optimism, optimismGoerli } from 'wagmi/chains'
 import { useRouteMarket } from '../../lib/market/useMarket'
@@ -40,7 +41,7 @@ function SelectTranferType({
   onChange: (t: 'deposit' | 'withdraw') => void
 }) {
   return (
-    <div className="bg-dark-main-bg ocean:bg-blue-main-bg flex h-11 w-full gap-2 rounded-full bg-opacity-50 p-1 ">
+    <div className="flex w-full gap-2 p-1 bg-opacity-50 rounded-full bg-dark-main-bg ocean:bg-blue-main-bg h-11 ">
       <button
         aria-pressed={type === 'deposit'}
         onClick={() => onChange('deposit')}
@@ -62,85 +63,50 @@ function SelectTranferType({
 function TransferMarginInput({
   onValueChange,
   value,
+  onMax,
   isLoading,
   label,
   max,
+  maxFlag,
 }: {
+  onMax: VoidFunction
   isLoading: boolean
   value: string
   label: string
   max: Dnum
+  maxFlag?: boolean
   onValueChange: (e: string) => void
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="text-dark-accent ocean:text-blue-accent mb-1 flex items-center justify-between px-3 text-xs">
+      <div className="flex items-center justify-between px-3 mb-1 text-xs text-dark-accent ocean:text-blue-accent">
         <span>{label}</span>
         <span>{format(max) || '0.00'} sUSD</span>
       </div>
 
       <NumericInput
         value={value}
-        onValueChange={(e) => onValueChange(e.floatValue?.toString() ?? '')}
-        className="placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent w-full"
+        onValueChange={(e) => {
+          if (!e.floatValue) return onValueChange('0')
+          onValueChange(e.floatValue > 0.001 ? e.floatValue?.toString() : e.formattedValue)
+        }}
+        className="w-full placeholder:text-dark-30 ocean:placeholder:text-blue-30 bg text-dark-accent ocean:text-blue-accent"
         placeholder="0.0"
         right={() => (
           <button
             onClick={() => {
-              if (isLoading) return
-              if (lessThan(max, '0.0001')) {
-                onValueChange('0')
-                return
-              }
-              onValueChange(format(max, { digits: undefined }))
+              onMax()
             }}
-            className="text-dark-30 text-xs font-bold hover:underline"
+            className={twMerge(
+              'text-xs font-bold  hover:underline ',
+              maxFlag ? 'text-dark-accent ocean:text-blue-accent' : 'text-dark-30',
+            )}
           >
             {isLoading ? <Spinner /> : 'MAX'}
           </button>
         )}
       />
     </div>
-  )
-}
-
-function WithdrawInput({
-  onValueChange,
-  value,
-}: {
-  value: string
-  onValueChange: (e: string) => void
-}) {
-  const { data: accessibleMargin, isLoading } = useMarginDetails((m) => m.accessibleMargin)
-
-  return (
-    <TransferMarginInput
-      onValueChange={onValueChange}
-      value={value}
-      max={accessibleMargin || [0n, 18]}
-      isLoading={isLoading}
-      label="Accessible margin:"
-    />
-  )
-}
-
-function DepositInput({
-  onValueChange,
-  value,
-}: {
-  value: string
-  onValueChange: (e: string) => void
-}) {
-  const balance = useSUsdBalance()
-
-  return (
-    <TransferMarginInput
-      isLoading={false}
-      onValueChange={onValueChange}
-      value={value}
-      max={balance || [0n, 18]}
-      label="Balance:"
-    />
   )
 }
 
@@ -181,9 +147,9 @@ function SubmitMarginTransferButton({
   const market = useRouteMarket()
   const network = useNetwork()
   const registerTx = useAddRecentTransaction()
-  const { config } = usePrepareMarketTransferMargin({
+  const { config, isLoading } = usePrepareMarketTransferMargin({
     address: market?.address,
-    enabled: !!value && value.gt(0),
+    enabled: !!value && !value.eq(0),
     args: value && [value],
   })
   const { write: transferMargin } = useMarketTransferMargin({
@@ -204,7 +170,7 @@ function SubmitMarginTransferButton({
     return (
       <button
         onClick={() => switchNetwork?.(optimism.id)}
-        className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
+        className="w-full h-12 capitalize rounded-full btn centered btn-secondary"
       >
         Switch to Optimism
       </button>
@@ -213,10 +179,10 @@ function SubmitMarginTransferButton({
   return (
     <button
       onClick={transferMargin}
-      disabled={!transferMargin || disabled || value?.eq(0)}
-      className="btn centered btn-secondary h-12 w-full rounded-full capitalize"
+      disabled={!transferMargin || isLoading || disabled || value?.eq(0)}
+      className="w-full h-12 capitalize rounded-full btn centered btn-secondary"
     >
-      {children}
+      {isLoading && <Spinner />} {children}
     </button>
   )
 }
@@ -240,15 +206,6 @@ const getTransferMarginButtonProps = (
   }
 }
 
-function WithdrawButton({ value }: { value: string }) {
-  const { data: accessibleMargin } = useMarginDetails((m) => m.accessibleMargin)
-  return (
-    <SubmitMarginTransferButton
-      {...getTransferMarginButtonProps(value, accessibleMargin, 'withdraw')}
-    />
-  )
-}
-
 function DepositButton({ value }: { value: string }) {
   const balance = useSUsdBalance()
   return <SubmitMarginTransferButton {...getTransferMarginButtonProps(value, balance, 'deposit')} />
@@ -257,39 +214,86 @@ function DepositButton({ value }: { value: string }) {
 export function ManageMarginModal(props: ModalProps) {
   const [transferType, setTransferType] = useState<'deposit' | 'withdraw'>('deposit')
 
-  const [value, setValue] = useState('')
-  const debouncedValue = useDebounce(value, 150)
-
   return (
     <Modal
       {...props}
       className="card card-secondary-outlined relative h-fit w-[400px] gap-4 py-3 px-4"
     >
-      <button onClick={props.onClose} className="box-4 absolute top-5 right-4 outline-none">
+      <button onClick={props.onClose} className="absolute outline-none box-4 top-5 right-4">
         <CloseIcon className="fill-dark-90 ocean:to-blue-300 box-4" />
       </button>
       <div className="flex flex-col gap-2">
-        <span className="text-dark-accent ocean:text-blue-accent font-medium ">
+        <span className="font-medium text-dark-accent ocean:text-blue-accent ">
           Transfer Margin
         </span>
         <SelectTranferType type={transferType} onChange={setTransferType} />
       </div>
-      {transferType === 'deposit' ? (
-        <>
-          {/* TODO: remove black background on modal & fix the header size breaking when opens modal with bridge  */}
-          {/* <WrappedBridge /> */}
-          <DepositInput value={value} onValueChange={setValue} />
-          <p className="text-dark-90 ocean:text-blue-accent text-center text-xs">
-            A $50 margin minimum is required to open a position.
-          </p>
-          <DepositButton value={debouncedValue} />
-        </>
-      ) : (
-        <>
-          <WithdrawInput value={value} onValueChange={setValue} />
-          <WithdrawButton value={debouncedValue} />
-        </>
-      )}
+      {transferType === 'deposit' ? <Deposit /> : <Withdraw />}
     </Modal>
+  )
+}
+
+const Deposit = () => {
+  const [value, setValue] = useState('')
+  const debouncedValue = useDebounce(value, 150)
+  const balance = useSUsdBalance()
+  const [max, setMax] = useState(false)
+
+  useEffect(() => {
+    if (max) {
+      setValue(format(balance || [0n, 18], { digits: undefined }))
+    }
+  }, [balance, max])
+
+  return (
+    <>
+      <TransferMarginInput
+        isLoading={false}
+        onMax={() => setMax((v) => !v)}
+        onValueChange={(v) => {
+          setValue(v), setMax(false)
+        }}
+        value={value}
+        maxFlag={max}
+        max={balance || [0n, 18]}
+        label="Balance:"
+      />
+
+      <p className="text-xs text-center text-dark-90 ocean:text-blue-accent">
+        A $50 margin minimum is required to open a position.
+      </p>
+      <DepositButton value={debouncedValue} />
+    </>
+  )
+}
+
+const Withdraw = () => {
+  const [value, setValue] = useState('')
+  const debouncedValue = useDebounce(value, 150)
+  const accessibleMargin = useMarginDetails((m) => m.accessibleMargin)
+  const props = { ...getTransferMarginButtonProps(value, accessibleMargin.data, 'withdraw') }
+  const [max, setMax] = useState(false)
+
+  useEffect(() => {
+    if (max) {
+      setValue(format(accessibleMargin.data || [0n, 18], { digits: undefined }))
+    }
+  }, [accessibleMargin, max])
+
+  return (
+    <>
+      <TransferMarginInput
+        onValueChange={(v) => {
+          setValue(v), setMax(false)
+        }}
+        value={debouncedValue}
+        max={accessibleMargin.data || [0n, 18]}
+        isLoading={accessibleMargin.isLoading || accessibleMargin.isRefetching}
+        maxFlag={max}
+        onMax={() => setMax((v) => !v)}
+        label="Accessible margin:"
+      />
+      <SubmitMarginTransferButton {...props} />
+    </>
   )
 }
