@@ -3,8 +3,9 @@ import { DefaultToastTransactionMeta } from '@pcnv/txs-react/dist/toasts/ToastsV
 import { Spinner } from '@tradex/icons'
 import { Modal, Skeleton, cx } from '@tradex/interface'
 import { useTranslation } from '@tradex/languages'
+import { optimism, optimismGoerli } from '@wagmi/core/chains'
 import { TRACKING_CODE, calculatePriceImpact } from 'app/[asset]/constants/perps-config'
-import { useRouteMarket } from 'app/[asset]/lib/market/useMarket'
+import { useMarketSettings, useRouteMarket } from 'app/[asset]/lib/market/useMarket'
 import { useMarketPrice } from 'app/[asset]/lib/price/price'
 import { MarketKey } from 'app/[asset]/lib/price/pyth'
 import { useIsHydrated } from 'app/providers/IsHydratedProvider'
@@ -21,7 +22,7 @@ import { parsePositionDetails } from 'perps-hooks/parsers'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useInterval } from 'usehooks-ts'
 import { toBigNumber } from 'utils/toBigNumber'
-import { deepEqual, useAccount } from 'wagmi'
+import { deepEqual, useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 
 type Position = {
   id: bigint
@@ -89,6 +90,7 @@ export function UserPositions() {
   const isHydrated = useIsHydrated()
 
   const marketDataPosition = useMarketDataPositionDetails({
+    chainId: optimism.id,
     args: market && address && [market.address, address],
     select: parsePositionDetails,
     enabled: !!market && !!address,
@@ -130,10 +132,12 @@ export function UserPositions() {
 
   if (!hasPosition) {
     return (
-      <div className="centered flex h-full ">
-        <span className="text-dark-accent ocean:text-blue-accent text-sm font-medium">
-          {t('you have no positions yet')}
-        </span>
+      <div className="centered flex h-full flex-col ">
+        <CancelPrevius market={market}>
+          <span className="text-dark-accent ocean:text-blue-accent text-sm font-medium">
+            {t('you have no positions yet')}
+          </span>
+        </CancelPrevius>
       </div>
     )
   }
@@ -174,10 +178,53 @@ export function UserPositions() {
     </div>
   )
 }
+
+const CancelPrevius = ({ market, children }) => {
+  const account = useAccount()
+  const [pending, setPending] = useState(false)
+  const prepareCancel = usePrepareMarketCancelOffchainDelayedOrder({
+    address: market?.address,
+    chainId: optimism.id,
+    args: account.address && [account.address],
+    enabled: !!account.address,
+  })
+
+  const cancel = useMarketCancelOffchainDelayedOrder({
+    ...prepareCancel.config,
+    onSuccess: () => {
+      prepareCancel.refetch()
+      setPending(false)
+    },
+  })
+
+  if (prepareCancel.isLoading) {
+    return <Spinner />
+  }
+  if (prepareCancel.isError) {
+    return children
+  }
+
+  return (
+    <div className="bg-dark-20 border-dark-10 ocean:bg-blue-30 ocean:border-blue-20 flex w-96 flex-col gap-2 rounded-xl border p-3 text-white shadow-xl">
+      <span className="text-bold text-md text-center">Review your operation</span>
+      <span className="text-bold text-center text-sm">Previous order failed</span>
+      <button
+        onClick={() => {
+          cancel.write?.()
+          setPending(true)
+        }}
+        disabled={!prepareCancel.isSuccess || pending}
+        className="btn disabled:bg-dark-30 ocean:disabled:bg-blue-30 centered h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
+      >
+        {pending && <Spinner />} Cancel previous
+      </button>
+    </div>
+  )
+}
 function SideNAsset(side: string, asset: string) {
   return (
     <React.Fragment>
-      <span className={cx(side === 'SHORT' ? 'text-negative' : 'text-positive')}>{side}</span>{' '}
+      <span className={cx(side === 'SHORT' ? 'text-negative' : 'text-positive')}>{side}</span>
       {asset}
     </React.Fragment>
   )
@@ -206,6 +253,7 @@ const ConfirmClosePosition = ({
   )
   const prepareClose = usePrepareMarketSubmitOffchainDelayedOrderWithTracking({
     address: market?.address,
+    chainId: optimism.id,
     args: [closePositionsizeDelta, priceImpact, TRACKING_CODE],
   })
   const closePosition = useMarketSubmitOffchainDelayedOrderWithTracking({
@@ -233,11 +281,28 @@ const ConfirmClosePosition = ({
   const cancel = useMarketCancelOffchainDelayedOrder({
     ...prepareCancel.config,
   })
+  const network = useNetwork()
+
+  const { switchNetwork } = useSwitchNetwork()
+  if (network.chain?.id !== optimism.id && network.chain?.id !== optimismGoerli.id)
+    return (
+      <div className="bg-dark-20 border-dark-10 ocean:bg-blue-30 ocean:border-blue-20 flex w-96 flex-col gap-2 rounded-xl border p-3 text-white shadow-xl">
+        <span className="text-bold text-md text-center">Review your operation</span>
+        <span className="text-bold text-center text-sm">Previous order failed</span>
+        <button
+          onClick={() => switchNetwork?.(optimism.id)}
+          className="btn disabled:bg-dark-30 ocean:disabled:bg-blue-30 centered h-11 rounded-lg bg-teal-500 py-2 font-bold text-white shadow-lg"
+        >
+          Switch to Optimism
+        </button>
+      </div>
+    )
+
   if (reason === 'previous order exists') {
     return (
       <div className="bg-dark-20 border-dark-10 ocean:bg-blue-30 ocean:border-blue-20 flex w-96 flex-col gap-2 rounded-xl border p-3 text-white shadow-xl">
         <span className="text-bold text-md text-center">Review your operation</span>
-        <span className="text-bold text-center text-sm">Previous order failed, cancel it</span>
+        <span className="text-bold text-center text-sm">Previous order failed</span>
         {prepareCancel.isSuccess && (
           <button
             onClick={cancel.write}
@@ -249,7 +314,6 @@ const ConfirmClosePosition = ({
       </div>
     )
   }
-  console.log(reason)
   return (
     <div className="bg-dark-20 border-dark-10 ocean:bg-blue-30 ocean:border-blue-20 flex w-96 flex-col gap-2 rounded-xl border p-3 text-white shadow-xl">
       <span className="text-bold text-md text-center">Review your operation</span>
@@ -337,7 +401,12 @@ const PositionPL = ({
   position: Position
 }) => {
   const price = useMarketPrice({ marketKey: market?.key })
-  const profit = mul(sub(price, position?.lastPrice), position.size)
+  const { data: { minKeeperFee } = {} } = useMarketSettings({ marketKey: market?.key })
+  const profit = sub(
+    mul(sub(price, position?.lastPrice), position.size),
+    minKeeperFee || ([0n, 18] as const),
+  )
+
   return (
     <PosItemInfo
       info={'Unrealized P&L'}
